@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Fun Personal Site</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@300;400;600&display=swap');
+    body {
+      font-family: 'Poppins', sans-serif;
+    }
+    .fun-font {
+      font-family: 'Pacifico', cursive;
+    }
+    .fade-in {
+      animation: fadeIn 2s ease-in-out;
+    }
+    @keyframes fadeIn {
+      0% {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body class="bg-gray-900 text-white">
+
+  <!-- Home Page -->
+  <header class="min-h-screen flex flex-col justify-center items-center bg-gradient-to-br from-purple-500 to-indigo-700 text-center">
+    <h1 class="text-6xl fun-font text-white fade-in">Welcome to My Fun Zone</h1>
+    <p class="mt-4 text-lg fade-in delay-500">Explore my games, writings, and creative experiments!</p>
+    <a href="#games" class="mt-6 px-8 py-4 bg-white text-purple-700 rounded-lg hover:scale-105 transform transition">Get Started</a>
+  </header>
+
+  <!-- JavaScript Games Section -->
+  <section id="games" class="py-16 bg-gray-800">
+    <div class="container mx-auto px-6">
+      <h2 class="text-4xl font-bold mb-8 fun-font text-center">JavaScript Games</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        <div class="bg-gray-700 rounded-lg p-4 hover:shadow-lg transform hover:scale-105 transition">
+          <h3 class="text-xl fun-font">Snake Game</h3>
+          <a href="snake-game.html" class="text-blue-400">Play Now</a>
+        </div>
+        <div class="bg-gray-700 rounded-lg p-4 hover:shadow-lg transform hover:scale-105 transition">
+          <h3 class="text-xl fun-font">Tic Tac Toe</h3>
+          <a href="tic-tac-toe.html" class="text-blue-400">Play Now</a>
+        </div>
+        <div class="bg-gray-700 rounded-lg p-4 hover:shadow-lg transform hover:scale-105 transition">
+          <h3 class="text-xl fun-font">Memory Game</h3>
+          <a href="memory-game.html" class="text-blue-400">Play Now</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Writings Section -->
+  <section id="writings" class="py-16 bg-gray-900">
+    <div class="container mx-auto px-6">
+      <h2 class="text-4xl font-bold mb-8 fun-font text-center">My Writings</h2>
+      <div class="space-y-6">
+        <div class="bg-gray-800 rounded-lg p-6">
+          <h3 class="text-2xl font-bold">Title of Writing #1</h3>
+          <p class="mt-2 text-gray-400">A short description or preview...</p>
+          <button class="mt-4 px-4 py-2 bg-indigo-600 rounded-lg text-white hover:bg-indigo-500">Read More</button>
+        </div>
+        <div class="bg-gray-800 rounded-lg p-6">
+          <h3 class="text-2xl font-bold">Title of Writing #2</h3>
+          <p class="mt-2 text-gray-400">Another preview or description...</p>
+          <button class="mt-4 px-4 py-2 bg-indigo-600 rounded-lg text-white hover:bg-indigo-500">Read More</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="py-8 bg-gray-800 text-center">
+    <p class="text-gray-400">Created with ❤️ by [Your Name]</p>
+    <div class="mt-4">
+      <a href="#" class="text-blue-400 mx-2 hover:text-blue-300">Twitter</a>
+      <a href="#" class="text-blue-400 mx-2 hover:text-blue-300">GitHub</a>
+      <a href="#" class="text-blue-400 mx-2 hover:text-blue-300">LinkedIn</a>
+    </div>
+  </footer>
+
+</body>
+</html>
