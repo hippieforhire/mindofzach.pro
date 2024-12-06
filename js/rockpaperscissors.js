@@ -18,6 +18,3 @@ function playRockPaperScissors() {
 
     alert(`You chose ${userChoice}, computer chose ${computerChoice}. ${result}`);
 }
-
-// Add a button to play Rock, Paper, Scissors
-document.body.innerHTML += '<button onclick="playRockPaperScissors()">Play Rock, Paper, Scissors</button>';
