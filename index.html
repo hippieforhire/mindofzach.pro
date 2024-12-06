@@ -13,79 +13,79 @@
     .fun-font {
       font-family: 'Pacifico', cursive;
     }
-    .fade-in {
-      animation: fadeIn 2s ease-in-out;
-    }
-    @keyframes fadeIn {
-      0% {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      100% {
-        opacity: 1;
-        transform: translateY(0);
-      }
+    .hidden {
+      display: none;
     }
   </style>
 </head>
-<body class="bg-gray-900 text-white">
+<body class="bg-gray-900 text-white min-h-screen flex flex-col items-center">
 
-  <!-- Home Page -->
-  <header class="min-h-screen flex flex-col justify-center items-center bg-gradient-to-br from-purple-500 to-indigo-700 text-center">
-    <h1 class="text-6xl fun-font text-white fade-in">Welcome to My Fun Zone</h1>
-    <p class="mt-4 text-lg fade-in delay-500">Explore my games, writings, and creative experiments!</p>
-    <a href="#games" class="mt-6 px-8 py-4 bg-white text-purple-700 rounded-lg hover:scale-105 transform transition">Get Started</a>
+  <!-- Header -->
+  <header class="py-10 text-center">
+    <h1 class="text-5xl fun-font mb-4">Welcome to My Game Zone</h1>
+    <p class="text-lg text-gray-400">Click a button to start a game or view a fun feature!</p>
   </header>
 
-  <!-- JavaScript Games Section -->
-  <section id="games" class="py-16 bg-gray-800">
-    <div class="container mx-auto px-6">
-      <h2 class="text-4xl font-bold mb-8 fun-font text-center">JavaScript Games</h2>
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        <div class="bg-gray-700 rounded-lg p-4 hover:shadow-lg transform hover:scale-105 transition">
-          <h3 class="text-xl fun-font">Snake Game</h3>
-          <a href="snake-game.html" class="text-blue-400">Play Now</a>
-        </div>
-        <div class="bg-gray-700 rounded-lg p-4 hover:shadow-lg transform hover:scale-105 transition">
-          <h3 class="text-xl fun-font">Tic Tac Toe</h3>
-          <a href="tic-tac-toe.html" class="text-blue-400">Play Now</a>
-        </div>
-        <div class="bg-gray-700 rounded-lg p-4 hover:shadow-lg transform hover:scale-105 transition">
-          <h3 class="text-xl fun-font">Memory Game</h3>
-          <a href="memory-game.html" class="text-blue-400">Play Now</a>
-        </div>
-      </div>
-    </div>
+  <!-- Game Buttons -->
+  <main class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 w-3/4">
+    <button class="px-6 py-3 bg-blue-600 rounded-lg hover:bg-blue-500" onclick="showGame('flappy')">Flappy Bird</button>
+    <button class="px-6 py-3 bg-green-600 rounded-lg hover:bg-green-500" onclick="showGame('tictactoe')">Tic Tac Toe</button>
+    <button class="px-6 py-3 bg-purple-600 rounded-lg hover:bg-purple-500" onclick="showGame('rps')">Rock Paper Scissors</button>
+    <button class="px-6 py-3 bg-yellow-600 rounded-lg hover:bg-yellow-500" onclick="showGame('quotes')">Quotes</button>
+    <button class="px-6 py-3 bg-red-600 rounded-lg hover:bg-red-500" onclick="showGame('spaceinvaders')">Space Invaders</button>
+    <button class="px-6 py-3 bg-indigo-600 rounded-lg hover:bg-indigo-500" onclick="showGame('zork')">Zork Adventure</button>
+  </main>
+
+  <!-- Game Sections -->
+  <section id="flappy" class="hidden">
+    <h2 class="text-3xl fun-font my-4">Flappy Bird</h2>
+    <canvas id="gameCanvas" class="bg-gray-200 mx-auto block" width="800" height="400"></canvas>
+    <p id="score" class="text-center text-lg mt-4">Score: 0</p>
+    <button class="mt-4 px-6 py-3 bg-gray-800 rounded-lg hover:bg-gray-700" onclick="startGame()">Restart</button>
   </section>
 
-  <!-- Writings Section -->
-  <section id="writings" class="py-16 bg-gray-900">
-    <div class="container mx-auto px-6">
-      <h2 class="text-4xl font-bold mb-8 fun-font text-center">My Writings</h2>
-      <div class="space-y-6">
-        <div class="bg-gray-800 rounded-lg p-6">
-          <h3 class="text-2xl font-bold">Title of Writing #1</h3>
-          <p class="mt-2 text-gray-400">A short description or preview...</p>
-          <button class="mt-4 px-4 py-2 bg-indigo-600 rounded-lg text-white hover:bg-indigo-500">Read More</button>
-        </div>
-        <div class="bg-gray-800 rounded-lg p-6">
-          <h3 class="text-2xl font-bold">Title of Writing #2</h3>
-          <p class="mt-2 text-gray-400">Another preview or description...</p>
-          <button class="mt-4 px-4 py-2 bg-indigo-600 rounded-lg text-white hover:bg-indigo-500">Read More</button>
-        </div>
-      </div>
-    </div>
+  <section id="tictactoe" class="hidden">
+    <h2 class="text-3xl fun-font my-4">Tic Tac Toe</h2>
+    <div id="ticTacToeBoard" class="grid grid-cols-3 gap-2 mx-auto" style="max-width: 300px;"></div>
   </section>
 
-  <!-- Footer -->
-  <footer class="py-8 bg-gray-800 text-center">
-    <p class="text-gray-400">Created with ❤️ by [Your Name]</p>
-    <div class="mt-4">
-      <a href="#" class="text-blue-400 mx-2 hover:text-blue-300">Twitter</a>
-      <a href="#" class="text-blue-400 mx-2 hover:text-blue-300">GitHub</a>
-      <a href="#" class="text-blue-400 mx-2 hover:text-blue-300">LinkedIn</a>
-    </div>
-  </footer>
+  <section id="rps" class="hidden">
+    <h2 class="text-3xl fun-font my-4">Rock Paper Scissors</h2>
+    <p class="text-lg text-center">Click the button to play!</p>
+  </section>
 
+  <section id="quotes" class="hidden">
+    <h2 class="text-3xl fun-font my-4">Inspirational Quotes</h2>
+    <p id="quote" class="text-xl text-center italic">Click below for a random quote!</p>
+    <button class="mt-4 px-6 py-3 bg-gray-800 rounded-lg hover:bg-gray-700" onclick="displayRandomQuote()">Get Quote</button>
+  </section>
+
+  <section id="spaceinvaders" class="hidden">
+    <h2 class="text-3xl fun-font my-4">Space Invaders</h2>
+    <canvas id="spaceInvadersCanvas" class="bg-black mx-auto block" width="800" height="400"></canvas>
+    <button id="startSpaceInvaders" class="mt-4 px-6 py-3 bg-gray-800 rounded-lg hover:bg-gray-700">Start Game</button>
+  </section>
+
+  <section id="zork" class="hidden">
+    <h2 class="text-3xl fun-font my-4">Zork Adventure</h2>
+    <div id="output" class="bg-gray-800 text-white p-4 rounded-lg overflow-y-scroll" style="max-height: 300px;"></div>
+    <input id="input" type="text" class="w-full mt-4 px-4 py-2 bg-gray-800 text-white rounded-lg" placeholder="Type your command here...">
+  </section>
+
+  <!-- Scripts -->
+  <script src="js/flappy.js"></script>
+  <script src="js/tictactoe.js"></script>
+  <script src="js/rockpaperscissors.js"></script>
+  <script src="js/quotes.js"></script>
+  <script src="js/spaceinvaders.js"></script>
+  <script src="js/zork.js"></script>
+  <script>
+    function showGame(gameId) {
+      // Hide all sections
+      document.querySelectorAll("section").forEach(section => section.classList.add("hidden"));
+      // Show selected game
+      document.getElementById(gameId).classList.remove("hidden");
+    }
+  </script>
 </body>
 </html>
