@@ -28,7 +28,7 @@
 
   <!-- Game Buttons -->
   <main class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 w-3/4">
-    <button class="px-6 py-3 bg-blue-600 rounded-lg hover:bg-blue-500" onclick="showGame('flappy')">Flappy Bird</button>
+    <button class="px-6 py-3 bg-blue-600 rounded-lg hover:bg-blue-500" onclick="openFlappyModal()">Flappy Bird</button>
     <button class="px-6 py-3 bg-green-600 rounded-lg hover:bg-green-500" onclick="showGame('tictactoe')">Tic Tac Toe</button>
     <button class="px-6 py-3 bg-purple-600 rounded-lg hover:bg-purple-500" onclick="showGame('rps')">Rock Paper Scissors</button>
     <button class="px-6 py-3 bg-yellow-600 rounded-lg hover:bg-yellow-500" onclick="showGame('quotes')">Quotes</button>
@@ -36,14 +36,20 @@
     <button class="px-6 py-3 bg-indigo-600 rounded-lg hover:bg-indigo-500" onclick="showGame('zork')">Zork Adventure</button>
   </main>
 
-  <!-- Game Sections -->
-  <section id="flappy" class="hidden">
-    <h2 class="text-3xl fun-font my-4">Flappy Bird</h2>
-    <canvas id="gameCanvas" class="bg-gray-200 mx-auto block" width="800" height="400"></canvas>
-    <p id="score" class="text-center text-lg mt-4">Score: 0</p>
-    <button class="mt-4 px-6 py-3 bg-gray-800 rounded-lg hover:bg-gray-700" onclick="startGame()">Restart</button>
-  </section>
+  <!-- Flappy Bird Modal -->
+  <div id="flappyModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-lg p-6 text-black w-full max-w-2xl">
+      <h2 class="text-3xl fun-font my-4 text-center">Flappy Bird</h2>
+      <canvas id="gameCanvas" class="bg-gray-200 mx-auto block" width="800" height="400"></canvas>
+      <p id="score" class="text-center text-lg mt-4">Score: 0</p>
+      <div class="text-center mt-4">
+        <button class="px-6 py-3 bg-blue-600 rounded-lg hover:bg-blue-500" onclick="startGame()">Restart</button>
+        <button class="px-6 py-3 bg-red-600 rounded-lg hover:bg-red-500" onclick="closeFlappyModal()">Close</button>
+      </div>
+    </div>
+  </div>
 
+  <!-- Other Game Sections -->
   <section id="tictactoe" class="hidden">
     <h2 class="text-3xl fun-font my-4">Tic Tac Toe</h2>
     <div id="ticTacToeBoard" class="grid grid-cols-3 gap-2 mx-auto" style="max-width: 300px;"></div>
@@ -81,10 +87,20 @@
   <script src="js/zork.js"></script>
   <script>
     function showGame(gameId) {
-      // Hide all sections
       document.querySelectorAll("section").forEach(section => section.classList.add("hidden"));
-      // Show selected game
       document.getElementById(gameId).classList.remove("hidden");
+    }
+
+    function openFlappyModal() {
+      const modal = document.getElementById("flappyModal");
+      modal.classList.remove("hidden");
+      resizeCanvas(); // Ensure the canvas resizes properly
+    }
+
+    function closeFlappyModal() {
+      const modal = document.getElementById("flappyModal");
+      modal.classList.add("hidden");
+      cancelAnimationFrame(gameLoopId); // Stop the game loop
     }
   </script>
 </body>
