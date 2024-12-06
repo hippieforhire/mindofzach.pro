@@ -57,7 +57,7 @@
 
   <section id="rps" class="hidden">
     <h2 class="text-3xl fun-font my-4">Rock Paper Scissors</h2>
-    <p class="text-lg text-center">Click the button to play!</p>
+    <button class="mt-4 px-6 py-3 bg-gray-800 rounded-lg hover:bg-gray-700" onclick="playRockPaperScissors()">Play Rock Paper Scissors</button>
   </section>
 
   <section id="quotes" class="hidden">
@@ -75,7 +75,7 @@
   <section id="zork" class="hidden">
     <h2 class="text-3xl fun-font my-4">Zork Adventure</h2>
     <div id="output" class="bg-gray-800 text-white p-4 rounded-lg overflow-y-scroll" style="max-height: 300px;"></div>
-    <input id="input" type="text" class="w-full mt-4 px-4 py-2 bg-gray-800 text-white rounded-lg" placeholder="Type your command here...">
+    <input id="input" type="text" class="w-full mt-4 px-4 py-2 bg-gray-800 text-white rounded-lg" placeholder="Type your command here..." onkeyup="handleZorkInput(event)">
   </section>
 
   <!-- Scripts -->
@@ -94,7 +94,7 @@
     function openFlappyModal() {
       const modal = document.getElementById("flappyModal");
       modal.classList.remove("hidden");
-      resizeCanvas(); // Ensure canvas resizes properly
+      resizeCanvas(); // Ensure the canvas resizes properly
     }
 
     function closeFlappyModal() {
