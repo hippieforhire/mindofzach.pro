@@ -13,8 +13,8 @@ function initGame() {
 }
 
 function resizeCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    canvas.width = 800; // Fixed width for the modal
+    canvas.height = 400; // Fixed height for the modal
 }
 
 function birdFlap(event) {
@@ -86,7 +86,6 @@ function updatePipes() {
     }
     pipes.forEach(pipe => {
         pipe.x -= 3;
-        // Increment score when pipe passes the bird
         if (pipe.x + 3 === bird.x) {
             score++;
             updateScore();
