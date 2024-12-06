@@ -13,8 +13,8 @@ function initGame() {
 }
 
 function resizeCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    canvas.width = 800; // Set a fixed width
+    canvas.height = 400; // Set a fixed height
 }
 
 function birdFlap(event) {
@@ -27,7 +27,7 @@ function birdFlap(event) {
 }
 
 function startGame() {
-    resizeCanvas();
+    resizeCanvas(); // Ensure canvas is resized
     initGame();
     gameLoop();
 }
@@ -126,8 +126,3 @@ function restartGame() {
 function updateScore() {
     document.getElementById("score").textContent = `Score: ${score}`;
 }
-
-// Initialize game
-resizeCanvas();
-canvas.addEventListener("click", birdFlap);
-canvas.addEventListener("touchstart", birdFlap, { passive: false });
