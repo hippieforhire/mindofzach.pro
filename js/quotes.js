@@ -29,8 +29,7 @@ const quotes = [
     “Every man dies, not every man really lives.”
     “Do what you have to do so you can do what you want to do.”
     “Happiness can be found even in the darkest of times, if one only remembers to turn on the light.”
-    “It is not our abilities that show what we truly are. It is our choices.”
-];
+    “It is not our abilities that show what we truly are. It is our ];
 
 function displayRandomQuote() {
     const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
