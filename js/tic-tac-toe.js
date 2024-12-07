@@ -1,51 +1,59 @@
+// Select the Tic Tac Toe board container
 const boardElement = document.getElementById("ticTacToeBoard");
 let boardState, currentPlayer;
 
-// Initialize the Tic Tac Toe game
+// Function to initialize the game board and state
 function initializeTicTacToe() {
-    // Reset board state
-    boardState = Array(9).fill(null);
-    currentPlayer = "X";
+    // Check if the board element exists
+    if (!boardElement) {
+        console.error("Error: Tic Tac Toe board element not found.");
+        return;
+    }
 
-    // Clear the board display
+    // Reset the game state
+    boardState = Array(9).fill(null); // Clear the board state
+    currentPlayer = "X"; // Set starting player
+
+    // Clear any previous board UI
     boardElement.innerHTML = "";
 
-    // Populate the board with clickable cells
+    // Create 9 cells for the game board
     for (let i = 0; i < 9; i++) {
         const cell = document.createElement("div");
-        cell.classList.add("tic-tac-toe-cell");
-        cell.dataset.index = i;
-        cell.addEventListener("click", handleCellClick);
-        boardElement.appendChild(cell);
+        cell.classList.add("tic-tac-toe-cell"); // Add styling class
+        cell.dataset.index = i; // Assign cell index
+        cell.addEventListener("click", handleCellClick); // Add click event
+        boardElement.appendChild(cell); // Add cell to the board
     }
 }
 
-// Handle cell click
+// Function to handle clicks on cells
 function handleCellClick(event) {
-    const cellIndex = event.target.dataset.index;
+    const cellIndex = event.target.dataset.index; // Get clicked cell index
 
-    // If the cell is already filled, do nothing
+    // If cell is already filled, do nothing
     if (boardState[cellIndex]) return;
 
     // Update the board state and UI
     boardState[cellIndex] = currentPlayer;
-    event.target.textContent = currentPlayer;
+    event.target.textContent = currentPlayer; // Display current player's mark
 
-    // Check for a win or draw
+    // Check for a win or a draw
     if (checkWin()) {
         alert(`${currentPlayer} wins!`);
-        initializeTicTacToe();
+        initializeTicTacToe(); // Reset the game
     } else if (boardState.every(cell => cell)) {
         alert("It's a draw!");
-        initializeTicTacToe();
+        initializeTicTacToe(); // Reset the game
     } else {
         // Switch to the other player
         currentPlayer = currentPlayer === "X" ? "O" : "X";
     }
 }
 
-// Check for a win
+// Function to check for a win
 function checkWin() {
+    // Define winning combinations
     const winningCombinations = [
         [0, 1, 2],
         [3, 4, 5],
@@ -57,7 +65,11 @@ function checkWin() {
         [2, 4, 6],
     ];
 
+    // Check if any winning combination is matched
     return winningCombinations.some(combination =>
         combination.every(index => boardState[index] === currentPlayer)
     );
 }
+
+// Initialize the game immediately when the page loads (optional)
+// initializeTicTacToe();
