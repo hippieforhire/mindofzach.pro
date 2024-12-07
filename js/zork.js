@@ -1,27 +1,44 @@
 let outputBox, inputBox, lunrIndex;
 
-// Initialize Lunr.js Index
-function initializeLunr() {
-    if (lunrIndex) return; // Prevent re-initializing
-    lunrIndex = lunr(function () {
-        this.field("command");
-        this.field("description");
-        this.field("items");
-        this.field("enemies");
-        this.ref("id");
+// Example gameData structure (ensure this exists)
+const gameData = {
+    currentRoom: "caveEntrance",
+    rooms: {
+        caveEntrance: {
+            description: "You are standing at the entrance of a dark cave. There is a faint light inside.",
+            items: ["torch"],
+            enemies: [],
+            next: { north: "deepCave" },
+        },
+        deepCave: {
+            description: "You are inside a dark cave. The air is damp, and you hear distant sounds.",
+            items: [],
+            enemies: [{ name: "goblin", health: 20 }],
+            next: { south: "caveEntrance" },
+        },
+    },
+    synonyms: {
+        look: ["look", "examine", "inspect"],
+        take: ["take", "grab", "pick"],
+        attack: ["attack", "fight", "hit"],
+        north: ["north", "go north"],
+        south: ["south", "go south"],
+    },
+    inventory: [],
+    player: { attackPower: 10 },
+};
 
-        // Index all rooms and commands
-        Object.keys(gameData.rooms).forEach(roomId => {
-            const room = gameData.rooms[roomId];
-            this.add({
-                id: roomId,
-                command: Object.values(gameData.synonyms).flat().join(" "),
-                description: room.description,
-                items: room.items.join(" "),
-                enemies: room.enemies.map(e => e.name).join(" ")
-            });
-        });
-    });
+// Open Zork Modal
+function openZorkModal() {
+    const modal = document.getElementById("zorkModal");
+    modal.classList.remove("hidden");
+    startZorkGame(); // Initialize the game when modal opens
+}
+
+// Close Zork Modal
+function closeZorkModal() {
+    const modal = document.getElementById("zorkModal");
+    modal.classList.add("hidden");
 }
 
 // Start the Game
@@ -33,6 +50,11 @@ function startZorkGame() {
     outputBox.textContent = "";
     inputBox.value = "";
 
+    if (!gameData.currentRoom || !gameData.rooms[gameData.currentRoom]) {
+        addOutput("Error: Starting room not found!");
+        return;
+    }
+
     addOutput(gameData.rooms[gameData.currentRoom].description); // Show the current room description
     inputBox.focus();
 
@@ -40,6 +62,14 @@ function startZorkGame() {
     inputBox.addEventListener("keyup", handleZorkInput);
 
     initializeLunr(); // Initialize Lunr index if not already done
+}
+
+// Add Text to Output Box
+function addOutput(text) {
+    const newParagraph = document.createElement("p");
+    newParagraph.textContent = text;
+    outputBox.appendChild(newParagraph);
+    outputBox.scrollTop = outputBox.scrollHeight; // Auto-scroll to the latest message
 }
 
 // Handle User Input
@@ -86,27 +116,7 @@ function executeCommand(action, input, currentRoom, matchedRoom) {
         addOutput(currentRoom.description);
         if (currentRoom.items.length > 0) addOutput(`You see: ${currentRoom.items.join(", ")}`);
         if (currentRoom.enemies.length > 0) addOutput(`Enemies present: ${currentRoom.enemies.map(e => e.name).join(", ")}`);
-    } else if (action === "equip") {
-        const weapon = Object.keys(gameData.weapons).find(w => input.includes(w));
-        if (weapon && gameData.inventory.includes(weapon)) {
-            gameData.equippedWeapon = gameData.weapons[weapon];
-            addOutput(`You equip the ${weapon}. Your attack power increases.`);
-        } else {
-            addOutput("You don't have that weapon to equip.");
-        }
-    } else if (action === "attack") {
-        if (currentRoom.enemies.length > 0) {
-            const enemy = currentRoom.enemies[0];
-            enemy.health -= gameData.player.attackPower;
-            addOutput(`You attack the ${enemy.name} for ${gameData.player.attackPower} damage.`);
-            if (enemy.health <= 0) {
-                addOutput(`You have defeated the ${enemy.name}!`);
-                currentRoom.enemies.shift();
-            }
-        } else {
-            addOutput("There's nothing to attack here.");
-        }
-    } else if (["north", "south", "east", "west"].includes(action)) {
+    } else if (["north", "south"].includes(action)) {
         const nextRoomKey = currentRoom.next[action];
         if (nextRoomKey) {
             gameData.currentRoom = nextRoomKey;
@@ -119,13 +129,26 @@ function executeCommand(action, input, currentRoom, matchedRoom) {
     }
 }
 
-// Add Text to Output Box
-function addOutput(text) {
-    const newParagraph = document.createElement("p");
-    newParagraph.textContent = text;
-    outputBox.appendChild(newParagraph);
-    outputBox.scrollTop = outputBox.scrollHeight; // Auto-scroll to the latest message
-}
+// Initialize Lunr.js Index
+function initializeLunr() {
+    if (lunrIndex) return; // Prevent re-initializing
+    lunrIndex = lunr(function () {
+        this.field("command");
+        this.field("description");
+        this.field("items");
+        this.field("enemies");
+        this.ref("id");
 
-// Automatically start the game when the script loads
-startZorkGame();
+        // Index all rooms and commands
+        Object.keys(gameData.rooms).forEach(roomId => {
+            const room = gameData.rooms[roomId];
+            this.add({
+                id: roomId,
+                command: Object.values(gameData.synonyms).flat().join(" "),
+                description: room.description,
+                items: room.items.join(" "),
+                enemies: room.enemies.map(e => e.name).join(" "),
+            });
+        });
+    });
+}
