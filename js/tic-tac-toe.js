@@ -1,60 +1,26 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const ticTacToeBoard = document.getElementById('ticTacToeBoard');
-    const board = ['', '', '', '', '', '', '', '', ''];
-    let currentPlayer = 'X';
+/* Style for the Tic Tac Toe board */
+#ticTacToeBoard {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 5px;
+    max-width: 300px;
+    margin: 0 auto;
+}
 
-    function setupTicTacToe() {
-        ticTacToeBoard.innerHTML = '';
-        board.forEach((cell, index) => {
-            const cellElement = document.createElement('div');
-            cellElement.className = 'tic-tac-toe-cell';
-            cellElement.dataset.index = index;
-            cellElement.addEventListener('click', onCellClick);
-            ticTacToeBoard.appendChild(cellElement);
-        });
-    }
+/* Style for individual cells */
+.tic-tac-toe-cell {
+    width: 100px;
+    height: 100px;
+    background-color: #4a5568;
+    color: #f7fafc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    border: 1px solid #2d3748;
+    cursor: pointer;
+}
 
-    function onCellClick(event) {
-        const cellElement = event.currentTarget;
-        const index = cellElement.dataset.index;
-        if (board[index] === '') {
-            board[index] = currentPlayer;
-            cellElement.textContent = currentPlayer;
-            if (checkWin()) {
-                setTimeout(() => alert(`${currentPlayer} wins!`), 10);
-                resetTicTacToe();
-            } else if (board.every(cell => cell !== '')) {
-                setTimeout(() => alert('Draw!'), 10);
-                resetTicTacToe();
-            } else {
-                currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
-            }
-        }
-    }
-
-    function checkWin() {
-        const winningCombinations = [
-            [0, 1, 2],
-            [3, 4, 5],
-            [6, 7, 8],
-            [0, 3, 6],
-            [1, 4, 7],
-            [2, 5, 8],
-            [0, 4, 8],
-            [2, 4, 6]
-        ];
-        return winningCombinations.some(combination => {
-            return combination.every(index => {
-                return board[index] === currentPlayer;
-            });
-        });
-    }
-
-    function resetTicTacToe() {
-        board.fill('');
-        currentPlayer = 'X';
-        setupTicTacToe();
-    }
-
-    setupTicTacToe();
-});
+.tic-tac-toe-cell:hover {
+    background-color: #2d3748;
+}
