@@ -1,87 +1,8 @@
-// Zork Game Logic with Lunr.js Fully Indexed
-const gameData = {
-    currentRoom: "entrance",
-    inventory: [],
-    equippedWeapon: null,
-    player: {
-        health: 100,
-        baseAttackPower: 10,
-        get attackPower() {
-            return this.baseAttackPower + (gameData.equippedWeapon?.power || 0);
-        },
-        defensePower: 5
-    },
-    synonyms: {
-        take: ["take", "grab", "pick up", "nab", "get", "snatch", "retrieve", "acquire"],
-        look: ["look", "examine", "inspect", "observe", "check out", "peer"],
-        use: ["use", "apply", "utilize", "activate"],
-        equip: ["equip", "wield", "use weapon", "arm", "prepare"],
-        attack: ["attack", "hit", "strike", "fight", "punch", "stab", "shoot"],
-        block: ["block", "defend", "shield", "parry"],
-        north: ["north", "forward", "go north", "move forward", "proceed north"],
-        south: ["south", "back", "go south", "retreat", "move back"],
-        east: ["east", "right", "go east", "move east"],
-        west: ["west", "left", "go west", "move west"]
-    },
-    weapons: {
-        sword: { name: "sword", power: 15 },
-        bow: { name: "bow", power: 10 },
-        magicStaff: { name: "magic staff", power: 20 }
-    },
-    rooms: {
-        entrance: {
-            description: "You are at the entrance of a dark cave. There is a torch on the wall.",
-            items: ["torch", "sword"],
-            enemies: [],
-            next: { north: "darkRoom" }
-        },
-        darkRoom: {
-            description: "You are in a pitch-dark room. A faint growl echoes in the darkness.",
-            items: [],
-            enemies: [
-                {
-                    name: "Goblin",
-                    health: 30,
-                    attackPower: 8,
-                    behavior: "basic"
-                }
-            ],
-            next: { north: "treasureRoom", south: "entrance" }
-        },
-        treasureRoom: {
-            description: "You enter a room glittering with treasure! But a dragon guards it!",
-            items: ["gold", "magicStaff"],
-            enemies: [
-                {
-                    name: "Dragon",
-                    health: 100,
-                    attackPower: 20,
-                    behavior: "defensive"
-                }
-            ],
-            next: { south: "darkRoom" }
-        },
-        ambushRoom: {
-            description: "You are ambushed by a shadowy figure!",
-            items: [],
-            enemies: [
-                {
-                    name: "Shadow Assassin",
-                    health: 50,
-                    attackPower: 15,
-                    behavior: "ambush"
-                }
-            ],
-            next: { east: "darkRoom" }
-        }
-    }
-};
-
 let outputBox, inputBox, lunrIndex;
 
 // Initialize Lunr.js Index
 function initializeLunr() {
-    if (lunrIndex) return; // Avoid reinitializing
+    if (lunrIndex) return; // Prevent re-initializing
     lunrIndex = lunr(function () {
         this.field("command");
         this.field("description");
@@ -108,41 +29,52 @@ function startZorkGame() {
     outputBox = document.getElementById("output");
     inputBox = document.getElementById("input");
 
-    outputBox.textContent = ""; // Clear previous output
-    addOutput(gameData.rooms[gameData.currentRoom].description); // Show initial room description
+    // Ensure output and input are cleared before starting
+    outputBox.textContent = "";
+    inputBox.value = "";
+
+    addOutput(gameData.rooms[gameData.currentRoom].description); // Show the current room description
     inputBox.focus();
 
-    inputBox.removeEventListener("keyup", handleZorkInput); // Prevent duplicate listeners
+    inputBox.removeEventListener("keyup", handleZorkInput); // Avoid duplicate event listeners
     inputBox.addEventListener("keyup", handleZorkInput);
 
-    initializeLunr(); // Initialize Lunr index
+    initializeLunr(); // Initialize Lunr index if not already done
 }
 
+// Handle User Input
 function handleZorkInput(event) {
     if (event.key === "Enter") {
         const command = inputBox.value.trim().toLowerCase();
-        inputBox.value = "";
+        inputBox.value = ""; // Clear input box after submission
         processCommand(command);
     }
 }
 
+// Process Commands
 function processCommand(input) {
-    const currentRoom = gameData.rooms[gameData.currentRoom];
+    const results = lunrIndex.search(input); // Search the command in Lunr index
 
-    // Match command with synonyms
-    for (let action in gameData.synonyms) {
-        if (gameData.synonyms[action].some(word => input.includes(word))) {
-            executeCommand(action, input, currentRoom);
-            return;
+    if (results.length > 0) {
+        const bestMatch = results[0];
+        const matchedRoom = gameData.rooms[bestMatch.ref];
+        const currentRoom = gameData.rooms[gameData.currentRoom];
+
+        for (let action in gameData.synonyms) {
+            if (gameData.synonyms[action].some(word => input.includes(word))) {
+                executeCommand(action, input, currentRoom, matchedRoom);
+                return;
+            }
         }
     }
 
     addOutput("I don't understand that command. Try something else.");
 }
 
-function executeCommand(action, input, currentRoom) {
+// Execute Commands
+function executeCommand(action, input, currentRoom, matchedRoom) {
     if (action === "take") {
-        const item = currentRoom.items.find(i => input.includes(i)) || currentRoom.items.pop();
+        const item = currentRoom.items.find(i => input.includes(i));
         if (item) {
             gameData.inventory.push(item);
             currentRoom.items = currentRoom.items.filter(i => i !== item);
@@ -174,7 +106,7 @@ function executeCommand(action, input, currentRoom) {
         } else {
             addOutput("There's nothing to attack here.");
         }
-    } else if (action === "north" || action === "south" || action === "east" || action === "west") {
+    } else if (["north", "south", "east", "west"].includes(action)) {
         const nextRoomKey = currentRoom.next[action];
         if (nextRoomKey) {
             gameData.currentRoom = nextRoomKey;
@@ -187,9 +119,13 @@ function executeCommand(action, input, currentRoom) {
     }
 }
 
+// Add Text to Output Box
 function addOutput(text) {
     const newParagraph = document.createElement("p");
     newParagraph.textContent = text;
     outputBox.appendChild(newParagraph);
-    outputBox.scrollTop = outputBox.scrollHeight;
+    outputBox.scrollTop = outputBox.scrollHeight; // Auto-scroll to the latest message
 }
+
+// Automatically start the game when the script loads
+startZorkGame();
