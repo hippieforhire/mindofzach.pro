@@ -81,6 +81,7 @@ let outputBox, inputBox, lunrIndex;
 
 // Initialize Lunr.js Index
 function initializeLunr() {
+    if (lunrIndex) return; // Avoid reinitializing
     lunrIndex = lunr(function () {
         this.field("command");
         this.field("description");
@@ -107,12 +108,14 @@ function startZorkGame() {
     outputBox = document.getElementById("output");
     inputBox = document.getElementById("input");
 
-    outputBox.textContent = "";
-    addOutput(gameData.rooms[gameData.currentRoom].description);
+    outputBox.textContent = ""; // Clear previous output
+    addOutput(gameData.rooms[gameData.currentRoom].description); // Show initial room description
     inputBox.focus();
 
+    inputBox.removeEventListener("keyup", handleZorkInput); // Prevent duplicate listeners
     inputBox.addEventListener("keyup", handleZorkInput);
-    initializeLunr(); // Initialize the Lunr index
+
+    initializeLunr(); // Initialize Lunr index
 }
 
 function handleZorkInput(event) {
@@ -124,28 +127,20 @@ function handleZorkInput(event) {
 }
 
 function processCommand(input) {
-    // Search command in Lunr index
-    const results = lunrIndex.search(input);
+    const currentRoom = gameData.rooms[gameData.currentRoom];
 
-    if (results.length > 0) {
-        const bestMatch = results[0];
-        const matchedRoom = gameData.rooms[bestMatch.ref];
-        const currentRoom = gameData.rooms[gameData.currentRoom];
-
-        for (let action in gameData.synonyms) {
-            if (gameData.synonyms[action].some(word => input.includes(word))) {
-                executeCommand(action, input, matchedRoom);
-                return;
-            }
+    // Match command with synonyms
+    for (let action in gameData.synonyms) {
+        if (gameData.synonyms[action].some(word => input.includes(word))) {
+            executeCommand(action, input, currentRoom);
+            return;
         }
     }
 
     addOutput("I don't understand that command. Try something else.");
 }
 
-function executeCommand(action, input, matchedRoom) {
-    const currentRoom = gameData.rooms[gameData.currentRoom];
-
+function executeCommand(action, input, currentRoom) {
     if (action === "take") {
         const item = currentRoom.items.find(i => input.includes(i)) || currentRoom.items.pop();
         if (item) {
@@ -178,6 +173,14 @@ function executeCommand(action, input, matchedRoom) {
             }
         } else {
             addOutput("There's nothing to attack here.");
+        }
+    } else if (action === "north" || action === "south" || action === "east" || action === "west") {
+        const nextRoomKey = currentRoom.next[action];
+        if (nextRoomKey) {
+            gameData.currentRoom = nextRoomKey;
+            addOutput(gameData.rooms[nextRoomKey].description);
+        } else {
+            addOutput("You can't go that way.");
         }
     } else {
         addOutput("You can't do that here.");
