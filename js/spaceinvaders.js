@@ -16,13 +16,34 @@ document.getElementById('startSpaceInvaders').addEventListener('click', function
     const bullets = [];
     const enemies = [];
     const powerUps = [];
-    const enemyRows = 5;
-    const enemyCols = 10;
+    const enemyRows = 3; // fewer rows for better visibility
+    const enemyCols = 7; // fewer cols for clarity
     const enemyWidth = 30;
     const enemyHeight = 20;
-    const enemyMargin = 10;
+    const enemyMargin = 20;
     const enemySpeed = 1;
     let score = 0;
+
+    // Starry background for better visibility
+    const stars = [];
+    for (let i = 0; i < 100; i++) {
+        stars.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            radius: Math.random() * 1.5
+        });
+    }
+
+    function drawBackground() {
+        ctx.fillStyle = 'black';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = 'white';
+        stars.forEach(star => {
+            ctx.beginPath();
+            ctx.arc(star.x, star.y, star.radius, 0, 2 * Math.PI);
+            ctx.fill();
+        });
+    }
 
     function drawPlayer() {
         ctx.fillStyle = 'green';
@@ -61,14 +82,18 @@ document.getElementById('startSpaceInvaders').addEventListener('click', function
             enemy.x += enemy.dx;
         });
 
-        const leftmostEnemy = enemies[0];
-        const rightmostEnemy = enemies[enemies.length - 1];
+        if (enemies.length > 0) {
+            const leftmostEnemy = enemies[0];
+            const rightmostEnemy = enemies[enemies.length - 1];
 
-        if (leftmostEnemy.x <= 0 || rightmostEnemy.x + enemyWidth >= canvas.width) {
-            enemies.forEach(enemy => {
-                enemy.dx *= -1;
-                enemy.y += enemyMargin;
-            });
+            if (leftmostEnemy && rightmostEnemy) {
+                if (leftmostEnemy.x <= 0 || rightmostEnemy.x + enemyWidth >= canvas.width) {
+                    enemies.forEach(enemy => {
+                        enemy.dx *= -1;
+                        enemy.y += enemyMargin;
+                    });
+                }
+            }
         }
     }
 
@@ -141,7 +166,7 @@ document.getElementById('startSpaceInvaders').addEventListener('click', function
     }
 
     function update() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawBackground();
         drawPlayer();
         movePlayer();
         drawBullets();
