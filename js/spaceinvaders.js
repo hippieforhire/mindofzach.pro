@@ -7,7 +7,7 @@ document.getElementById('startSpaceInvaders').addEventListener('click', function
         width: 40,
         height: 20,
         x: canvas.width / 2 - 20,
-        y: canvas.height - 30,
+        y: canvas.height - 50, // Slightly higher so player is visible well above bottom edge
         speed: 5,
         dx: 0,
         doubleBullets: false
@@ -16,15 +16,14 @@ document.getElementById('startSpaceInvaders').addEventListener('click', function
     const bullets = [];
     const enemies = [];
     const powerUps = [];
-    const enemyRows = 3; // fewer rows for better visibility
-    const enemyCols = 7; // fewer cols for clarity
+    const enemyRows = 3;
+    const enemyCols = 7;
     const enemyWidth = 30;
     const enemyHeight = 20;
     const enemyMargin = 20;
     const enemySpeed = 1;
     let score = 0;
 
-    // Starry background for better visibility
     const stars = [];
     for (let i = 0; i < 100; i++) {
         stars.push({
@@ -101,8 +100,8 @@ document.getElementById('startSpaceInvaders').addEventListener('click', function
         for (let row = 0; row < enemyRows; row++) {
             for (let col = 0; col < enemyCols; col++) {
                 const enemy = {
-                    x: col * (enemyWidth + enemyMargin),
-                    y: row * (enemyHeight + enemyMargin),
+                    x: 50 + col * (enemyWidth + enemyMargin), // Shift right so enemies are easily seen
+                    y: 50 + row * (enemyHeight + enemyMargin), // Shift down so they're visible right away
                     width: enemyWidth,
                     height: enemyHeight,
                     dx: enemySpeed
