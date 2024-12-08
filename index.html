@@ -111,6 +111,11 @@
     function showGame(gameId) {
       document.querySelectorAll("section").forEach(section => section.classList.add("hidden"));
       document.getElementById(gameId).classList.remove("hidden");
+      
+      // Call startZorkGame() if the user shows the zork section
+      if (gameId === 'zork') {
+        startZorkGame();
+      }
     }
 
     function openFlappyModal() {
