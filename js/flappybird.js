@@ -56,7 +56,7 @@ function gameLoop() {
     bird.velocity += bird.gravity;
     bird.y += bird.velocity;
 
-    // End game if bird hits grass line or top
+    // End the game if the bird hits the grass line or goes above the top.
     if (bird.y + bird.height > canvas.height * 0.75 || bird.y < 0) {
         endGame();
     }
@@ -65,7 +65,7 @@ function gameLoop() {
     updatePipes();
     drawPipes();
     checkCollisions();
-    updateScore(); // This increments score each frame as original code did.
+    // Note: Score now increments only when passing pipes, no continuous increment here.
     timer++;
     gameLoopId = requestAnimationFrame(gameLoop);
 }
@@ -99,22 +99,27 @@ function drawBird() {
 }
 
 function updatePipes() {
-    // Adjust the pipe generation so bottom pipes are above the grass line
-    // Ensure pipeHeight + gap < canvas.height * 0.75
-    // We'll pick a gap that ensures there's room
     const gap = 150;
-    if (timer % 60 === 0 && !isGameOver) {
-        // Maximum pipe height so that bottom pipe top is well above grass line
-        // pipe.y + gap < 0.75 * canvas.height
-        // pipe.y < 0.75 * canvas.height - gap
+    // Generate pipes less frequently to space them further apart horizontally
+    if (timer % 90 === 0 && !isGameOver) {
+        // Keep top and bottom pipe height logic as before
         const maxPipeHeight = Math.floor((canvas.height * 0.75) - gap - 50);
         const pipeHeight = Math.floor(Math.random() * maxPipeHeight) + 50;
-        pipes.push({ x: canvas.width, y: pipeHeight, gap: gap });
+        // Add a 'passed' property to track scoring
+        pipes.push({ x: canvas.width, y: pipeHeight, gap: gap, passed: false });
     }
 
     pipes.forEach(pipe => {
         pipe.x -= 3;
+
+        // Check if the bird has passed this pipe to increment score by 1
+        if (!pipe.passed && (bird.x > pipe.x + 50)) {
+            pipe.passed = true;
+            score++;
+            updateScore();
+        }
     });
+
     pipes = pipes.filter(pipe => pipe.x + 50 > 0);
 }
 
@@ -123,8 +128,7 @@ function drawPipes() {
     pipes.forEach(pipe => {
         // Top pipe
         ctx.fillRect(pipe.x, 0, 50, pipe.y);
-        // Bottom pipe should appear above grass line since pipe.y + gap < 0.75 * canvas.height
-        // Drawing bottom pipe as before:
+        // Bottom pipe remains above grass line due to pipe height calculation
         ctx.fillRect(pipe.x, pipe.y + pipe.gap, 50, canvas.height - (pipe.y + pipe.gap));
     });
 }
@@ -143,7 +147,9 @@ function endGame() {
     isGameOver = true;
     window.removeEventListener("click", birdFlap);
     window.removeEventListener("touchstart", birdFlap);
-    document.getElementById("score").textContent += " - Game Over!";
+    // Add the requested "Tap to Restart" text
+    // Using a newline to help fit on screen better
+    document.getElementById("score").textContent += " - Game Over!\nTap to Restart!";
     restartButton.style.display = "block";
 }
 
@@ -154,9 +160,6 @@ function restartGame() {
 }
 
 function updateScore() {
-    // Original code increments score by 1 each frame. Keeping logic identical.
-    // No displayed text changed.
-    score++;
     document.getElementById("score").textContent = `Score: ${score}`;
 }
 
