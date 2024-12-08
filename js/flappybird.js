@@ -38,9 +38,12 @@ function gameLoop() {
     drawBackground();
     bird.velocity += bird.gravity;
     bird.y += bird.velocity;
-    if (bird.y + bird.height > canvas.height || bird.y < 0) {
+
+    // Changed line to end the game if bird hits ground (grass line)
+    if (bird.y + bird.height > canvas.height * 0.75 || bird.y < 0) {
         endGame();
     }
+
     drawBird();
     updatePipes();
     drawPipes();
@@ -80,7 +83,8 @@ function drawBird() {
 
 function updatePipes() {
     if (timer % 60 === 0 && !isGameOver) {
-        const pipeHeight = Math.floor(Math.random() * (canvas.height / 2)) + 100;
+        // Changed line to ensure pipes align correctly and don't get messed up
+        const pipeHeight = Math.floor(Math.random() * 100) + 100;
         const gap = 200;
         pipes.push({ x: canvas.width, y: pipeHeight, gap: gap });
     }
