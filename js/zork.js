@@ -1,6 +1,8 @@
-let outputBox, inputBox, lunrIndex;
+let outputBox, inputBox;
 
-// Example gameData structure (ensure this exists)
+// Removed all Lunr references and logic
+// Added more generic synonyms as requested
+
 const gameData = {
     currentRoom: "caveEntrance",
     rooms: {
@@ -19,23 +21,24 @@ const gameData = {
     },
     synonyms: {
         look: ["look", "examine", "inspect"],
-        take: ["take", "grab", "pick"],
+        take: ["take", "grab", "pick", "take x", "take the x", "take the"],
         attack: ["attack", "fight", "hit"],
         north: ["north", "go north"],
         south: ["south", "go south"],
+        run: ["run"]
     },
     inventory: [],
     player: { attackPower: 10 },
 };
 
-// Open Zork Modal
+// Open Zork Modal (unused but retained to avoid removing features)
 function openZorkModal() {
     const modal = document.getElementById("zorkModal");
     modal.classList.remove("hidden");
-    startZorkGame(); // Initialize the game when modal opens
+    startZorkGame(); // Initialize the game if a modal was used
 }
 
-// Close Zork Modal
+// Close Zork Modal (unused but retained)
 function closeZorkModal() {
     const modal = document.getElementById("zorkModal");
     modal.classList.add("hidden");
@@ -46,7 +49,7 @@ function startZorkGame() {
     outputBox = document.getElementById("output");
     inputBox = document.getElementById("input");
 
-    // Ensure output and input are cleared before starting
+    // Clear output and input
     outputBox.textContent = "";
     inputBox.value = "";
 
@@ -55,13 +58,12 @@ function startZorkGame() {
         return;
     }
 
-    addOutput(gameData.rooms[gameData.currentRoom].description); // Show the current room description
+    addOutput(gameData.rooms[gameData.currentRoom].description); // Show initial room description
     inputBox.focus();
 
-    inputBox.removeEventListener("keyup", handleZorkInput); // Avoid duplicate event listeners
+    // Remove any old listeners before adding a fresh one
+    inputBox.removeEventListener("keyup", handleZorkInput);
     inputBox.addEventListener("keyup", handleZorkInput);
-
-    initializeLunr(); // Initialize Lunr index if not already done
 }
 
 // Add Text to Output Box
@@ -69,30 +71,25 @@ function addOutput(text) {
     const newParagraph = document.createElement("p");
     newParagraph.textContent = text;
     outputBox.appendChild(newParagraph);
-    outputBox.scrollTop = outputBox.scrollHeight; // Auto-scroll to the latest message
+    outputBox.scrollTop = outputBox.scrollHeight; // Scroll to latest message
 }
 
 // Handle User Input
 function handleZorkInput(event) {
     if (event.key === "Enter") {
         const command = inputBox.value.trim().toLowerCase();
-        inputBox.value = ""; // Clear input box after submission
+        inputBox.value = "";
         processCommand(command);
     }
 }
 
-// Process Commands
+// Process Commands without Lunr
 function processCommand(input) {
-    const results = lunrIndex.search(input); // Search the command in Lunr index
-
-    if (results.length > 0) {
-        const bestMatch = results[0];
-        const matchedRoom = gameData.rooms[bestMatch.ref];
-        const currentRoom = gameData.rooms[gameData.currentRoom];
-
-        for (let action in gameData.synonyms) {
-            if (gameData.synonyms[action].some(word => input.includes(word))) {
-                executeCommand(action, input, currentRoom, matchedRoom);
+    // Check each action and its synonyms
+    for (let action in gameData.synonyms) {
+        for (let synonym of gameData.synonyms[action]) {
+            if (input.includes(synonym)) {
+                executeCommand(action, input, gameData.rooms[gameData.currentRoom]);
                 return;
             }
         }
@@ -102,7 +99,7 @@ function processCommand(input) {
 }
 
 // Execute Commands
-function executeCommand(action, input, currentRoom, matchedRoom) {
+function executeCommand(action, input, currentRoom) {
     if (action === "take") {
         const item = currentRoom.items.find(i => input.includes(i));
         if (item) {
@@ -124,31 +121,9 @@ function executeCommand(action, input, currentRoom, matchedRoom) {
         } else {
             addOutput("You can't go that way.");
         }
+    } else if (action === "run") {
+        addOutput("You run in circles, unsure of where to go.");
     } else {
         addOutput("You can't do that here.");
     }
-}
-
-// Initialize Lunr.js Index
-function initializeLunr() {
-    if (lunrIndex) return; // Prevent re-initializing
-    lunrIndex = lunr(function () {
-        this.field("command");
-        this.field("description");
-        this.field("items");
-        this.field("enemies");
-        this.ref("id");
-
-        // Index all rooms and commands
-        Object.keys(gameData.rooms).forEach(roomId => {
-            const room = gameData.rooms[roomId];
-            this.add({
-                id: roomId,
-                command: Object.values(gameData.synonyms).flat().join(" "),
-                description: room.description,
-                items: room.items.join(" "),
-                enemies: room.enemies.map(e => e.name).join(" "),
-            });
-        });
-    });
 }
