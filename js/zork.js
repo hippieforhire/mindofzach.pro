@@ -1,7 +1,4 @@
-let outputBox, inputBox;
-
-// Removed all Lunr references and logic
-// Added more generic synonyms as requested
+let outputBox, inputBox, lunrIndex;
 
 const gameData = {
     currentRoom: "caveEntrance",
@@ -20,36 +17,54 @@ const gameData = {
         },
     },
     synonyms: {
-        look: ["look", "examine", "inspect"],
-        take: ["take", "grab", "pick", "take x", "take the x", "take the"],
-        attack: ["attack", "fight", "hit"],
-        north: ["north", "go north"],
-        south: ["south", "go south"],
-        run: ["run"]
+        look: [
+            "look", "examine", "inspect", "view", "peer", "see", "observe",
+            "check", "glance", "stare", "gaze", "scrutinize", "study", "scan",
+            "perceive", "watch", "consider", "survey", "have a look", "take a look"
+        ],
+        take: [
+            "take", "grab", "pick", "take x", "take the x", "take the", "pick up", "seize",
+            "collect", "acquire", "obtain", "get hold of", "snatch", "remove", "lift", "get",
+            "claim", "retrieve", "fetch"
+        ],
+        attack: [
+            "attack", "fight", "hit", "strike", "punch", "stab", "slash", "swing at",
+            "assault", "bash", "smack", "clobber", "whack", "beat up", "engage", "pummel",
+            "thrash", "clout", "hammer", "lunge at", "charge at", "go after"
+        ],
+        north: [
+            "north", "go north", "move north", "head north", "proceed north", "travel north",
+            "northward", "to north", "venture north"
+        ],
+        south: [
+            "south", "go south", "move south", "head south", "proceed south", "travel south",
+            "southward", "to south", "venture south"
+        ],
+        run: [
+            "run", "sprint", "dash", "bolt", "hurry", "rush", "flee", "escape", "leg it",
+            "make a run for it", "race", "charge away", "hightail", "scurry", "scuttle",
+            "beat it", "clear out"
+        ]
     },
     inventory: [],
     player: { attackPower: 10 },
 };
 
-// Open Zork Modal (unused but retained to avoid removing features)
 function openZorkModal() {
     const modal = document.getElementById("zorkModal");
     modal.classList.remove("hidden");
-    startZorkGame(); // Initialize the game if a modal was used
+    startZorkGame();
 }
 
-// Close Zork Modal (unused but retained)
 function closeZorkModal() {
     const modal = document.getElementById("zorkModal");
     modal.classList.add("hidden");
 }
 
-// Start the Game
 function startZorkGame() {
     outputBox = document.getElementById("output");
     inputBox = document.getElementById("input");
 
-    // Clear output and input
     outputBox.textContent = "";
     inputBox.value = "";
 
@@ -58,23 +73,20 @@ function startZorkGame() {
         return;
     }
 
-    addOutput(gameData.rooms[gameData.currentRoom].description); // Show initial room description
+    addOutput(gameData.rooms[gameData.currentRoom].description);
     inputBox.focus();
 
-    // Remove any old listeners before adding a fresh one
     inputBox.removeEventListener("keyup", handleZorkInput);
     inputBox.addEventListener("keyup", handleZorkInput);
 }
 
-// Add Text to Output Box
 function addOutput(text) {
     const newParagraph = document.createElement("p");
     newParagraph.textContent = text;
     outputBox.appendChild(newParagraph);
-    outputBox.scrollTop = outputBox.scrollHeight; // Scroll to latest message
+    outputBox.scrollTop = outputBox.scrollHeight;
 }
 
-// Handle User Input
 function handleZorkInput(event) {
     if (event.key === "Enter") {
         const command = inputBox.value.trim().toLowerCase();
@@ -83,9 +95,8 @@ function handleZorkInput(event) {
     }
 }
 
-// Process Commands without Lunr
 function processCommand(input) {
-    // Check each action and its synonyms
+    // Check each action and synonyms
     for (let action in gameData.synonyms) {
         for (let synonym of gameData.synonyms[action]) {
             if (input.includes(synonym)) {
@@ -94,11 +105,9 @@ function processCommand(input) {
             }
         }
     }
-
     addOutput("I don't understand that command. Try something else.");
 }
 
-// Execute Commands
 function executeCommand(action, input, currentRoom) {
     if (action === "take") {
         const item = currentRoom.items.find(i => input.includes(i));
@@ -121,8 +130,21 @@ function executeCommand(action, input, currentRoom) {
         } else {
             addOutput("You can't go that way.");
         }
+    } else if (action === "attack") {
+        // Basic placeholder for attack logic
+        if (currentRoom.enemies.length > 0) {
+            const enemy = currentRoom.enemies[0];
+            enemy.health -= gameData.player.attackPower;
+            addOutput(`You attack the ${enemy.name}! Its health is now ${enemy.health}.`);
+            if (enemy.health <= 0) {
+                addOutput(`You have defeated the ${enemy.name}!`);
+                currentRoom.enemies = [];
+            }
+        } else {
+            addOutput("There's nothing here to attack.");
+        }
     } else if (action === "run") {
-        addOutput("You run in circles, unsure of where to go.");
+        addOutput("You run around, unsure of where to go, but nothing changes.");
     } else {
         addOutput("You can't do that here.");
     }
