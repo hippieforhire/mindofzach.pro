@@ -44,6 +44,7 @@ const gameData = {
         },
     },
     // Further expanded synonyms: triple amounts and add use/equip/talk/trade/wield synonyms
+    // We add the new "goto" synonyms from the second code into this synonyms object as a new action category.
     synonyms: {
         look: [
             "look","examine","inspect","view","peer","see","observe","check","glance","stare","gaze","scrutinize",
@@ -153,6 +154,10 @@ const gameData = {
         ],
         drink: [
             "drink","sip","gulp","quench","swallow","imbibe"
+        ],
+        // New goto synonyms from second code:
+        goto: [
+            "go to", "approach", "move to", "walk to", "head to", "approach the", "go towards", "move towards"
         ]
     },
     inventory: [],
@@ -208,15 +213,19 @@ function handleZorkInput(event) {
 }
 
 function processCommand(input) {
+    let commandRecognized = false;
     for (let action in gameData.synonyms) {
         for (let synonym of gameData.synonyms[action]) {
             if (input.includes(synonym)) {
                 executeCommand(action, input, gameData.rooms[gameData.currentRoom]);
+                commandRecognized = true;
                 return;
             }
         }
     }
-    addOutput("I don't understand that command. Try something else.");
+    if (!commandRecognized) {
+        addOutput("I don't understand that command. Try something else.");
+    }
 }
 
 function executeCommand(action, input, currentRoom) {
@@ -234,7 +243,6 @@ function executeCommand(action, input, currentRoom) {
         }
     }
 
-    // Helper functions
     function getWeaponBonus() {
         if (gameData.player.weapon === "sword") {
             return 10; // sword doubles attack power
@@ -291,9 +299,8 @@ function executeCommand(action, input, currentRoom) {
         }
     }
 
-    // handle actions
     if (action === "take") {
-        const item = currentRoom.items.find(i => input.includes(i));
+        const item = currentRoom.items ? currentRoom.items.find(i => input.includes(i)) : null;
         if (item) {
             gameData.inventory.push(item);
             currentRoom.items = currentRoom.items.filter(i => i !== item);
@@ -301,6 +308,7 @@ function executeCommand(action, input, currentRoom) {
         } else {
             addOutput("There's nothing here to take.");
         }
+
     } else if (action === "look") {
         showRoomDetails();
 
@@ -372,7 +380,6 @@ function executeCommand(action, input, currentRoom) {
             addOutput("You equip the sword, feeling its weight. Your attack power grows!");
         } else if (input.includes("potion") && gameData.inventory.includes("healing potion")) {
             addOutput("You drink the healing potion. You feel invigorated! (For now, this just makes you feel good.)");
-            // Remove the potion after use
             const potIndex = gameData.inventory.indexOf("healing potion");
             if (potIndex !== -1) {
                 gameData.inventory.splice(potIndex, 1);
@@ -389,9 +396,8 @@ function executeCommand(action, input, currentRoom) {
         }
 
     } else if (action === "trade" || action === "give") {
-        // try giving item: user might type "give berries", "offer berries"
         const words = input.split(" ");
-        const possibleItem = words[words.length-1]; // last word might be item
+        const possibleItem = words[words.length-1];
         if (currentRoom.npc) {
             giveItemToNPC(currentRoom.npc, possibleItem);
         } else {
@@ -410,8 +416,32 @@ function executeCommand(action, input, currentRoom) {
         }
 
     } else if (action === "drink") {
-        // If user tries to drink from river without a container?
         addOutput("You don't have anything suitable to drink right now.");
+
+    } else if (action === "goto") {
+        // Implementing goto logic from the second code while keeping original code intact elsewhere.
+        let recognizedTarget = false;
+
+        // Check if input includes an item present in the current room
+        if (currentRoom.items) {
+            for (let i of currentRoom.items) {
+                if (input.includes(i)) {
+                    addOutput(`You move closer to the ${i}. It's right here at your feet.`);
+                    recognizedTarget = true;
+                    break;
+                }
+            }
+        }
+
+        // Check NPC
+        if (!recognizedTarget && currentRoom.npc && input.includes(currentRoom.npc.name)) {
+            addOutput(`You approach the ${currentRoom.npc.name}. They acknowledge your presence.`);
+            recognizedTarget = true;
+        }
+
+        if (!recognizedTarget) {
+            addOutput("Good try, but you can't do that.");
+        }
 
     } else {
         addOutput("You can't do that here.");
