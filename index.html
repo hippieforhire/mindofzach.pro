@@ -107,7 +107,8 @@
   <section id="zork" class="hidden">
     <h2 class="text-3xl fun-font my-4">Zork Adventure</h2>
     <div id="output" class="bg-gray-800 text-white p-4 rounded-lg overflow-y-scroll" style="max-height: 300px;"></div>
-    <input id="input" type="text" class="w-full mt-4 px-4 py-2 bg-gray-800 text-white rounded-lg" placeholder="Type your command here..." onkeydown="handleZorkInput(event)">
+    <!-- Removed onkeydown attribute here to avoid double triggers -->
+    <input id="input" type="text" class="w-full mt-4 px-4 py-2 bg-gray-800 text-white rounded-lg" placeholder="Type your command here...">
     <p class="text-sm text-gray-400 mt-2">Type commands like "go north", "take sword", or "attack goblin".</p>
   </section>
 
