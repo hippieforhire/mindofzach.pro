@@ -1,3 +1,5 @@
+// tictactoe.js
+
 let ticBoardState, ticCurrentPlayer;
 
 function initializeTicTacToe() {
@@ -23,7 +25,6 @@ function initializeTicTacToe() {
 
 function ticHandleCellClick(event) {
     const cellIndex = event.target.dataset.index;
-
     if (ticBoardState[cellIndex]) return;
 
     ticBoardState[cellIndex] = ticCurrentPlayer;
