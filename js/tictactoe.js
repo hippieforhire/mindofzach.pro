@@ -1,10 +1,7 @@
-// New tictactoe.js code (no dashes in file name)
-// Ensure you have <script src="js/tictactoe.js"></script> in your HTML
-
-const ticBoardElement = document.getElementById("ticTacToeBoard");
 let ticBoardState, ticCurrentPlayer;
 
 function initializeTicTacToe() {
+    const ticBoardElement = document.getElementById("ticTacToeBoard");
     if (!ticBoardElement) {
         console.error("Error: Tic Tac Toe board element not found.");
         return;
@@ -27,7 +24,6 @@ function initializeTicTacToe() {
 function ticHandleCellClick(event) {
     const cellIndex = event.target.dataset.index;
 
-    // If cell is already taken, do nothing
     if (ticBoardState[cellIndex]) return;
 
     ticBoardState[cellIndex] = ticCurrentPlayer;
