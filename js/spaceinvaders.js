@@ -1,18 +1,12 @@
-// Added lines below to ensure canvas is sized and touch actions are disabled before start
-const canvas = document.getElementById('spaceInvadersCanvas');
-// Set size and styling now so it fits before pressing start, without removing original lines
-canvas.width = 800;
-canvas.height = 400;
-canvas.style.maxWidth = "100%";
-canvas.style.height = "auto";
-canvas.style.touchAction = 'none'; // Added this line to prevent default browser touch behavior
+// spaceinvaders.js
 
-document.getElementById('startSpaceInvaders').addEventListener('click', function() {
-    // These lines already existed, leaving them as is:
+function startSpaceInvadersGame() {
+    const canvas = document.getElementById('spaceInvadersCanvas');
     canvas.width = 800;
     canvas.height = 400;
     canvas.style.maxWidth = "100%";
     canvas.style.height = "auto";
+    canvas.style.touchAction = 'none';
 
     const ctx = canvas.getContext('2d');
 
@@ -47,7 +41,6 @@ document.getElementById('startSpaceInvaders').addEventListener('click', function
     }
 
     function drawBackground() {
-        const ctx = canvas.getContext('2d');
         ctx.fillStyle = 'black';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = 'white';
@@ -231,12 +224,10 @@ document.getElementById('startSpaceInvaders').addEventListener('click', function
         const xPos = touch.clientX - rect.left;
         const yPos = touch.clientY - rect.top;
 
-        // If top half of canvas: shoot only
         if (yPos < canvas.height / 2) {
             shoot();
             player.dx = 0;
         } else {
-            // Bottom half touched: move left or right
             if (xPos < canvas.width / 2) player.dx = -player.speed;
             else player.dx = player.speed;
         }
@@ -266,4 +257,9 @@ document.getElementById('startSpaceInvaders').addEventListener('click', function
     createEnemies();
     createPowerUps();
     update();
+}
+
+// Hook up the startSpaceInvaders button
+document.getElementById('startSpaceInvaders').addEventListener('click', function() {
+    startSpaceInvadersGame();
 });
