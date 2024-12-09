@@ -1,6 +1,14 @@
+// Added lines below to ensure canvas is sized and touch actions are disabled before start
+const canvas = document.getElementById('spaceInvadersCanvas');
+// Set size and styling now so it fits before pressing start, without removing original lines
+canvas.width = 800;
+canvas.height = 400;
+canvas.style.maxWidth = "100%";
+canvas.style.height = "auto";
+canvas.style.touchAction = 'none'; // Added this line to prevent default browser touch behavior
+
 document.getElementById('startSpaceInvaders').addEventListener('click', function() {
-    const canvas = document.getElementById('spaceInvadersCanvas');
-    // Fixed size then scale to fit screen
+    // These lines already existed, leaving them as is:
     canvas.width = 800;
     canvas.height = 400;
     canvas.style.maxWidth = "100%";
@@ -39,6 +47,7 @@ document.getElementById('startSpaceInvaders').addEventListener('click', function
     }
 
     function drawBackground() {
+        const ctx = canvas.getContext('2d');
         ctx.fillStyle = 'black';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = 'white';
@@ -240,7 +249,6 @@ document.getElementById('startSpaceInvaders').addEventListener('click', function
     document.addEventListener('keydown', keyDown);
     document.addEventListener('keyup', keyUp);
 
-    // Add preventDefault to ensure no scrolling of background page
     canvas.addEventListener('touchstart', function(e) {
         e.preventDefault();
         touchStart(e);
@@ -251,7 +259,6 @@ document.getElementById('startSpaceInvaders').addEventListener('click', function
         touchEnd(e);
     }, { passive: false });
 
-    // Also prevent default on touchmove just in case user tries to move while touching
     canvas.addEventListener('touchmove', function(e) {
         e.preventDefault();
     }, { passive: false });
