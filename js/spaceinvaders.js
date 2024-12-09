@@ -1,8 +1,10 @@
 document.getElementById('startSpaceInvaders').addEventListener('click', function() {
     const canvas = document.getElementById('spaceInvadersCanvas');
-    // Fix the screen size similarly to flappy bird for better fit
+    // Fixed size then scale to fit screen
     canvas.width = 800;
     canvas.height = 400;
+    canvas.style.maxWidth = "100%";
+    canvas.style.height = "auto";
 
     const ctx = canvas.getContext('2d');
 
@@ -24,7 +26,6 @@ document.getElementById('startSpaceInvaders').addEventListener('click', function
     const enemyWidth = 30;
     const enemyHeight = 20;
     const enemyMargin = 20;
-    // Increase enemy speed from 1 to 2 to make it less easy
     const enemySpeed = 2;
     let score = 0;
 
@@ -216,14 +217,20 @@ document.getElementById('startSpaceInvaders').addEventListener('click', function
     }
 
     function touchStart(e) {
+        const rect = canvas.getBoundingClientRect();
         const touch = e.touches[0];
-        // If touching left/right half of screen for movement
-        if (touch.clientX < canvas.width / 2) player.dx = -player.speed;
-        else player.dx = player.speed;
+        const xPos = touch.clientX - rect.left;
+        const yPos = touch.clientY - rect.top;
 
-        // If touching top half of canvas, shoot
-        if (touch.clientY < canvas.height / 2) {
+        // If top half of canvas: shoot only
+        if (yPos < canvas.height / 2) {
             shoot();
+            // Do not move horizontally if top half touched
+            player.dx = 0;
+        } else {
+            // Bottom half touched: move left or right
+            if (xPos < canvas.width / 2) player.dx = -player.speed;
+            else player.dx = player.speed;
         }
     }
 
