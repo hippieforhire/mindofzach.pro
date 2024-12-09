@@ -1,13 +1,16 @@
 document.getElementById('startSpaceInvaders').addEventListener('click', function() {
     const canvas = document.getElementById('spaceInvadersCanvas');
-    canvas.style.display = 'block';
+    // Fix the screen size similarly to flappy bird for better fit
+    canvas.width = 800;
+    canvas.height = 400;
+
     const ctx = canvas.getContext('2d');
 
     const player = {
         width: 40,
         height: 20,
         x: canvas.width / 2 - 20,
-        y: canvas.height - 50, // Slightly higher so player is visible well above bottom edge
+        y: canvas.height - 50,
         speed: 5,
         dx: 0,
         doubleBullets: false
@@ -21,7 +24,8 @@ document.getElementById('startSpaceInvaders').addEventListener('click', function
     const enemyWidth = 30;
     const enemyHeight = 20;
     const enemyMargin = 20;
-    const enemySpeed = 1;
+    // Increase enemy speed from 1 to 2 to make it less easy
+    const enemySpeed = 2;
     let score = 0;
 
     const stars = [];
@@ -100,8 +104,8 @@ document.getElementById('startSpaceInvaders').addEventListener('click', function
         for (let row = 0; row < enemyRows; row++) {
             for (let col = 0; col < enemyCols; col++) {
                 const enemy = {
-                    x: 50 + col * (enemyWidth + enemyMargin), // Shift right so enemies are easily seen
-                    y: 50 + row * (enemyHeight + enemyMargin), // Shift down so they're visible right away
+                    x: 50 + col * (enemyWidth + enemyMargin),
+                    y: 50 + row * (enemyHeight + enemyMargin),
                     width: enemyWidth,
                     height: enemyHeight,
                     dx: enemySpeed
@@ -213,8 +217,14 @@ document.getElementById('startSpaceInvaders').addEventListener('click', function
 
     function touchStart(e) {
         const touch = e.touches[0];
+        // If touching left/right half of screen for movement
         if (touch.clientX < canvas.width / 2) player.dx = -player.speed;
         else player.dx = player.speed;
+
+        // If touching top half of canvas, shoot
+        if (touch.clientY < canvas.height / 2) {
+            shoot();
+        }
     }
 
     function touchEnd() {
