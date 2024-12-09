@@ -17,6 +17,15 @@ function initializeTicTacToe() {
     for (let i = 0; i < 9; i++) {
         const cell = document.createElement("div");
         cell.classList.add("tic-tac-toe-cell");
+        // Added inline styles so you can see and click the cells
+        cell.style.width = "100px";
+        cell.style.height = "100px";
+        cell.style.border = "1px solid black";
+        cell.style.display = "flex";
+        cell.style.alignItems = "center";
+        cell.style.justifyContent = "center";
+        cell.style.fontSize = "2rem";
+
         cell.dataset.index = i;
         cell.addEventListener("click", ticHandleCellClick);
         ticBoardElement.appendChild(cell);
