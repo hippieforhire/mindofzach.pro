@@ -225,7 +225,6 @@ document.getElementById('startSpaceInvaders').addEventListener('click', function
         // If top half of canvas: shoot only
         if (yPos < canvas.height / 2) {
             shoot();
-            // Do not move horizontally if top half touched
             player.dx = 0;
         } else {
             // Bottom half touched: move left or right
@@ -240,8 +239,22 @@ document.getElementById('startSpaceInvaders').addEventListener('click', function
 
     document.addEventListener('keydown', keyDown);
     document.addEventListener('keyup', keyUp);
-    canvas.addEventListener('touchstart', touchStart);
-    canvas.addEventListener('touchend', touchEnd);
+
+    // Add preventDefault to ensure no scrolling of background page
+    canvas.addEventListener('touchstart', function(e) {
+        e.preventDefault();
+        touchStart(e);
+    }, { passive: false });
+
+    canvas.addEventListener('touchend', function(e) {
+        e.preventDefault();
+        touchEnd(e);
+    }, { passive: false });
+
+    // Also prevent default on touchmove just in case user tries to move while touching
+    canvas.addEventListener('touchmove', function(e) {
+        e.preventDefault();
+    }, { passive: false });
 
     createEnemies();
     createPowerUps();
