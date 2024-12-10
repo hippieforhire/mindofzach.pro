@@ -411,21 +411,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Initialize the keyboard layout with Enter and Backspace
-  function createKeyboard() {
-    const keys = [
-      'Q','W','E','R','T','Y','U','I','O','P',
-      'A','S','D','F','G','H','J','K','L',
-      'ENTER','Z','X','C','V','B','N','M','BACKSPACE'
-    ];
-    wordleKeyboard.innerHTML = '';
-    keys.forEach(key => {
-      const keyButton = document.createElement('div');
-      keyButton.classList.add('wordle-key');
-      keyButton.textContent = key;
-      keyButton.addEventListener('click', () => handleKeyPress(key));
-      wordleKeyboard.appendChild(keyButton);
-    });
-  }
+  // Note: This function was previously duplicated and has been removed to prevent conflicts.
 
   // Initialize the game if not played yet
   if (!hasPlayedToday()) {
