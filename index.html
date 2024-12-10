@@ -138,8 +138,7 @@
     /* Animation Classes */
     @keyframes flip {
       0% { transform: rotateY(0deg); }
-      50% { transform: rotateY(90deg); }
-      100% { transform: rotateY(0deg); }
+      100% { transform: rotateY(180deg); }
     }
     .animate-flip {
       animation: flip 0.5s ease;
@@ -313,7 +312,7 @@
   <!-- NEW SCRIPTS FOR WRITINGS AND YET ANOTHER WORDLE TYPE GAME -->
   <script src="js/writings.js"></script>
   
-  <!-- Moved yetanotherwordlegame.js to after the inline scripts -->
+  <!-- Ensure yetanotherwordlegame.js is loaded after inline scripts -->
   <script src="js/yetanotherwordlegame.js"></script>
   
   <script>
