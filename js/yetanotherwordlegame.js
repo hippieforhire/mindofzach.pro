@@ -268,6 +268,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const currentRow = wordleBoard.children[guesses.length - 1];
     Array.from(currentRow.children).forEach((cell, index) => {
       cell.classList.add(feedback[index]);
+      // Add animation class
+      cell.classList.add('animate-flip');
+      // Remove the animation class after animation completes to allow re-animation
+      setTimeout(() => {
+        cell.classList.remove('animate-flip');
+      }, 500); // Duration should match the CSS animation duration
     });
   }
 
@@ -304,13 +310,20 @@ document.addEventListener('DOMContentLoaded', () => {
       const cell = wordleBoard.children[guesses.length].children[i];
       if (cell.textContent === '') {
         cell.textContent = secretWord[i].toUpperCase();
-        cell.classList.add('correct');
+        cell.classList.add('correct', 'animate-flip');
+        // Remove the animation class after animation completes
+        setTimeout(() => {
+          cell.classList.remove('animate-flip');
+        }, 500);
         // Update keyboard
         const key = secretWord[i].toUpperCase();
         const keyButton = Array.from(wordleKeyboard.children).find(btn => btn.textContent === key);
         if (keyButton) {
           keyButton.classList.remove('present', 'absent');
-          keyButton.classList.add('correct');
+          keyButton.classList.add('correct', 'animate-press');
+          setTimeout(() => {
+            keyButton.classList.remove('animate-press');
+          }, 300);
         }
         break;
       }
@@ -355,6 +368,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // The following event listener has been removed to prevent double inputs
+  /*
   // Handle On-Screen Keyboard Clicks
   wordleKeyboard.addEventListener('click', (e) => {
     if (e.target.classList.contains('wordle-key')) {
@@ -372,6 +387,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   });
+  */
 
   // Save game state to localStorage
   function saveGameState(won) {
