@@ -214,10 +214,13 @@ document.addEventListener('DOMContentLoaded', () => {
       wordleMessage.textContent = `Please enter a ${wordLength}-letter word.`;
       return;
     }
-    //if (!isValidWord(currentGuess.toLowerCase())) {
-      //wordleMessage.textContent = "Word not in list.";
-      //return;
-    //}
+    // Commented out word validation to allow any combination of letters
+    /*
+    if (!isValidWord(currentGuess.toLowerCase())) {
+      wordleMessage.textContent = "Word not in list.";
+      return;
+    }
+    */
 
     // Process the guess
     const feedback = getFeedback(currentGuess.toLowerCase());
