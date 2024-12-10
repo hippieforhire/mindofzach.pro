@@ -71,25 +71,24 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentRound = 0; // 0,1,2 for rounds 1,2,3
   const totalRounds = 3;
   let usedPowerUp = false;
-  let powerUpUsedThisGame = false;
   let secretWord = words[currentRound].toLowerCase();
   let wordLength = secretWord.length;
   let maxGuesses = 6;
   let guesses = [];
   let currentGuess = '';
   let extraGuesses = 0;
+  let gameOver = false;
 
   // Initialize the game
   function initializeWordleGame() {
     currentRound = 0;
     usedPowerUp = false;
-    powerUpUsedThisGame = false;
-    extraGuesses = 0;
     secretWord = words[currentRound].toLowerCase();
     wordLength = secretWord.length;
     maxGuesses = 6;
     guesses = [];
     currentGuess = '';
+    gameOver = false;
     wordleMessage.textContent = `Theme: ${theme}`;
     currentThemeDisplay.textContent = theme;
     createBoard();
@@ -162,6 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Handle Keyboard Input (Physical)
   wordleInput.addEventListener('keydown', (e) => {
+    if (gameOver) return;
     if (e.key === 'Enter') {
       submitGuess();
     } else if (e.key === 'Backspace') {
@@ -175,6 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Handle On-Screen Keyboard Click
   function handleKeyPress(key) {
+    if (gameOver) return;
     if (key === 'ENTER') {
       submitGuess();
     } else if (key === 'BACKSPACE') {
@@ -198,6 +199,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Submit the current guess
   function submitGuess() {
+    if (gameOver) return;
     if (currentGuess.length !== wordLength) {
       wordleMessage.textContent = `Please enter a ${wordLength}-letter word.`;
       return;
@@ -278,7 +280,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Power-Up Functionality
   powerUpButton.addEventListener('click', () => {
     if (usedPowerUp) {
-      wordleMessage.textContent = "You have already used your power-up for today.";
+      wordleMessage.textContent = "You have already used your power-up for this game.";
       return;
     }
 
@@ -307,6 +309,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const key = secretWord[i].toUpperCase();
         const keyButton = Array.from(wordleKeyboard.children).find(btn => btn.textContent === key);
         if (keyButton) {
+          keyButton.classList.remove('present', 'absent');
           keyButton.classList.add('correct');
         }
         break;
@@ -348,6 +351,7 @@ document.addEventListener('DOMContentLoaded', () => {
       updateKeyboard();
     } else {
       wordleMessage.textContent += " Game Over.";
+      gameOver = true;
     }
   }
 
@@ -399,11 +403,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.target === wordleModal) {
       closeWordleModal();
     }
-  });
-
-  // Display theme information when the modal is opened
-  wordleModal.addEventListener('show', () => {
-    currentThemeDisplay.textContent = theme;
   });
 
   // Close the modal and reset if necessary
