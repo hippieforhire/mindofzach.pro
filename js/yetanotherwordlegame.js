@@ -1,4 +1,4 @@
-// yetanotherwordle.js
+// yetanotherwordlegame.js
 
 document.addEventListener('DOMContentLoaded', () => {
   const wordleModal = document.getElementById('wordleModal');
@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const startWordleButton = document.getElementById('startWordleButton');
   const powerUpButton = document.getElementById('powerUpButton');
   const wordleKeyboard = document.getElementById('wordleKeyboard');
+  const currentThemeDisplay = document.getElementById('currentTheme');
 
   // Configuration for the game
   const dailyGames = {
@@ -41,40 +42,56 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
+  // Helper function to get current date in YYYY-MM-DD format (Central Standard Time)
+  function getCurrentDate() {
+    const now = new Date();
+    // Convert to Central Standard Time by adjusting the time offset
+    const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+    const centralTime = new Date(utc - (3600000 * 6)); // CST is UTC-6
+    const year = centralTime.getFullYear();
+    let month = centralTime.getMonth() + 1;
+    let day = centralTime.getDate();
+    month = month < 10 ? '0' + month : month;
+    day = day < 10 ? '0' + day : day;
+    return `${year}-${month}-${day}`;
+  }
+
   let currentDate = getCurrentDate();
   let gameData = dailyGames[currentDate];
 
+  // If no game data for today, loop back to the first day
   if (!gameData) {
-    wordleMessage.textContent = "No game available for today.";
-    wordleInput.disabled = true;
-    powerUpButton.disabled = true;
-    return;
+    const dates = Object.keys(dailyGames);
+    const firstDate = dates[0];
+    gameData = dailyGames[firstDate];
+    currentDate = firstDate;
   }
 
   const { theme, words } = gameData;
   let currentRound = 0; // 0,1,2 for rounds 1,2,3
-  let totalRounds = 3;
+  const totalRounds = 3;
   let usedPowerUp = false;
-  let extraGuess = false;
-  let revealLetter = false;
+  let powerUpUsedThisGame = false;
   let secretWord = words[currentRound].toLowerCase();
   let wordLength = secretWord.length;
   let maxGuesses = 6;
   let guesses = [];
   let currentGuess = '';
+  let extraGuesses = 0;
 
   // Initialize the game
   function initializeWordleGame() {
     currentRound = 0;
     usedPowerUp = false;
-    extraGuess = false;
-    revealLetter = false;
+    powerUpUsedThisGame = false;
+    extraGuesses = 0;
     secretWord = words[currentRound].toLowerCase();
     wordLength = secretWord.length;
     maxGuesses = 6;
     guesses = [];
     currentGuess = '';
     wordleMessage.textContent = `Theme: ${theme}`;
+    currentThemeDisplay.textContent = theme;
     createBoard();
     createKeyboard();
     wordleInput.disabled = false;
@@ -105,7 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const keys = [
       'Q','W','E','R','T','Y','U','I','O','P',
       'A','S','D','F','G','H','J','K','L',
-      'Z','X','C','V','B','N','M'
+      'ENTER','Z','X','C','V','B','N','M','BACKSPACE'
     ];
     wordleKeyboard.innerHTML = '';
     keys.forEach(key => {
@@ -119,16 +136,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Update Keyboard based on guesses
   function updateKeyboard() {
-    guesses.forEach(guess => {
-      guess.forEach((letter, index) => {
+    guesses.forEach(guessObj => {
+      const { guess, feedback } = guessObj;
+      guess.split('').forEach((letter, index) => {
         const key = letter.toUpperCase();
         const keyButton = Array.from(wordleKeyboard.children).find(btn => btn.textContent === key);
         if (keyButton) {
-          const cell = wordleBoard.children[guess.row].children[index];
-          if (cell.classList.contains('correct')) {
+          if (feedback[index] === 'correct') {
+            keyButton.classList.remove('present', 'absent');
             keyButton.classList.add('correct');
-          } else if (cell.classList.contains('present')) {
+          } else if (feedback[index] === 'present') {
             if (!keyButton.classList.contains('correct')) {
+              keyButton.classList.remove('absent');
               keyButton.classList.add('present');
             }
           } else {
@@ -141,7 +160,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Handle Keyboard Input
+  // Handle Keyboard Input (Physical)
   wordleInput.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
       submitGuess();
@@ -198,11 +217,11 @@ document.addEventListener('DOMContentLoaded', () => {
     wordleMessage.textContent = '';
 
     // Check for win
-    if (currentGuess.toLowerCase() === secretWord) {
+    if (guesses[guesses.length - 1].guess === secretWord) {
       wordleMessage.textContent = "Congratulations! You've guessed the word!";
       wordleInput.disabled = true;
       powerUpButton.disabled = true;
-      saveGameState(true);
+      proceedToNextRound(true);
       return;
     }
 
@@ -211,7 +230,7 @@ document.addEventListener('DOMContentLoaded', () => {
       wordleMessage.textContent = `You've run out of guesses! The word was "${secretWord.toUpperCase()}".`;
       wordleInput.disabled = true;
       powerUpButton.disabled = true;
-      saveGameState(false);
+      proceedToNextRound(false);
       return;
     }
   }
@@ -253,7 +272,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Placeholder for word validation (can be replaced with actual dictionary check)
   function isValidWord(word) {
     // For demonstration, assuming all words in the dailyGames are valid
-    return dailyGames[currentDate].words.includes(word);
+    return words.includes(word);
   }
 
   // Power-Up Functionality
@@ -309,6 +328,29 @@ document.addEventListener('DOMContentLoaded', () => {
     wordleMessage.textContent = "An extra guess has been added!";
   }
 
+  // Proceed to the next round
+  function proceedToNextRound(won) {
+    if (won && currentRound < totalRounds - 1) {
+      currentRound += 1;
+      secretWord = words[currentRound].toLowerCase();
+      wordLength = secretWord.length;
+      maxGuesses = 6;
+      guesses = [];
+      currentGuess = '';
+      wordleMessage.textContent = `Round ${currentRound + 1}: ${theme}`;
+      createBoard();
+      createKeyboard();
+      wordleInput.disabled = false;
+      wordleInput.value = '';
+      wordleInput.focus();
+      powerUpButton.disabled = !usedPowerUp;
+      powerUpButton.textContent = usedPowerUp ? "Power-Up Used" : "Use Power-Up";
+      updateKeyboard();
+    } else {
+      wordleMessage.textContent += " Game Over.";
+    }
+  }
+
   // Handle On-Screen Keyboard Clicks
   wordleKeyboard.addEventListener('click', (e) => {
     if (e.target.classList.contains('wordle-key')) {
@@ -320,7 +362,7 @@ document.addEventListener('DOMContentLoaded', () => {
         updateBoardUI();
       } else {
         if (currentGuess.length < wordLength) {
-          currentGuess += key;
+          currentGuess += key.toUpperCase();
           updateBoardUI();
         }
       }
@@ -335,4 +377,66 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Check if the game has already been played today
-  function hasPlayed
+  function hasPlayedToday() {
+    const lastPlayed = localStorage.getItem('wordle_last_played');
+    const today = getCurrentDate();
+    return lastPlayed === today;
+  }
+
+  // Initialize the game when Start Game is clicked
+  startWordleButton.addEventListener('click', () => {
+    if (hasPlayedToday()) {
+      wordleMessage.textContent = "You have already played today's game.";
+      wordleInput.disabled = true;
+      powerUpButton.disabled = true;
+      return;
+    }
+    initializeWordleGame();
+  });
+
+  // Initialize the game when the modal is opened if not played
+  wordleModal.addEventListener('click', (e) => {
+    if (e.target === wordleModal) {
+      closeWordleModal();
+    }
+  });
+
+  // Display theme information when the modal is opened
+  wordleModal.addEventListener('show', () => {
+    currentThemeDisplay.textContent = theme;
+  });
+
+  // Close the modal and reset if necessary
+  wordleModal.addEventListener('hidden', () => {
+    // Reset the game state if needed
+  });
+
+  // Initialize the keyboard layout with Enter and Backspace
+  function createKeyboard() {
+    const keys = [
+      'Q','W','E','R','T','Y','U','I','O','P',
+      'A','S','D','F','G','H','J','K','L',
+      'ENTER','Z','X','C','V','B','N','M','BACKSPACE'
+    ];
+    wordleKeyboard.innerHTML = '';
+    keys.forEach(key => {
+      const keyButton = document.createElement('div');
+      keyButton.classList.add('wordle-key');
+      keyButton.textContent = key;
+      keyButton.addEventListener('click', () => handleKeyPress(key));
+      wordleKeyboard.appendChild(keyButton);
+    });
+  }
+
+  // Initialize the game if not played yet
+  if (!hasPlayedToday()) {
+    // Optionally, you can auto-initialize or wait for the user to click Start
+    // Here, we wait for the user to click Start
+  } else {
+    wordleMessage.textContent = "You have already played today's game.";
+    wordleInput.disabled = true;
+    powerUpButton.disabled = true;
+    currentThemeDisplay.textContent = theme;
+  }
+
+});
