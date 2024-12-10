@@ -13,6 +13,9 @@ document.addEventListener('DOMContentLoaded', () => {
         return response.json();
       })
       .then(data => {
+        if (!data.writings || !Array.isArray(data.writings)) {
+          throw new Error('Invalid writings format');
+        }
         writingsContainer.innerHTML = ''; // Clear previous writings
         data.writings.forEach(writing => {
           const writingCard = document.createElement('div');
@@ -22,11 +25,16 @@ document.addEventListener('DOMContentLoaded', () => {
           title.classList.add('text-2xl', 'font-bold', 'mb-2');
           title.textContent = writing.title;
 
+          const description = document.createElement('p');
+          description.classList.add('text-gray-400', 'mb-2');
+          description.textContent = writing.description;
+
           const content = document.createElement('p');
           content.classList.add('text-gray-300');
           content.textContent = writing.content;
 
           writingCard.appendChild(title);
+          writingCard.appendChild(description);
           writingCard.appendChild(content);
           writingsContainer.appendChild(writingCard);
         });
