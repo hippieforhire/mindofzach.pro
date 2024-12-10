@@ -53,6 +53,12 @@
     <button class="px-6 py-3 bg-red-600 rounded-lg hover:bg-red-500" onclick="openSpaceInvadersModal()">Space Invaders</button>
     <button class="px-6 py-3 bg-indigo-600 rounded-lg hover:bg-indigo-500" onclick="showGame('zork')">Zork Adventure</button>
     <button class="px-6 py-3 bg-teal-600 rounded-lg hover:bg-teal-500" onclick="showGame('numberguess')">Number Guess</button>
+
+    <!-- NEW BUTTON FOR YET ANOTHER WORDLE TYPE GAME -->
+    <button class="px-6 py-3 bg-pink-600 rounded-lg hover:bg-pink-500" onclick="openWordleModal()">Yet Another Wordle Type Game</button>
+
+    <!-- NEW BUTTON FOR WRITINGS -->
+    <button class="px-6 py-3 bg-gray-600 rounded-lg hover:bg-gray-500" onclick="showGame('writings')">Writings</button>
   </main>
 
   <div id="flappyModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -72,7 +78,6 @@
     <div class="bg-white rounded-lg shadow-lg p-6 text-black w-full max-w-md">
       <h2 class="text-3xl fun-font my-4 text-center">Tic Tac Toe</h2>
       <div id="ticTacToeBoard" class="grid grid-cols-3 gap-2 mx-auto"></div>
-      <!-- Centered start button inside a text-center div -->
       <div class="text-center">
         <button class="mt-4 game-button" onclick="initializeTicTacToe()">Start Game</button>
       </div>
@@ -107,7 +112,6 @@
   <section id="zork" class="hidden">
     <h2 class="text-3xl fun-font my-4">Zork Adventure</h2>
     <div id="output" class="bg-gray-800 text-white p-4 rounded-lg overflow-y-scroll" style="max-height: 300px;"></div>
-    <!-- Removed onkeydown attribute here to avoid double triggers -->
     <input id="input" type="text" class="w-full mt-4 px-4 py-2 bg-gray-800 text-white rounded-lg" placeholder="Type your command here...">
     <p class="text-sm text-gray-400 mt-2">Type commands like "go north", "take sword", or "attack goblin".</p>
   </section>
@@ -118,6 +122,27 @@
     <button class="mt-4 game-button" onclick="playNumberGuess()">Play Number Guess</button>
   </section>
 
+  <!-- NEW SECTION FOR WRITINGS -->
+  <section id="writings" class="hidden">
+    <h2 class="text-3xl fun-font my-4">My Writings</h2>
+    <div id="writings-container" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+  </section>
+
+  <!-- NEW MODAL FOR YET ANOTHER WORDLE TYPE GAME -->
+  <div id="wordleModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-lg p-6 text-black w-full max-w-md">
+      <h2 class="text-3xl fun-font my-4 text-center">Yet Another Wordle Type Game</h2>
+      <p class="text-gray-700 text-center mb-4">Try to guess the hidden word! Type your guess and press Enter.</p>
+      <div id="wordleBoard" class="flex flex-col space-y-2 mb-4"></div>
+      <input id="wordleInput" type="text" maxlength="5" class="w-full px-4 py-2 border rounded-lg text-black" placeholder="Enter a 5-letter word">
+      <p id="wordleMessage" class="text-center text-gray-800 mt-4"></p>
+      <div class="text-center mt-4">
+        <button class="px-6 py-3 bg-pink-600 text-white rounded-lg hover:bg-pink-500" id="startWordleButton">Start Game</button>
+        <button class="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-500" onclick="closeWordleModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
   <script src="js/flappybird.js"></script>
   <script src="js/tictactoe.js"></script>
   <script src="js/rockpaperscissors.js"></script>
@@ -125,6 +150,9 @@
   <script src="js/spaceinvaders.js"></script>
   <script src="js/zork.js"></script>
   <script src="js/numberguess.js"></script>
+  <!-- ADDING NEW SCRIPTS FOR WRITINGS AND WORDLE -->
+  <script src="js/writings.js"></script>
+  <script src="js/yetanotherwordle.js"></script>
   <script>
     function showGame(gameId) {
       document.querySelectorAll("section").forEach(section => section.classList.add("hidden"));
@@ -143,7 +171,6 @@
 
     function openTicTacToeModal() {
       document.getElementById("ticTacToeModal").classList.remove("hidden");
-      // Initialize game as soon as modal opens, ensuring element is there
       initializeTicTacToe();
     }
     function closeTicTacToeModal() {
@@ -155,6 +182,14 @@
     }
     function closeSpaceInvadersModal() {
       document.getElementById("spaceInvadersModal").classList.add("hidden");
+    }
+
+    // NEW FUNCTIONS FOR WORDLE MODAL
+    function openWordleModal() {
+      document.getElementById("wordleModal").classList.remove("hidden");
+    }
+    function closeWordleModal() {
+      document.getElementById("wordleModal").classList.add("hidden");
     }
   </script>
 </body>
