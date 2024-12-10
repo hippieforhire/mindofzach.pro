@@ -152,6 +152,16 @@
     .animate-press {
       animation: press 0.3s ease;
     }
+
+    /* New Class for Invisible but Focusable Input */
+    .invisible-input {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+      border: none;
+      outline: none;
+    }
   </style>
 </head>
 <body class="bg-gray-900 text-white min-h-screen flex flex-col items-center">
@@ -231,8 +241,8 @@
       <!-- On-Screen Keyboard -->
       <div id="wordleKeyboard" class="mt-4"></div>
 
-      <!-- Hidden Input for Capturing Physical Keyboard Inputs -->
-      <input id="wordleInput" type="text" class="hidden" autofocus>
+      <!-- Invisible Input for Capturing Physical Keyboard Inputs -->
+      <input id="wordleInput" type="text" class="invisible-input" autofocus>
 
       <!-- Message Display -->
       <p id="wordleMessage" class="text-center text-gray-800 mt-4"></p>
