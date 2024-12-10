@@ -76,7 +76,6 @@ document.addEventListener('DOMContentLoaded', () => {
   let maxGuesses = 6;
   let guesses = [];
   let currentGuess = '';
-  let extraGuesses = 0;
   let gameOver = false;
 
   // Initialize the game
@@ -95,7 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
     createKeyboard();
     wordleInput.disabled = false;
     wordleInput.value = '';
-    wordleInput.focus();
+    wordleInput.focus(); // Ensure the input is focused
     powerUpButton.disabled = false;
     powerUpButton.textContent = "Use Power-Up";
     updateKeyboard();
@@ -143,15 +142,24 @@ document.addEventListener('DOMContentLoaded', () => {
         if (keyButton) {
           if (feedback[index] === 'correct') {
             keyButton.classList.remove('present', 'absent');
-            keyButton.classList.add('correct');
+            keyButton.classList.add('correct', 'animate-press');
+            setTimeout(() => {
+              keyButton.classList.remove('animate-press');
+            }, 300);
           } else if (feedback[index] === 'present') {
             if (!keyButton.classList.contains('correct')) {
               keyButton.classList.remove('absent');
-              keyButton.classList.add('present');
+              keyButton.classList.add('present', 'animate-press');
+              setTimeout(() => {
+                keyButton.classList.remove('animate-press');
+              }, 300);
             }
           } else {
             if (!keyButton.classList.contains('correct') && !keyButton.classList.contains('present')) {
-              keyButton.classList.add('absent');
+              keyButton.classList.add('absent', 'animate-press');
+              setTimeout(() => {
+                keyButton.classList.remove('animate-press');
+              }, 300);
             }
           }
         }
@@ -163,6 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
   wordleInput.addEventListener('keydown', (e) => {
     if (gameOver) return;
     if (e.key === 'Enter') {
+      e.preventDefault(); // Prevent form submission if inside a form
       submitGuess();
     } else if (e.key === 'Backspace') {
       currentGuess = currentGuess.slice(0, -1);
@@ -224,6 +233,7 @@ document.addEventListener('DOMContentLoaded', () => {
       wordleInput.disabled = true;
       powerUpButton.disabled = true;
       proceedToNextRound(true);
+      saveGameState(true); // Save win state
       return;
     }
 
@@ -233,6 +243,7 @@ document.addEventListener('DOMContentLoaded', () => {
       wordleInput.disabled = true;
       powerUpButton.disabled = true;
       proceedToNextRound(false);
+      saveGameState(false); // Save loss state
       return;
     }
   }
@@ -267,9 +278,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function updateBoardColors(feedback) {
     const currentRow = wordleBoard.children[guesses.length - 1];
     Array.from(currentRow.children).forEach((cell, index) => {
-      cell.classList.add(feedback[index]);
-      // Add animation class
-      cell.classList.add('animate-flip');
+      cell.classList.add(feedback[index], 'animate-flip');
       // Remove the animation class after animation completes to allow re-animation
       setTimeout(() => {
         cell.classList.remove('animate-flip');
@@ -368,27 +377,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // The following event listener has been removed to prevent double inputs
-  /*
-  // Handle On-Screen Keyboard Clicks
-  wordleKeyboard.addEventListener('click', (e) => {
-    if (e.target.classList.contains('wordle-key')) {
-      const key = e.target.textContent;
-      if (key === 'ENTER') {
-        submitGuess();
-      } else if (key === 'BACKSPACE') {
-        currentGuess = currentGuess.slice(0, -1);
-        updateBoardUI();
-      } else {
-        if (currentGuess.length < wordLength) {
-          currentGuess += key.toUpperCase();
-          updateBoardUI();
-        }
-      }
-    }
-  });
-  */
-
   // Save game state to localStorage
   function saveGameState(won) {
     const today = getCurrentDate();
@@ -426,8 +414,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // Reset the game state if needed
   });
 
-  // Initialize the keyboard layout with Enter and Backspace
-  // Note: This function was previously duplicated and has been removed to prevent conflicts.
+  // Ensure the input field is focused when the modal is opened
+  wordleModal.addEventListener('transitionend', () => {
+    if (!wordleModal.classList.contains('hidden')) {
+      wordleInput.focus();
+    }
+  });
 
   // Initialize the game if not played yet
   if (!hasPlayedToday()) {
