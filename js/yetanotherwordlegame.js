@@ -279,11 +279,17 @@ document.addEventListener('DOMContentLoaded', () => {
   function updateBoardColors(feedback) {
     const currentRow = wordleBoard.children[guesses.length - 1];
     Array.from(currentRow.children).forEach((cell, index) => {
+      // Remove the class if it's already present to re-trigger animation
+      cell.classList.remove('animate-flip', 'correct', 'present', 'absent');
+      void cell.offsetWidth; // Trigger reflow
+
+      // Add feedback class and animate-flip
       cell.classList.add(feedback[index], 'animate-flip');
+
       // Remove the animation class after animation completes to allow re-animation
       setTimeout(() => {
         cell.classList.remove('animate-flip');
-      }, 500); // Duration should match the CSS animation duration
+      }, 500); // Duration matches the CSS animation duration
     });
   }
 
@@ -318,17 +324,25 @@ document.addEventListener('DOMContentLoaded', () => {
     for (let i = 0; i < wordLength; i++) {
       const cell = wordleBoard.children[guesses.length].children[i];
       if (cell.textContent === '') {
+        // Remove existing feedback classes to avoid conflicts
+        cell.classList.remove('correct', 'present', 'absent', 'animate-flip');
+        void cell.offsetWidth; // Trigger reflow
+
         cell.textContent = secretWord[i].toUpperCase();
         cell.classList.add('correct', 'animate-flip');
         // Remove the animation class after animation completes
         setTimeout(() => {
           cell.classList.remove('animate-flip');
         }, 500);
+
         // Update keyboard
         const key = secretWord[i].toUpperCase();
         const keyButton = Array.from(wordleKeyboard.children).find(btn => btn.textContent === key);
         if (keyButton) {
-          keyButton.classList.remove('present', 'absent');
+          // Remove existing feedback classes to avoid conflicts
+          keyButton.classList.remove('present', 'absent', 'animate-press');
+          void keyButton.offsetWidth; // Trigger reflow
+
           keyButton.classList.add('correct', 'animate-press');
           setTimeout(() => {
             keyButton.classList.remove('animate-press');
