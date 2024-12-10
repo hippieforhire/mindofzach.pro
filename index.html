@@ -40,14 +40,12 @@
     /* Styles for Yet Another Wordle Type Game */
     #wordleBoard {
       display: grid;
-      grid-template-rows: repeat(6, 50px);
       gap: 5px;
       justify-items: center;
       margin-bottom: 20px;
     }
     .wordle-row {
       display: grid;
-      grid-template-columns: repeat(5, 50px);
       gap: 5px;
     }
     .wordle-cell {
@@ -161,6 +159,20 @@
       height: 0;
       border: none;
       outline: none;
+    }
+
+    /* Responsive Adjustments for Different Word Lengths */
+    @media (max-width: 768px) {
+      .wordle-cell {
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+      }
+      .wordle-key {
+        width: 35px;
+        height: 35px;
+        font-size: 16px;
+      }
     }
   </style>
 </head>
