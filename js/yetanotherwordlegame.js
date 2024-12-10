@@ -100,12 +100,13 @@ document.addEventListener('DOMContentLoaded', () => {
     updateKeyboard();
   }
 
-  // Create the Wordle Board
+  // Create the Wordle Board based on word length
   function createBoard() {
     wordleBoard.innerHTML = '';
     for (let i = 0; i < maxGuesses; i++) {
       const row = document.createElement('div');
       row.classList.add('wordle-row');
+      row.style.gridTemplateColumns = `repeat(${wordLength}, 50px)`; // Dynamic columns
       for (let j = 0; j < wordLength; j++) {
         const cell = document.createElement('div');
         cell.classList.add('wordle-cell');
@@ -286,9 +287,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Placeholder for word validation (can be replaced with actual dictionary check)
+  // Validate the word using the words array from dailyGames
   function isValidWord(word) {
-    // For demonstration, assuming all words in the dailyGames are valid
     return words.includes(word);
   }
 
@@ -341,9 +341,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function getExtraGuessFunction() {
     maxGuesses += 1;
-    // Add an extra row to the board
+    // Add an extra row to the board based on current word length
     const row = document.createElement('div');
     row.classList.add('wordle-row');
+    row.style.gridTemplateColumns = `repeat(${wordLength}, 50px)`; // Dynamic columns
     for (let j = 0; j < wordLength; j++) {
       const cell = document.createElement('div');
       cell.classList.add('wordle-cell');
@@ -402,16 +403,11 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeWordleGame();
   });
 
-  // Initialize the game when the modal is opened if not played
+  // Close the modal when clicking outside the content
   wordleModal.addEventListener('click', (e) => {
     if (e.target === wordleModal) {
       closeWordleModal();
     }
-  });
-
-  // Close the modal and reset if necessary
-  wordleModal.addEventListener('hidden', () => {
-    // Reset the game state if needed
   });
 
   // Ensure the input field is focused when the modal is opened
@@ -423,8 +419,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Initialize the game if not played yet
   if (!hasPlayedToday()) {
-    // Optionally, you can auto-initialize or wait for the user to click Start
-    // Here, we wait for the user to click Start
+    // Wait for the user to click Start
   } else {
     wordleMessage.textContent = "You have already played today's game.";
     wordleInput.disabled = true;
