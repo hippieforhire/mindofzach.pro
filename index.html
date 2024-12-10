@@ -43,6 +43,7 @@
       gap: 5px;
       justify-items: center;
       margin-bottom: 20px;
+      perspective: 1000px; /* Added for 3D transforms */
     }
     .wordle-row {
       display: grid;
@@ -64,6 +65,7 @@
       transition: background-color 0.3s ease, border-color 0.3s ease;
       backface-visibility: hidden;
       transform: rotateY(0deg);
+      transform-style: preserve-3d; /* Added to preserve 3D space */
     }
     .wordle-cell.correct {
       background-color: #6aaa64; /* Green */
