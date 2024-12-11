@@ -149,21 +149,21 @@ document.addEventListener('DOMContentLoaded', () => {
             keyButton.classList.add('correct', 'animate-press');
             setTimeout(() => {
               keyButton.classList.remove('animate-press');
-            }, 300);
+            }, 600); // Increased from 300ms to match animation duration
           } else if (feedback[index] === 'present') {
             if (!keyButton.classList.contains('correct')) {
               keyButton.classList.remove('absent');
               keyButton.classList.add('present', 'animate-press');
               setTimeout(() => {
                 keyButton.classList.remove('animate-press');
-              }, 300);
+              }, 600); // Increased from 300ms to match animation duration
             }
           } else {
             if (!keyButton.classList.contains('correct') && !keyButton.classList.contains('present')) {
               keyButton.classList.add('absent', 'animate-press');
               setTimeout(() => {
                 keyButton.classList.remove('animate-press');
-              }, 300);
+              }, 600); // Increased from 300ms to match animation duration
             }
           }
         }
@@ -296,7 +296,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // Remove the animation class after animation completes to allow re-animation
       setTimeout(() => {
         cell.classList.remove('animate-flip');
-      }, 500); // Duration matches the CSS animation duration
+      }, 1000); // Increased from 500ms to match animation duration
     });
   }
 
@@ -340,7 +340,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Remove the animation class after animation completes
         setTimeout(() => {
           cell.classList.remove('animate-flip');
-        }, 500);
+        }, 1000); // Increased from 500ms to match animation duration
 
         // Update keyboard
         const key = secretWord[i].toUpperCase();
@@ -353,7 +353,7 @@ document.addEventListener('DOMContentLoaded', () => {
           keyButton.classList.add('correct', 'animate-press');
           setTimeout(() => {
             keyButton.classList.remove('animate-press');
-          }, 300);
+          }, 600); // Increased from 300ms to match animation duration
         }
         break;
       }
@@ -464,11 +464,11 @@ document.addEventListener('DOMContentLoaded', () => {
     roundIndicator.classList.remove('animate-fade-out');
     roundIndicator.classList.add('animate-fade-in');
 
-    // After fade-in, wait for 1.5 seconds and then fade out
+    // After fade-in, wait for 2.5 seconds and then fade out
     setTimeout(() => {
       roundIndicator.classList.remove('animate-fade-in');
       roundIndicator.classList.add('animate-fade-out');
-    }, 1500); // Duration matches the CSS animation duration
+    }, 2500); // Increased from 1500ms to 2500ms to match animation duration
   }
 
   // Function to display Correct Guess Message with animation
@@ -477,13 +477,13 @@ document.addEventListener('DOMContentLoaded', () => {
     correctGuessMessage.style.opacity = '1';
     correctGuessMessage.classList.add('animate-fade-in');
 
-    // After displaying, fade out the message after 2 seconds
+    // After displaying, fade out the message after 3 seconds
     setTimeout(() => {
       correctGuessMessage.classList.remove('animate-fade-in');
       correctGuessMessage.classList.add('animate-fade-out');
       correctGuessMessage.style.opacity = '0';
       correctGuessMessage.textContent = '';
-    }, 2000);
+    }, 3000); // Increased from 2000ms to 3000ms to match animation duration
   }
 
 });
