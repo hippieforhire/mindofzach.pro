@@ -117,6 +117,10 @@
       background-color: #787c7e; /* Grey */
       color: white;
     }
+    .wordle-key:hover {
+      background-color: #b0bec5; /* Slightly darker grey */
+      transform: scale(1.05);
+    }
     .wordle-key:active {
       transform: scale(0.95);
     }
@@ -224,6 +228,64 @@
       pointer-events: none;
       transition: opacity 0.5s ease;
     }
+
+    /* Confetti Styles */
+    #confetti {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 1000;
+    }
+    .confetti-piece {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background-color: rgba(255, 255, 255, 0.8);
+      opacity: 0;
+      animation: confetti-fall 3s forwards;
+    }
+    @keyframes confetti-fall {
+      0% {
+        transform: translateY(-10px) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
+      }
+    }
+
+    /* Style for Progress Bar */
+    #progressBarContainer {
+      width: 100%;
+      background-color: #e0e0e0;
+      border-radius: 5px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    #progressBar {
+      width: 0%;
+      height: 10px;
+      background-color: #4caf50;
+      transition: width 0.3s ease;
+    }
+
+    /* Enhanced Modal Transitions */
+    .modal-content {
+      background: linear-gradient(135deg, #ffffff, #f0f0f0);
+      border-radius: 15px;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      transform: scale(0.9);
+      opacity: 0;
+    }
+    .modal-open .modal-content {
+      transform: scale(1);
+      opacity: 1;
+    }
   </style>
 </head>
 <body class="bg-gray-900 text-white min-h-screen flex flex-col items-center">
@@ -288,12 +350,20 @@
 
   <!-- NEW Modal for Yet Another Wordle Type Game -->
   <div id="wordleModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-auto">
-    <div class="bg-white rounded-lg shadow-lg p-6 text-black w-full max-w-2xl mx-4 relative">
+    <div class="bg-white rounded-lg shadow-lg p-6 text-black w-full max-w-2xl mx-4 relative modal-content">
       <!-- Round Indicator -->
       <div id="roundIndicator"></div>
 
       <!-- Correct Guess Message -->
       <div id="correctGuessMessage"></div>
+
+      <!-- Confetti Container -->
+      <div id="confetti"></div>
+
+      <!-- Progress Bar -->
+      <div id="progressBarContainer">
+        <div id="progressBar"></div>
+      </div>
 
       <h2 class="text-3xl fun-font my-4 text-center">Yet Another Wordle Type Game</h2>
       <p id="wordleTheme" class="text-center text-lg mb-4">Theme: <span id="currentTheme">Loading...</span></p>
@@ -404,10 +474,12 @@
     // NEW FUNCTIONS FOR WORDLE MODAL
     function openWordleModal() {
       document.getElementById("wordleModal").classList.remove("hidden");
+      document.body.classList.add('modal-open'); // Trigger modal transition
       // The Wordle game initialization is handled in yetanotherwordlegame.js
     }
     function closeWordleModal() {
       document.getElementById("wordleModal").classList.add("hidden");
+      document.body.classList.remove('modal-open'); // Reset modal transition
     }
 
     // NEW FUNCTIONS FOR WRITINGS
