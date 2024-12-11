@@ -175,6 +175,55 @@
         font-size: 16px;
       }
     }
+
+    /* New Animation Classes for Fade In and Fade Out */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes fadeOut {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+    .animate-fade-in {
+      animation: fadeIn 1s forwards;
+    }
+    .animate-fade-out {
+      animation: fadeOut 1s forwards;
+    }
+
+    /* Style for Round Indicator */
+    #roundIndicator {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: rgba(255, 255, 255, 0.8);
+      color: #333;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-size: 1.5rem;
+      font-weight: bold;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* Style for Correct Guess Confirmation */
+    #correctGuessMessage {
+      position: absolute;
+      top: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: rgba(106, 170, 100, 0.9); /* Semi-transparent green */
+      color: white;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+    }
   </style>
 </head>
 <body class="bg-gray-900 text-white min-h-screen flex flex-col items-center">
@@ -239,7 +288,13 @@
 
   <!-- NEW Modal for Yet Another Wordle Type Game -->
   <div id="wordleModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-auto">
-    <div class="bg-white rounded-lg shadow-lg p-6 text-black w-full max-w-2xl mx-4">
+    <div class="bg-white rounded-lg shadow-lg p-6 text-black w-full max-w-2xl mx-4 relative">
+      <!-- Round Indicator -->
+      <div id="roundIndicator"></div>
+
+      <!-- Correct Guess Message -->
+      <div id="correctGuessMessage"></div>
+
       <h2 class="text-3xl fun-font my-4 text-center">Yet Another Wordle Type Game</h2>
       <p id="wordleTheme" class="text-center text-lg mb-4">Theme: <span id="currentTheme">Loading...</span></p>
       
