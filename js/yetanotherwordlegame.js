@@ -9,6 +9,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const powerUpButton = document.getElementById('powerUpButton');
   const wordleKeyboard = document.getElementById('wordleKeyboard');
   const currentThemeDisplay = document.getElementById('currentTheme');
+  const roundIndicator = document.getElementById('roundIndicator'); // New Element
+  const correctGuessMessage = document.getElementById('correctGuessMessage'); // New Element
 
   // Configuration for the game
   const dailyGames = {
@@ -98,6 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
     powerUpButton.disabled = false;
     powerUpButton.textContent = "Use Power-Up";
     updateKeyboard();
+    showRoundIndicator(); // Show Round Indicator
   }
 
   // Create the Wordle Board based on word length
@@ -236,6 +239,7 @@ document.addEventListener('DOMContentLoaded', () => {
       wordleMessage.textContent = "Congratulations! You've guessed the word!";
       wordleInput.disabled = true;
       powerUpButton.disabled = true;
+      displayCorrectGuess(); // Display Correct Guess Message
       proceedToNextRound(true);
       saveGameState(true); // Save win state
       return;
@@ -389,6 +393,7 @@ document.addEventListener('DOMContentLoaded', () => {
       powerUpButton.disabled = !usedPowerUp;
       powerUpButton.textContent = usedPowerUp ? "Power-Up Used" : "Use Power-Up";
       updateKeyboard();
+      showRoundIndicator(); // Show Round Indicator for the new round
     } else {
       wordleMessage.textContent += " Game Over.";
       gameOver = true;
@@ -434,6 +439,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // Ensure the input field is focused when the modal is opened via JavaScript
+  const openModalObserver = new MutationObserver(() => {
+    if (!wordleModal.classList.contains('hidden')) {
+      wordleInput.focus();
+    }
+  });
+  openModalObserver.observe(wordleModal, { attributes: true, attributeFilter: ['class'] });
+
   // Initialize the game if not played yet
   if (!hasPlayedToday()) {
     // Wait for the user to click Start
@@ -442,6 +455,35 @@ document.addEventListener('DOMContentLoaded', () => {
     wordleInput.disabled = true;
     powerUpButton.disabled = true;
     currentThemeDisplay.textContent = theme;
+  }
+
+  // Function to show Round Indicator with fade-in and fade-out
+  function showRoundIndicator() {
+    const roundText = `Round ${currentRound + 1}`;
+    roundIndicator.textContent = roundText;
+    roundIndicator.classList.remove('animate-fade-out');
+    roundIndicator.classList.add('animate-fade-in');
+
+    // After fade-in, wait for 1.5 seconds and then fade out
+    setTimeout(() => {
+      roundIndicator.classList.remove('animate-fade-in');
+      roundIndicator.classList.add('animate-fade-out');
+    }, 1500); // Duration matches the CSS animation duration
+  }
+
+  // Function to display Correct Guess Message with animation
+  function displayCorrectGuess() {
+    correctGuessMessage.textContent = "Correct Guess!";
+    correctGuessMessage.style.opacity = '1';
+    correctGuessMessage.classList.add('animate-fade-in');
+
+    // After displaying, fade out the message after 2 seconds
+    setTimeout(() => {
+      correctGuessMessage.classList.remove('animate-fade-in');
+      correctGuessMessage.classList.add('animate-fade-out');
+      correctGuessMessage.style.opacity = '0';
+      correctGuessMessage.textContent = '';
+    }, 2000);
   }
 
 });
