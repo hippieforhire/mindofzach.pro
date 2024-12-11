@@ -11,6 +11,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const currentThemeDisplay = document.getElementById('currentTheme');
   const roundIndicator = document.getElementById('roundIndicator'); // New Element
   const correctGuessMessage = document.getElementById('correctGuessMessage'); // New Element
+  const confettiContainer = document.getElementById('confetti'); // New Element
+  const progressBar = document.getElementById('progressBar'); // New Element
 
   // Configuration for the game
   const dailyGames = {
@@ -101,6 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
     powerUpButton.textContent = "Use Power-Up";
     updateKeyboard();
     showRoundIndicator(); // Show Round Indicator
+    updateProgressBar(); // Reset Progress Bar
   }
 
   // Create the Wordle Board based on word length
@@ -234,12 +237,16 @@ document.addEventListener('DOMContentLoaded', () => {
     updateBoardUI();
     wordleMessage.textContent = '';
 
+    // Update Progress Bar
+    updateProgressBar();
+
     // Check for win
     if (guesses[guesses.length - 1].guess === secretWord) {
       wordleMessage.textContent = "Congratulations! You've guessed the word!";
       wordleInput.disabled = true;
       powerUpButton.disabled = true;
       displayCorrectGuess(); // Display Correct Guess Message
+      triggerConfetti(); // Trigger Confetti Animation
       proceedToNextRound(true);
       saveGameState(true); // Save win state
       return;
@@ -287,16 +294,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const currentRow = wordleBoard.children[guesses.length - 1];
     Array.from(currentRow.children).forEach((cell, index) => {
       // Remove the class if it's already present to re-trigger animation
-      cell.classList.remove('animate-flip', 'correct', 'present', 'absent');
+      cell.classList.remove('animate-flip', 'bounce');
       void cell.offsetWidth; // Trigger reflow
 
       // Add feedback class and animate-flip
-      cell.classList.add(feedback[index], 'animate-flip');
+      cell.classList.add(feedback[index], 'animate-flip', 'bounce');
 
       // Remove the animation class after animation completes to allow re-animation
       setTimeout(() => {
-        cell.classList.remove('animate-flip');
-      }, 1000); // Increased from 500ms to match animation duration
+        cell.classList.remove('animate-flip', 'bounce');
+      }, 1000); // Duration matches the CSS animation duration
     });
   }
 
@@ -332,14 +339,14 @@ document.addEventListener('DOMContentLoaded', () => {
       const cell = wordleBoard.children[guesses.length].children[i];
       if (cell.textContent === '') {
         // Remove existing feedback classes to avoid conflicts
-        cell.classList.remove('correct', 'present', 'absent', 'animate-flip');
+        cell.classList.remove('correct', 'present', 'absent', 'animate-flip', 'bounce');
         void cell.offsetWidth; // Trigger reflow
 
         cell.textContent = secretWord[i].toUpperCase();
-        cell.classList.add('correct', 'animate-flip');
+        cell.classList.add('correct', 'animate-flip', 'bounce');
         // Remove the animation class after animation completes
         setTimeout(() => {
-          cell.classList.remove('animate-flip');
+          cell.classList.remove('animate-flip', 'bounce');
         }, 1000); // Increased from 500ms to match animation duration
 
         // Update keyboard
@@ -373,6 +380,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     wordleBoard.appendChild(row);
     wordleMessage.textContent = "An extra guess has been added!";
+    updateProgressBar(); // Update progress bar to reflect the extra guess
   }
 
   // Proceed to the next round
@@ -394,6 +402,7 @@ document.addEventListener('DOMContentLoaded', () => {
       powerUpButton.textContent = usedPowerUp ? "Power-Up Used" : "Use Power-Up";
       updateKeyboard();
       showRoundIndicator(); // Show Round Indicator for the new round
+      updateProgressBar(); // Reset Progress Bar
     } else {
       wordleMessage.textContent += " Game Over.";
       gameOver = true;
@@ -455,6 +464,7 @@ document.addEventListener('DOMContentLoaded', () => {
     wordleInput.disabled = true;
     powerUpButton.disabled = true;
     currentThemeDisplay.textContent = theme;
+    updateProgressBar(); // Initialize Progress Bar
   }
 
   // Function to show Round Indicator with fade-in and fade-out
@@ -485,5 +495,66 @@ document.addEventListener('DOMContentLoaded', () => {
       correctGuessMessage.textContent = '';
     }, 3000); // Increased from 2000ms to 3000ms to match animation duration
   }
+
+  // Function to trigger confetti animation
+  function triggerConfetti() {
+    const confettiCount = 100;
+    const colors = ['#FFC700', '#FF0000', '#2E3192', '#41BBC7'];
+    for (let i = 0; i < confettiCount; i++) {
+      const confetti = document.createElement('div');
+      confetti.classList.add('confetti-piece');
+      confetti.style.left = `${Math.random() * 100}%`;
+      confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+      confetti.style.animationDelay = `${Math.random() * 5}s`;
+      confettiContainer.appendChild(confetti);
+
+      // Remove confetti after animation
+      confetti.addEventListener('animationend', () => {
+        confetti.remove();
+      });
+    }
+  }
+
+  // Function to update Progress Bar
+  function updateProgressBar() {
+    const progress = (guesses.length / maxGuesses) * 100;
+    progressBar.style.width = `${progress}%`;
+  }
+
+  // Function to create a confetti piece
+  function createConfettiPiece() {
+    const confetti = document.createElement('div');
+    confetti.classList.add('confetti-piece');
+    confetti.style.left = `${Math.random() * 100}%`;
+    confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+    confetti.style.animationDuration = `${Math.random() * 3 + 2}s`;
+    confettiContainer.appendChild(confetti);
+
+    // Remove confetti after animation
+    confetti.addEventListener('animationend', () => {
+      confetti.remove();
+    });
+  }
+
+  // Function to continuously generate confetti
+  function startConfetti() {
+    const confettiInterval = setInterval(() => {
+      createConfettiPiece();
+      if (confettiContainer.children.length > 200) {
+        clearInterval(confettiInterval);
+      }
+    }, 200);
+  }
+  
+  // Modified triggerConfetti to start multiple confetti pieces
+  function triggerConfetti() {
+    startConfetti();
+  }
+
+  // Function to display Correct Guess Message with animation
+  // (Already defined above)
+
+  // Function to show Round Indicator
+  // (Already defined above)
 
 });
