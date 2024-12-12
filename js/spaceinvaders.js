@@ -563,3 +563,15 @@ function startSpaceInvadersGame() {
 
     update();
 }
+
+// Hook up the startSpaceInvaders button after the DOM is fully loaded
+document.addEventListener('DOMContentLoaded', function() {
+    const startButton = document.getElementById('startSpaceInvaders');
+    if (startButton) {
+        startButton.addEventListener('click', function() {
+            startSpaceInvadersGame();
+        });
+    } else {
+        console.error('Start button with id "startSpaceInvaders" not found.');
+    }
+});
