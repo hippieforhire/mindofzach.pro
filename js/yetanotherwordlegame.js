@@ -1,560 +1,662 @@
-// yetanotherwordlegame.js
+// spaceinvaders.js
 
-document.addEventListener('DOMContentLoaded', () => {
-  const wordleModal = document.getElementById('wordleModal');
-  const wordleBoard = document.getElementById('wordleBoard');
-  const wordleInput = document.getElementById('wordleInput');
-  const wordleMessage = document.getElementById('wordleMessage');
-  const startWordleButton = document.getElementById('startWordleButton');
-  const powerUpButton = document.getElementById('powerUpButton');
-  const wordleKeyboard = document.getElementById('wordleKeyboard');
-  const currentThemeDisplay = document.getElementById('currentTheme');
-  const roundIndicator = document.getElementById('roundIndicator'); // New Element
-  const correctGuessMessage = document.getElementById('correctGuessMessage'); // New Element
-  const confettiContainer = document.getElementById('confetti'); // New Element
-  const progressBar = document.getElementById('progressBar'); // New Element
+(function() {
+    // Game Initialization Function
+    function startSpaceInvadersGame() {
+        const canvas = document.getElementById('spaceInvadersCanvas');
+        const startButton = document.getElementById('startSpaceInvaders');
 
-  // Configuration for the game
-  const dailyGames = {
-    "2024-12-09": {
-      theme: "Famous Movies",
-      words: ["alien", "psycho", "titanic"]
-    },
-    "2024-12-10": {
-      theme: "Famous Bands",
-      words: ["queen", "weezer", "nirvana"]
-    },
-    "2024-12-11": {
-      theme: "Country or State Capitals",
-      words: ["texas", "berlin", "jakarta"]
-    },
-    "2024-12-12": {
-      theme: "Common Cat Names",
-      words: ["salem", "oliver", "smokey"]
-    },
-    "2024-12-13": {
-      theme: "Car Types/Models",
-      words: ["civic", "accord", "mustang"]
-    },
-    "2024-12-14": {
-      theme: "Common Dog Names",
-      words: ["buddy", "bailey", "charlie"]
-    },
-    "2024-12-15": {
-      theme: "American Cuisine",
-      words: ["cajun", "burger", "hotdogs"]
-    }
-  };
-
-  // Helper function to get current date in YYYY-MM-DD format (Central Standard Time)
-  function getCurrentDate() {
-    const now = new Date();
-    // Convert to Central Standard Time by adjusting the time offset
-    const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
-    const centralTime = new Date(utc - (3600000 * 6)); // CST is UTC-6
-    const year = centralTime.getFullYear();
-    let month = centralTime.getMonth() + 1;
-    let day = centralTime.getDate();
-    month = month < 10 ? '0' + month : month;
-    day = day < 10 ? '0' + day : day;
-    return `${year}-${month}-${day}`;
-  }
-
-  let currentDate = getCurrentDate();
-  let gameData = dailyGames[currentDate];
-
-  // If no game data for today, loop back to the first day
-  if (!gameData) {
-    const dates = Object.keys(dailyGames);
-    const firstDate = dates[0];
-    gameData = dailyGames[firstDate];
-    currentDate = firstDate;
-  }
-
-  const { theme, words } = gameData;
-  let currentRound = 0; // 0,1,2 for rounds 1,2,3
-  const totalRounds = 3;
-  let usedPowerUp = false;
-  let secretWord = words[currentRound].toLowerCase();
-  let wordLength = secretWord.length;
-  let maxGuesses = 6;
-  let guesses = [];
-  let currentGuess = '';
-  let gameOver = false;
-
-  // Initialize the game
-  function initializeWordleGame() {
-    currentRound = 0;
-    usedPowerUp = false;
-    secretWord = words[currentRound].toLowerCase();
-    wordLength = secretWord.length;
-    maxGuesses = 6;
-    guesses = [];
-    currentGuess = '';
-    gameOver = false;
-    wordleMessage.textContent = `Theme: ${theme}`;
-    currentThemeDisplay.textContent = theme;
-    createBoard();
-    createKeyboard();
-    wordleInput.disabled = false;
-    wordleInput.value = '';
-    wordleInput.focus(); // Ensure the input is focused
-    powerUpButton.disabled = false;
-    powerUpButton.textContent = "Use Power-Up";
-    updateKeyboard();
-    showRoundIndicator(); // Show Round Indicator
-    updateProgressBar(); // Reset Progress Bar
-  }
-
-  // Create the Wordle Board based on word length
-  function createBoard() {
-    wordleBoard.innerHTML = '';
-    for (let i = 0; i < maxGuesses; i++) {
-      const row = document.createElement('div');
-      row.classList.add('wordle-row');
-      row.style.gridTemplateColumns = `repeat(${wordLength}, 50px)`; // Dynamic columns
-      for (let j = 0; j < wordLength; j++) {
-        const cell = document.createElement('div');
-        cell.classList.add('wordle-cell');
-        row.appendChild(cell);
-      }
-      wordleBoard.appendChild(row);
-    }
-  }
-
-  // Create the On-Screen Keyboard
-  function createKeyboard() {
-    const keys = [
-      'Q','W','E','R','T','Y','U','I','O','P',
-      'A','S','D','F','G','H','J','K','L',
-      'ENTER','Z','X','C','V','B','N','M','BACKSPACE'
-    ];
-    wordleKeyboard.innerHTML = '';
-    keys.forEach(key => {
-      const keyButton = document.createElement('div');
-      keyButton.classList.add('wordle-key');
-      keyButton.textContent = key;
-      keyButton.addEventListener('click', () => handleKeyPress(key));
-      wordleKeyboard.appendChild(keyButton);
-    });
-  }
-
-  // Update Keyboard based on guesses
-  function updateKeyboard() {
-    guesses.forEach(guessObj => {
-      const { guess, feedback } = guessObj;
-      guess.split('').forEach((letter, index) => {
-        const key = letter.toUpperCase();
-        const keyButton = Array.from(wordleKeyboard.children).find(btn => btn.textContent === key);
-        if (keyButton) {
-          if (feedback[index] === 'correct') {
-            keyButton.classList.remove('present', 'absent');
-            keyButton.classList.add('correct', 'animate-press');
-            setTimeout(() => {
-              keyButton.classList.remove('animate-press');
-            }, 600); // Increased from 300ms to match animation duration
-          } else if (feedback[index] === 'present') {
-            if (!keyButton.classList.contains('correct')) {
-              keyButton.classList.remove('absent');
-              keyButton.classList.add('present', 'animate-press');
-              setTimeout(() => {
-                keyButton.classList.remove('animate-press');
-              }, 600); // Increased from 300ms to match animation duration
-            }
-          } else {
-            if (!keyButton.classList.contains('correct') && !keyButton.classList.contains('present')) {
-              keyButton.classList.add('absent', 'animate-press');
-              setTimeout(() => {
-                keyButton.classList.remove('animate-press');
-              }, 600); // Increased from 300ms to match animation duration
-            }
-          }
+        if (!canvas) {
+            console.error('Canvas with id "spaceInvadersCanvas" not found.');
+            return;
         }
-      });
-    });
-  }
-
-  // Handle Keyboard Input (Physical)
-  wordleInput.addEventListener('keydown', (e) => {
-    if (gameOver) return;
-    if (e.key === 'Enter') {
-      e.preventDefault(); // Prevent form submission if inside a form
-      submitGuess();
-    } else if (e.key === 'Backspace') {
-      currentGuess = currentGuess.slice(0, -1);
-      updateBoardUI();
-    } else if (/^[a-zA-Z]$/.test(e.key) && currentGuess.length < wordLength) {
-      currentGuess += e.key.toUpperCase();
-      updateBoardUI();
-    }
-  });
-
-  // Handle On-Screen Keyboard Click
-  function handleKeyPress(key) {
-    if (gameOver) return;
-    if (key === 'ENTER') {
-      submitGuess();
-    } else if (key === 'BACKSPACE') {
-      currentGuess = currentGuess.slice(0, -1);
-      updateBoardUI();
-    } else {
-      if (currentGuess.length < wordLength) {
-        currentGuess += key.toUpperCase();
-        updateBoardUI();
-      }
-    }
-  }
-
-  // Update the Board UI with current guess
-  function updateBoardUI() {
-    const currentRow = wordleBoard.children[guesses.length];
-    Array.from(currentRow.children).forEach((cell, index) => {
-      cell.textContent = currentGuess[index] || '';
-    });
-  }
-
-  // Submit the current guess
-  function submitGuess() {
-    if (gameOver) return;
-    if (currentGuess.length !== wordLength) {
-      wordleMessage.textContent = `Please enter a ${wordLength}-letter word.`;
-      return;
-    }
-    // Commented out word validation to allow any combination of letters
-    /*
-    if (!isValidWord(currentGuess.toLowerCase())) {
-      wordleMessage.textContent = "Word not in list.";
-      return;
-    }
-    */
-
-    // Process the guess
-    const feedback = getFeedback(currentGuess.toLowerCase());
-    guesses.push({ guess: currentGuess.toLowerCase(), feedback });
-    updateBoardColors(feedback);
-    updateKeyboard();
-    currentGuess = '';
-    updateBoardUI();
-    wordleMessage.textContent = '';
-
-    // Update Progress Bar
-    updateProgressBar();
-
-    // Check for win
-    if (guesses[guesses.length - 1].guess === secretWord) {
-      wordleMessage.textContent = "Congratulations! You've guessed the word!";
-      wordleInput.disabled = true;
-      powerUpButton.disabled = true;
-      displayCorrectGuess(); // Display Correct Guess Message
-      triggerConfetti(); // Trigger Confetti Animation
-      proceedToNextRound(true);
-      saveGameState(true); // Save win state
-      return;
-    }
-
-    // Check for loss
-    if (guesses.length === maxGuesses) {
-      wordleMessage.textContent = `You've run out of guesses! The word was "${secretWord.toUpperCase()}".`;
-      wordleInput.disabled = true;
-      powerUpButton.disabled = true;
-      proceedToNextRound(false);
-      saveGameState(false); // Save loss state
-      return;
-    }
-  }
-
-  // Get feedback for a guess
-  function getFeedback(guess) {
-    const feedback = Array(wordLength).fill('absent');
-    const secretArr = secretWord.split('');
-
-    // First pass for correct letters
-    for (let i = 0; i < wordLength; i++) {
-      if (guess[i] === secretArr[i]) {
-        feedback[i] = 'correct';
-        secretArr[i] = null;
-      }
-    }
-
-    // Second pass for present letters
-    for (let i = 0; i < wordLength; i++) {
-      if (feedback[i] === 'correct') continue;
-      const index = secretArr.indexOf(guess[i]);
-      if (index !== -1) {
-        feedback[i] = 'present';
-        secretArr[index] = null;
-      }
-    }
-
-    return feedback;
-  }
-
-  // Update the board colors based on feedback
-  function updateBoardColors(feedback) {
-    const currentRow = wordleBoard.children[guesses.length - 1];
-    Array.from(currentRow.children).forEach((cell, index) => {
-      // Remove the class if it's already present to re-trigger animation
-      cell.classList.remove('animate-flip', 'bounce');
-      void cell.offsetWidth; // Trigger reflow
-
-      // Add feedback class and animate-flip
-      cell.classList.add(feedback[index], 'animate-flip', 'bounce');
-
-      // Remove the animation class after animation completes to allow re-animation
-      setTimeout(() => {
-        cell.classList.remove('animate-flip', 'bounce');
-      }, 1000); // Duration matches the CSS animation duration
-    });
-  }
-
-  // Validate the word using the words array from dailyGames
-  function isValidWord(word) {
-    return words.includes(word);
-  }
-
-  // Power-Up Functionality
-  powerUpButton.addEventListener('click', () => {
-    if (usedPowerUp) {
-      wordleMessage.textContent = "You have already used your power-up for this game.";
-      return;
-    }
-
-    // Present options to the user
-    const powerUpChoice = prompt("Choose a Power-Up:\n1. Reveal a Letter\n2. Get an Extra Guess");
-
-    if (powerUpChoice === '1') {
-      revealLetterFunction();
-      usedPowerUp = true;
-    } else if (powerUpChoice === '2') {
-      getExtraGuessFunction();
-      usedPowerUp = true;
-    } else {
-      wordleMessage.textContent = "Invalid Power-Up choice.";
-    }
-  });
-
-  function revealLetterFunction() {
-    // Find a letter in the secret word that hasn't been revealed yet
-    for (let i = 0; i < wordLength; i++) {
-      const cell = wordleBoard.children[guesses.length].children[i];
-      if (cell.textContent === '') {
-        // Remove existing feedback classes to avoid conflicts
-        cell.classList.remove('correct', 'present', 'absent', 'animate-flip', 'bounce');
-        void cell.offsetWidth; // Trigger reflow
-
-        cell.textContent = secretWord[i].toUpperCase();
-        cell.classList.add('correct', 'animate-flip', 'bounce');
-        // Remove the animation class after animation completes
-        setTimeout(() => {
-          cell.classList.remove('animate-flip', 'bounce');
-        }, 1000); // Increased from 500ms to match animation duration
-
-        // Update keyboard
-        const key = secretWord[i].toUpperCase();
-        const keyButton = Array.from(wordleKeyboard.children).find(btn => btn.textContent === key);
-        if (keyButton) {
-          // Remove existing feedback classes to avoid conflicts
-          keyButton.classList.remove('present', 'absent', 'animate-press');
-          void keyButton.offsetWidth; // Trigger reflow
-
-          keyButton.classList.add('correct', 'animate-press');
-          setTimeout(() => {
-            keyButton.classList.remove('animate-press');
-          }, 600); // Increased from 300ms to match animation duration
+        if (!startButton) {
+            console.error('Start button with id "startSpaceInvaders" not found.');
+            return;
         }
-        break;
-      }
+
+        // Show the canvas and hide the start button
+        canvas.style.display = 'block';
+        startButton.style.display = 'none';
+
+        const ctx = canvas.getContext('2d');
+
+        // Set canvas dimensions based on rendered size
+        function resizeCanvas() {
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+        }
+
+        // Initial resize
+        resizeCanvas();
+
+        // Resize canvas on window resize
+        window.addEventListener('resize', resizeCanvas);
+
+        // Game Variables
+        let gameOver = false;
+        let score = 0;
+        let currentLevel = 1;
+        const maxLevels = 5;
+        let powerUpInterval = null;
+
+        // Player Object
+        const player = {
+            width: 40,
+            height: 20,
+            x: canvas.width / 2 - 20,
+            y: canvas.height - 50,
+            speed: 5,
+            dx: 0,
+            doubleBullets: false,
+            shield: false,
+            lives: 3
+        };
+
+        // Arrays to hold game entities
+        const bullets = [];
+        const enemyBullets = [];
+        const enemies = [];
+        const bosses = [];
+        const powerUps = [];
+
+        // Starfield for Background
+        const stars = [];
+        for (let i = 0; i < 150; i++) { // Increased number for a denser background
+            stars.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                radius: Math.random() * 1.5,
+                speed: Math.random() * 0.5 + 0.5,
+                color: getRandomStarColor()
+            });
+        }
+
+        // Enemy Configuration
+        const enemyConfig = {
+            rows: 3,
+            cols: 7,
+            width: 30,
+            height: 20,
+            margin: 20,
+            speed: 2
+        };
+
+        // Boss Configuration
+        const bossConfig = {
+            width: 80,
+            height: 40,
+            speed: 1.5,
+            health: 100
+        };
+
+        // Power-Up Types
+        const powerUpTypes = ['double-bullets', 'shield', 'extra-life'];
+
+        // Initialize Enemies for Current Level
+        function createEnemies() {
+            enemies.length = 0; // Clear existing enemies
+            for (let row = 0; row < enemyConfig.rows; row++) {
+                for (let col = 0; col < enemyConfig.cols; col++) {
+                    const enemy = {
+                        x: 50 + col * (enemyConfig.width + enemyConfig.margin),
+                        y: 50 + row * (enemyConfig.height + enemyConfig.margin),
+                        width: enemyConfig.width,
+                        height: enemyConfig.height,
+                        dx: enemyConfig.speed,
+                        dy: 0,
+                        health: 20
+                    };
+                    enemies.push(enemy);
+                }
+            }
+        }
+
+        // Initialize Boss for Specific Levels
+        function createBoss() {
+            const boss = {
+                x: canvas.width / 2 - bossConfig.width / 2,
+                y: 30,
+                width: bossConfig.width,
+                height: bossConfig.height,
+                dx: bossConfig.speed,
+                health: bossConfig.health,
+                shootInterval: 1000, // Boss shoots every second
+                lastShot: Date.now()
+            };
+            bosses.push(boss);
+        }
+
+        // Draw Stars (Background)
+        function drawBackground() {
+            ctx.fillStyle = 'black';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            stars.forEach(star => {
+                ctx.fillStyle = star.color;
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.radius, 0, 2 * Math.PI);
+                ctx.fill();
+                star.y += star.speed;
+                if (star.y > canvas.height) {
+                    star.y = 0;
+                    star.x = Math.random() * canvas.width;
+                    star.color = getRandomStarColor();
+                }
+            });
+        }
+
+        // Utility Function to Get Random Star Color
+        function getRandomStarColor() {
+            const colors = ['#FFFFFF', '#FFD700', '#ADD8E6', '#FF69B4', '#7FFFD4'];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+
+        // Draw Player
+        function drawPlayer() {
+            if (player.shield) {
+                ctx.strokeStyle = 'cyan';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.arc(player.x + player.width / 2, player.y + player.height / 2, player.width, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+            ctx.fillStyle = 'green';
+            ctx.fillRect(player.x, player.y, player.width, player.height);
+        }
+
+        // Move Player
+        function movePlayer() {
+            player.x += player.dx;
+            if (player.x < 0) player.x = 0;
+            if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
+        }
+
+        // Draw Bullets
+        function drawBullets() {
+            ctx.fillStyle = 'red';
+            bullets.forEach(bullet => {
+                ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
+            });
+        }
+
+        // Move Bullets
+        function moveBullets() {
+            for (let i = bullets.length - 1; i >= 0; i--) {
+                bullets[i].y -= bullets[i].speed;
+                if (bullets[i].y < 0) {
+                    bullets.splice(i, 1);
+                }
+            }
+        }
+
+        // Draw Enemy Bullets
+        function drawEnemyBullets() {
+            ctx.fillStyle = 'orange';
+            enemyBullets.forEach(bullet => {
+                ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
+            });
+        }
+
+        // Move Enemy Bullets
+        function moveEnemyBullets() {
+            for (let i = enemyBullets.length - 1; i >= 0; i--) {
+                enemyBullets[i].y += enemyBullets[i].speed;
+                if (enemyBullets[i].y > canvas.height) {
+                    enemyBullets.splice(i, 1);
+                    continue;
+                }
+                // Check collision with player
+                if (isColliding(enemyBullets[i], player)) {
+                    enemyBullets.splice(i, 1);
+                    if (!player.shield) {
+                        player.lives -= 1;
+                        if (player.lives <= 0) {
+                            alert("Game Over!");
+                            endGame();
+                        }
+                    }
+                }
+            }
+        }
+
+        // Draw Enemies
+        function drawEnemies() {
+            ctx.fillStyle = 'blue';
+            enemies.forEach(enemy => {
+                ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
+            });
+        }
+
+        // Move Enemies
+        function moveEnemies() {
+            enemies.forEach(enemy => {
+                enemy.x += enemy.dx;
+            });
+
+            if (enemies.length > 0) {
+                const leftmostEnemy = enemies.reduce((prev, curr) => prev.x < curr.x ? prev : curr);
+                const rightmostEnemy = enemies.reduce((prev, curr) => prev.x > curr.x ? prev : curr);
+
+                if (leftmostEnemy.x <= 0 || rightmostEnemy.x + enemyConfig.width >= canvas.width) {
+                    enemies.forEach(enemy => {
+                        enemy.dx *= -1;
+                        enemy.y += enemyConfig.margin;
+                        // Check if enemies reach the player
+                        if (enemy.y + enemy.height >= player.y) {
+                            alert("Game Over!");
+                            endGame();
+                        }
+                    });
+                }
+            }
+        }
+
+        // Draw Bosses
+        function drawBosses() {
+            ctx.fillStyle = 'purple';
+            bosses.forEach(boss => {
+                ctx.fillRect(boss.x, boss.y, boss.width, boss.height);
+            });
+        }
+
+        // Move Bosses
+        function moveBosses() {
+            bosses.forEach(boss => {
+                boss.x += boss.dx;
+                if (boss.x <= 0 || boss.x + boss.width >= canvas.width) {
+                    boss.dx *= -1;
+                }
+            });
+        }
+
+        // Draw Power-Ups
+        function drawPowerUps() {
+            powerUps.forEach(powerUp => {
+                switch(powerUp.type) {
+                    case 'double-bullets':
+                        ctx.fillStyle = 'yellow';
+                        break;
+                    case 'shield':
+                        ctx.fillStyle = 'cyan';
+                        break;
+                    case 'extra-life':
+                        ctx.fillStyle = 'magenta';
+                        break;
+                    default:
+                        ctx.fillStyle = 'white';
+                }
+                ctx.fillRect(powerUp.x, powerUp.y, powerUp.width, powerUp.height);
+            });
+        }
+
+        // Check Collisions between Bullets and Enemies/Bosses
+        function checkCollisions() {
+            // Clone the bullets array to avoid issues when modifying it during iteration
+            const bulletsClone = bullets.slice();
+            bulletsClone.forEach((bullet, bulletIndex) => {
+                // Check collision with regular enemies
+                enemies.forEach((enemy, enemyIndex) => {
+                    if (isColliding(bullet, enemy)) {
+                        // Remove bullet and enemy
+                        const actualBulletIndex = bullets.indexOf(bullet);
+                        if (actualBulletIndex > -1) bullets.splice(actualBulletIndex, 1);
+                        enemies.splice(enemyIndex, 1);
+                        score += 10;
+                    }
+                });
+
+                // Check collision with bosses
+                bosses.forEach((boss, bossIndex) => {
+                    if (isColliding(bullet, boss)) {
+                        // Remove bullet
+                        const actualBulletIndex = bullets.indexOf(bullet);
+                        if (actualBulletIndex > -1) bullets.splice(actualBulletIndex, 1);
+                        // Decrease boss health
+                        boss.health -= player.doubleBullets ? 20 : 10;
+                        score += player.doubleBullets ? 20 : 10;
+                        if (boss.health <= 0) {
+                            bosses.splice(bossIndex, 1);
+                            score += 100;
+                            alert("Boss Defeated! Level Up!");
+                            currentLevel++;
+                            if (currentLevel > maxLevels) {
+                                alert("Congratulations! You've completed all levels!");
+                                endGame();
+                            } else {
+                                setupLevel();
+                            }
+                        }
+                    }
+                });
+            });
+        }
+
+        // Utility Function to Check Collision Between Two Rectangles
+        function isColliding(rect1, rect2) {
+            return (
+                rect1.x < rect2.x + rect2.width &&
+                rect1.x + rect1.width > rect2.x &&
+                rect1.y < rect2.y + rect2.height &&
+                rect1.y + rect1.height > rect2.y
+            );
+        }
+
+        // Draw Score and Lives
+        function drawScoreAndLives() {
+            ctx.fillStyle = 'white';
+            ctx.font = '20px Arial';
+            ctx.fillText(`Score: ${score}`, 10, 30);
+            ctx.fillText(`Lives: ${player.lives}`, canvas.width - 120, 30);
+            if (player.shield) {
+                ctx.fillStyle = 'cyan';
+                ctx.font = '16px Arial';
+                ctx.fillText(`Shield Active`, canvas.width / 2 - 60, 30);
+            }
+        }
+
+        // Create Power-Ups
+        function createPowerUps() {
+            const powerUp = {
+                x: Math.random() * (canvas.width - 20),
+                y: Math.random() * (canvas.height - 200),
+                width: 20,
+                height: 20,
+                type: powerUpTypes[Math.floor(Math.random() * powerUpTypes.length)],
+                speed: 2
+            };
+            powerUps.push(powerUp);
+        }
+
+        // Move Power-Ups
+        function movePowerUps() {
+            for (let i = powerUps.length - 1; i >= 0; i--) {
+                powerUps[i].y += powerUps[i].speed;
+                if (powerUps[i].y > canvas.height) {
+                    powerUps.splice(i, 1);
+                }
+            }
+        }
+
+        // Check Power-Up Collection
+        function checkPowerUpCollisions() {
+            for (let i = powerUps.length - 1; i >= 0; i--) {
+                if (isColliding(player, powerUps[i])) {
+                    applyPowerUp(powerUps[i].type);
+                    powerUps.splice(i, 1);
+                }
+            }
+        }
+
+        // Apply Power-Up Effects
+        function applyPowerUp(type) {
+            switch(type) {
+                case 'double-bullets':
+                    player.doubleBullets = true;
+                    setTimeout(() => {
+                        player.doubleBullets = false;
+                    }, 10000); // Double bullets for 10 seconds
+                    break;
+                case 'shield':
+                    player.shield = true;
+                    setTimeout(() => {
+                        player.shield = false;
+                    }, 10000); // Shield for 10 seconds
+                    break;
+                case 'extra-life':
+                    player.lives += 1;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        // Boss Shooting
+        function bossShoot() {
+            bosses.forEach(boss => {
+                if (Date.now() - boss.lastShot > boss.shootInterval) {
+                    const bullet = {
+                        x: boss.x + boss.width / 2 - 2,
+                        y: boss.y + boss.height,
+                        width: 4,
+                        height: 10,
+                        speed: 4
+                    };
+                    enemyBullets.push(bullet);
+                    boss.lastShot = Date.now();
+                }
+            });
+        }
+
+        // Handle Player Shooting
+        function shoot() {
+            const bullet1 = {
+                x: player.x + player.width / 2 - 2,
+                y: player.y,
+                width: 4,
+                height: 10,
+                speed: 7
+            };
+            bullets.push(bullet1);
+
+            if (player.doubleBullets) {
+                const bullet2 = {
+                    x: player.x + player.width / 4 - 2,
+                    y: player.y,
+                    width: 4,
+                    height: 10,
+                    speed: 7
+                };
+                const bullet3 = {
+                    x: player.x + (3 * player.width) / 4 - 2,
+                    y: player.y,
+                    width: 4,
+                    height: 10,
+                    speed: 7
+                };
+                bullets.push(bullet2);
+                bullets.push(bullet3);
+            }
+        }
+
+        // Setup Level
+        function setupLevel() {
+            enemyConfig.speed += 0.5; // Increase enemy speed each level
+            createEnemies();
+
+            // Every 3 levels, introduce a boss
+            if (currentLevel % 3 === 0) {
+                createBoss();
+            }
+
+            // Spawn Power-Ups periodically
+            if (!powerUpInterval) {
+                powerUpInterval = setInterval(createPowerUps, 10000); // Every 10 seconds
+            }
+        }
+
+        // End Game
+        function endGame() {
+            gameOver = true;
+            alert(`Game Over! Your score: ${score}`);
+            // Clear power-up interval to prevent memory leaks
+            if (powerUpInterval) {
+                clearInterval(powerUpInterval);
+                powerUpInterval = null;
+            }
+            // Hide the canvas
+            canvas.style.display = 'none';
+            // Re-enable the start button
+            const startButton = document.getElementById('startSpaceInvaders');
+            if (startButton) {
+                startButton.style.display = 'inline-block';
+            }
+            // Remove resize listener
+            window.removeEventListener('resize', resizeCanvas);
+        }
+
+        // Reset Game
+        function resetGame() {
+            player.lives = 3;
+            player.doubleBullets = false;
+            player.shield = false;
+            currentLevel = 1;
+            score = 0;
+            enemies.length = 0;
+            bullets.length = 0;
+            enemyBullets.length = 0;
+            powerUps.length = 0;
+            bosses.length = 0;
+            enemyConfig.speed = 2;
+            createEnemies();
+            setupLevel();
+            gameOver = false;
+            // Restart the update loop
+            requestAnimationFrame(update);
+        }
+
+        // Handle Key Down
+        function keyDown(e) {
+            if (e.key === 'ArrowRight') {
+                player.dx = player.speed;
+                // Debugging: Log movement direction
+                console.log('ArrowRight pressed: Moving Right');
+            }
+            if (e.key === 'ArrowLeft') {
+                player.dx = -player.speed;
+                // Debugging: Log movement direction
+                console.log('ArrowLeft pressed: Moving Left');
+            }
+            if (e.key === ' ') {
+                shoot();
+                // Debugging: Log shooting
+                console.log('Spacebar pressed: Shooting');
+            }
+        }
+
+        // Handle Key Up
+        function keyUp(e) {
+            if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+                player.dx = 0;
+                // Debugging: Log stopping movement
+                console.log('Arrow key released: Stopping movement');
+            }
+        }
+
+        // Handle Touch Controls
+        function touchStart(e) {
+            const rect = canvas.getBoundingClientRect();
+            const touch = e.touches[0];
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            const xPos = (touch.clientX - rect.left) * scaleX;
+            const yPos = (touch.clientY - rect.top) * scaleY;
+
+            console.log(`TouchStart - xPos: ${xPos}, yPos: ${yPos}`);
+
+            if (yPos < canvas.height / 2) {
+                shoot();
+                console.log('TouchStart - Top half: Shooting');
+            } else {
+                if (xPos < canvas.width / 2) {
+                    player.dx = -player.speed;
+                    console.log('TouchStart - Bottom left: Moving Left');
+                } else {
+                    player.dx = player.speed;
+                    console.log('TouchStart - Bottom right: Moving Right');
+                }
+            }
+        }
+
+        function touchMove(e) {
+            const rect = canvas.getBoundingClientRect();
+            const touch = e.touches[0];
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            const xPos = (touch.clientX - rect.left) * scaleX;
+            const yPos = (touch.clientY - rect.top) * scaleY;
+
+            console.log(`TouchMove - xPos: ${xPos}, yPos: ${yPos}`);
+
+            if (yPos >= canvas.height / 2) {
+                if (xPos < canvas.width / 2) {
+                    player.dx = -player.speed;
+                    console.log('TouchMove - Bottom left: Moving Left');
+                } else {
+                    player.dx = player.speed;
+                    console.log('TouchMove - Bottom right: Moving Right');
+                }
+            }
+        }
+
+        function touchEnd() {
+            player.dx = 0;
+            console.log('TouchEnd - Stopping movement');
+        }
+
+        // Event Listeners
+        document.addEventListener('keydown', keyDown);
+        document.addEventListener('keyup', keyUp);
+
+        canvas.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            touchStart(e);
+        }, { passive: false });
+
+        canvas.addEventListener('touchmove', function(e) {
+            e.preventDefault();
+            touchMove(e);
+        }, { passive: false });
+
+        canvas.addEventListener('touchend', function(e) {
+            e.preventDefault();
+            touchEnd(e);
+        }, { passive: false });
+
+        // Initialize Enemies and Start Level
+        createEnemies();
+        setupLevel();
+
+        // Main Update Loop
+        function update() {
+            if (gameOver) return;
+            drawBackground();
+            drawPlayer();
+            movePlayer();
+            drawBullets();
+            moveBullets();
+            drawEnemies();
+            moveEnemies();
+            drawBosses();
+            moveBosses();
+            drawEnemyBullets();
+            moveEnemyBullets();
+            drawPowerUps();
+            movePowerUps();
+            drawScoreAndLives();
+            checkCollisions();
+            checkPowerUpCollisions();
+            bossShoot();
+            requestAnimationFrame(update);
+        }
+
+        // Start the Update Loop
+        requestAnimationFrame(update);
     }
-  }
 
-  function getExtraGuessFunction() {
-    maxGuesses += 1;
-    // Add an extra row to the board based on current word length
-    const row = document.createElement('div');
-    row.classList.add('wordle-row');
-    row.style.gridTemplateColumns = `repeat(${wordLength}, 50px)`; // Dynamic columns
-    for (let j = 0; j < wordLength; j++) {
-      const cell = document.createElement('div');
-      cell.classList.add('wordle-cell');
-      row.appendChild(cell);
-    }
-    wordleBoard.appendChild(row);
-    wordleMessage.textContent = "An extra guess has been added!";
-    updateProgressBar(); // Update progress bar to reflect the extra guess
-  }
-
-  // Proceed to the next round
-  function proceedToNextRound(won) {
-    if (won && currentRound < totalRounds - 1) {
-      currentRound += 1;
-      secretWord = words[currentRound].toLowerCase();
-      wordLength = secretWord.length;
-      maxGuesses = 6;
-      guesses = [];
-      currentGuess = '';
-      wordleMessage.textContent = `Round ${currentRound + 1}: ${theme}`;
-      createBoard();
-      createKeyboard();
-      wordleInput.disabled = false;
-      wordleInput.value = '';
-      wordleInput.focus();
-      powerUpButton.disabled = !usedPowerUp;
-      powerUpButton.textContent = usedPowerUp ? "Power-Up Used" : "Use Power-Up";
-      updateKeyboard();
-      showRoundIndicator(); // Show Round Indicator for the new round
-      updateProgressBar(); // Reset Progress Bar
-    } else {
-      wordleMessage.textContent += " Game Over.";
-      gameOver = true;
-    }
-  }
-
-  // Save game state to localStorage
-  function saveGameState(won) {
-    const today = getCurrentDate();
-    localStorage.setItem('wordle_last_played', today);
-    localStorage.setItem('wordle_won', won);
-  }
-
-  // Check if the game has already been played today
-  function hasPlayedToday() {
-    const lastPlayed = localStorage.getItem('wordle_last_played');
-    const today = getCurrentDate();
-    return lastPlayed === today;
-  }
-
-  // Initialize the game when Start Game is clicked
-  startWordleButton.addEventListener('click', () => {
-    if (hasPlayedToday()) {
-      wordleMessage.textContent = "You have already played today's game.";
-      wordleInput.disabled = true;
-      powerUpButton.disabled = true;
-      return;
-    }
-    initializeWordleGame();
-  });
-
-  // Close the modal when clicking outside the content
-  wordleModal.addEventListener('click', (e) => {
-    if (e.target === wordleModal) {
-      closeWordleModal();
-    }
-  });
-
-  // Ensure the input field is focused when the modal is opened
-  wordleModal.addEventListener('transitionend', () => {
-    if (!wordleModal.classList.contains('hidden')) {
-      wordleInput.focus();
-    }
-  });
-
-  // Ensure the input field is focused when the modal is opened via JavaScript
-  const openModalObserver = new MutationObserver(() => {
-    if (!wordleModal.classList.contains('hidden')) {
-      wordleInput.focus();
-    }
-  });
-  openModalObserver.observe(wordleModal, { attributes: true, attributeFilter: ['class'] });
-
-  // Initialize the game if not played yet
-  if (!hasPlayedToday()) {
-    // Wait for the user to click Start
-  } else {
-    wordleMessage.textContent = "You have already played today's game.";
-    wordleInput.disabled = true;
-    powerUpButton.disabled = true;
-    currentThemeDisplay.textContent = theme;
-    updateProgressBar(); // Initialize Progress Bar
-  }
-
-  // Function to show Round Indicator with fade-in and fade-out
-  function showRoundIndicator() {
-    const roundText = `Round ${currentRound + 1}`;
-    roundIndicator.textContent = roundText;
-    roundIndicator.classList.remove('animate-fade-out');
-    roundIndicator.classList.add('animate-fade-in');
-
-    // After fade-in, wait for 2.5 seconds and then fade out
-    setTimeout(() => {
-      roundIndicator.classList.remove('animate-fade-in');
-      roundIndicator.classList.add('animate-fade-out');
-    }, 2500); // Increased from 1500ms to 2500ms to match animation duration
-  }
-
-  // Function to display Correct Guess Message with animation
-  function displayCorrectGuess() {
-    correctGuessMessage.textContent = "Correct Guess!";
-    correctGuessMessage.style.opacity = '1';
-    correctGuessMessage.classList.add('animate-fade-in');
-
-    // After displaying, fade out the message after 3 seconds
-    setTimeout(() => {
-      correctGuessMessage.classList.remove('animate-fade-in');
-      correctGuessMessage.classList.add('animate-fade-out');
-      correctGuessMessage.style.opacity = '0';
-      correctGuessMessage.textContent = '';
-    }, 3000); // Increased from 2000ms to 3000ms to match animation duration
-  }
-
-  // Function to trigger confetti animation
-  function triggerConfetti() {
-    const confettiCount = 100;
-    const colors = ['#FFC700', '#FF0000', '#2E3192', '#41BBC7'];
-    for (let i = 0; i < confettiCount; i++) {
-      const confetti = document.createElement('div');
-      confetti.classList.add('confetti-piece');
-      confetti.style.left = `${Math.random() * 100}%`;
-      confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-      confetti.style.animationDelay = `${Math.random() * 5}s`;
-      confettiContainer.appendChild(confetti);
-
-      // Remove confetti after animation
-      confetti.addEventListener('animationend', () => {
-        confetti.remove();
-      });
-    }
-  }
-
-  // Function to update Progress Bar
-  function updateProgressBar() {
-    const progress = (guesses.length / maxGuesses) * 100;
-    progressBar.style.width = `${progress}%`;
-  }
-
-  // Function to create a confetti piece
-  function createConfettiPiece() {
-    const confetti = document.createElement('div');
-    confetti.classList.add('confetti-piece');
-    confetti.style.left = `${Math.random() * 100}%`;
-    confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
-    confetti.style.animationDuration = `${Math.random() * 3 + 2}s`;
-    confettiContainer.appendChild(confetti);
-
-    // Remove confetti after animation
-    confetti.addEventListener('animationend', () => {
-      confetti.remove();
+    // Hook up the startSpaceInvaders button after the DOM is fully loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        const startButton = document.getElementById('startSpaceInvaders');
+        if (startButton) {
+            startButton.addEventListener('click', function() {
+                // Prevent multiple game instances by checking if the canvas is already displayed
+                const canvas = document.getElementById('spaceInvadersCanvas');
+                if (canvas.style.display !== 'block') {
+                    startSpaceInvadersGame();
+                }
+            });
+        } else {
+            console.error('Start button with id "startSpaceInvaders" not found.');
+        }
     });
-  }
-
-  // Function to continuously generate confetti
-  function startConfetti() {
-    const confettiInterval = setInterval(() => {
-      createConfettiPiece();
-      if (confettiContainer.children.length > 200) {
-        clearInterval(confettiInterval);
-      }
-    }, 200);
-  }
-  
-  // Modified triggerConfetti to start multiple confetti pieces
-  function triggerConfetti() {
-    startConfetti();
-  }
-
-  // Function to display Correct Guess Message with animation
-  // (Already defined above)
-
-  // Function to show Round Indicator
-  // (Already defined above)
-
-});
+})();
