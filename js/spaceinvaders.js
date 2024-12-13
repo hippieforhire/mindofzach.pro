@@ -198,6 +198,7 @@
                     enemyBullets.splice(i, 1);
                     if (!player.shield) {
                         player.lives -= 1;
+                        console.log("Player hit! Lives left:", player.lives);
                         if (player.lives <= 0) {
                             alert("Game Over!");
                             endGame();
@@ -290,6 +291,7 @@
                         if (actualBulletIndex > -1) bullets.splice(actualBulletIndex, 1);
                         enemies.splice(enemyIndex, 1);
                         score += 10;
+                        console.log("Enemy hit! Score:", score);
                     }
                 });
 
@@ -302,6 +304,7 @@
                         // Decrease boss health
                         boss.health -= player.doubleBullets ? 20 : 10;
                         score += player.doubleBullets ? 20 : 10;
+                        console.log(`Boss hit! Boss Health: ${boss.health}, Score: ${score}`);
                         if (boss.health <= 0) {
                             bosses.splice(bossIndex, 1);
                             score += 100;
@@ -353,6 +356,7 @@
                 speed: 2
             };
             powerUps.push(powerUp);
+            console.log(`Power-Up Spawned: ${powerUp.type}`);
         }
 
         // Move Power-Ups
@@ -371,6 +375,7 @@
                 if (isColliding(player, powerUps[i])) {
                     applyPowerUp(powerUps[i].type);
                     powerUps.splice(i, 1);
+                    console.log(`Power-Up Collected: ${powerUps[i].type}`);
                 }
             }
         }
@@ -380,18 +385,23 @@
             switch(type) {
                 case 'double-bullets':
                     player.doubleBullets = true;
+                    console.log("Double Bullets Activated!");
                     setTimeout(() => {
                         player.doubleBullets = false;
+                        console.log("Double Bullets Deactivated!");
                     }, 10000); // Double bullets for 10 seconds
                     break;
                 case 'shield':
                     player.shield = true;
+                    console.log("Shield Activated!");
                     setTimeout(() => {
                         player.shield = false;
+                        console.log("Shield Deactivated!");
                     }, 10000); // Shield for 10 seconds
                     break;
                 case 'extra-life':
                     player.lives += 1;
+                    console.log("Extra Life Gained! Lives:", player.lives);
                     break;
                 default:
                     break;
@@ -411,6 +421,7 @@
                     };
                     enemyBullets.push(bullet);
                     boss.lastShot = Date.now();
+                    console.log("Boss Shot!");
                 }
             });
         }
@@ -425,6 +436,7 @@
                 speed: 7
             };
             bullets.push(bullet1);
+            console.log("Bullet Fired!");
 
             if (player.doubleBullets) {
                 const bullet2 = {
@@ -443,6 +455,7 @@
                 };
                 bullets.push(bullet2);
                 bullets.push(bullet3);
+                console.log("Double Bullets Fired!");
             }
         }
 
@@ -454,17 +467,20 @@
             // Every 3 levels, introduce a boss
             if (currentLevel % 3 === 0) {
                 createBoss();
+                console.log("Boss Introduced!");
             }
 
             // Spawn Power-Ups periodically
             if (!powerUpInterval) {
                 powerUpInterval = setInterval(createPowerUps, 10000); // Every 10 seconds
+                console.log("Power-Up Interval Started");
             }
         }
 
         // End Game
         function endGame() {
             gameOver = true;
+            console.log("Game Over!");
             alert(`Game Over! Your score: ${score}`);
             // Clear power-up interval to prevent memory leaks
             if (powerUpInterval) {
@@ -498,18 +514,31 @@
             gameOver = false;
             // Restart the update loop
             requestAnimationFrame(update);
+            console.log("Game Reset!");
         }
 
         // Handle Key Down
         function keyDown(e) {
-            if (e.key === 'ArrowRight') player.dx = player.speed;
-            if (e.key === 'ArrowLeft') player.dx = -player.speed;
-            if (e.key === ' ') shoot();
+            if (e.key === 'ArrowRight') {
+                player.dx = player.speed;
+                console.log("Moving Right");
+            }
+            if (e.key === 'ArrowLeft') {
+                player.dx = -player.speed;
+                console.log("Moving Left");
+            }
+            if (e.key === ' ') {
+                shoot();
+                console.log("Shooting");
+            }
         }
 
         // Handle Key Up
         function keyUp(e) {
-            if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') player.dx = 0;
+            if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+                player.dx = 0;
+                console.log("Stopping Movement");
+            }
         }
 
         // Handle Touch Controls
@@ -523,11 +552,14 @@
 
             if (yPos < canvas.height / 2) {
                 shoot();
+                console.log("Touch: Shooting");
             } else {
                 if (xPos < canvas.width / 2) {
                     player.dx = -player.speed;
+                    console.log("Touch: Moving Left");
                 } else {
                     player.dx = player.speed;
+                    console.log("Touch: Moving Right");
                 }
             }
         }
@@ -543,14 +575,17 @@
             if (yPos >= canvas.height / 2) {
                 if (xPos < canvas.width / 2) {
                     player.dx = -player.speed;
+                    console.log("Touch Move: Moving Left");
                 } else {
                     player.dx = player.speed;
+                    console.log("Touch Move: Moving Right");
                 }
             }
         }
 
         function touchEnd() {
             player.dx = 0;
+            console.log("Touch End: Stopping Movement");
         }
 
         // Event Listeners
