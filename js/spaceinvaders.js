@@ -516,8 +516,10 @@
         function touchStart(e) {
             const rect = canvas.getBoundingClientRect();
             const touch = e.touches[0];
-            const xPos = touch.clientX - rect.left;
-            const yPos = touch.clientY - rect.top;
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            const xPos = (touch.clientX - rect.left) * scaleX;
+            const yPos = (touch.clientY - rect.top) * scaleY;
 
             if (yPos < canvas.height / 2) {
                 shoot();
@@ -533,8 +535,10 @@
         function touchMove(e) {
             const rect = canvas.getBoundingClientRect();
             const touch = e.touches[0];
-            const xPos = touch.clientX - rect.left;
-            const yPos = touch.clientY - rect.top;
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            const xPos = (touch.clientX - rect.left) * scaleX;
+            const yPos = (touch.clientY - rect.top) * scaleY;
 
             if (yPos >= canvas.height / 2) {
                 if (xPos < canvas.width / 2) {
