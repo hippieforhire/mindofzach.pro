@@ -2,11 +2,16 @@
 
 function startSpaceInvadersGame() {
     const canvas = document.getElementById('spaceInvadersCanvas');
+    if (!canvas) {
+        console.error('Canvas with id "spaceInvadersCanvas" not found.');
+        return;
+    }
     canvas.width = 800;
     canvas.height = 400;
     canvas.style.maxWidth = "100%";
     canvas.style.height = "auto";
     canvas.style.touchAction = 'none';
+    canvas.style.display = 'block'; // Make canvas visible when game starts
 
     const ctx = canvas.getContext('2d');
 
@@ -32,6 +37,7 @@ function startSpaceInvadersGame() {
     const maxLevels = 5;
     let score = 0;
     let gameOver = false;
+    let powerUpInterval = null;
 
     // Starfield for Background
     const stars = [];
@@ -158,7 +164,7 @@ function startSpaceInvadersGame() {
     // Draw Enemy Bullets
     function drawEnemyBullets() {
         ctx.fillStyle = 'orange';
-        enemyBullets.forEach((bullet, index) => {
+        enemyBullets.forEach(bullet => {
             ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
         });
     }
@@ -422,16 +428,8 @@ function startSpaceInvadersGame() {
         }
 
         // Spawn Power-Ups periodically
-        if (currentLevel === 1) {
-            // Ensure only one interval is set per game instance
-            if (!window.powerUpInterval) {
-                window.powerUpInterval = setInterval(createPowerUps, 10000); // Every 10 seconds
-            }
-        } else {
-            // For higher levels, continue spawning power-ups
-            if (!window.powerUpInterval) {
-                window.powerUpInterval = setInterval(createPowerUps, 10000); // Every 10 seconds
-            }
+        if (!powerUpInterval) {
+            powerUpInterval = setInterval(createPowerUps, 10000); // Every 10 seconds
         }
     }
 
@@ -440,9 +438,19 @@ function startSpaceInvadersGame() {
         gameOver = true;
         alert(`Game Over! Your score: ${score}`);
         // Clear power-up interval to prevent memory leaks
-        if (window.powerUpInterval) {
-            clearInterval(window.powerUpInterval);
-            window.powerUpInterval = null;
+        if (powerUpInterval) {
+            clearInterval(powerUpInterval);
+            powerUpInterval = null;
+        }
+        // Hide the canvas
+        const canvas = document.getElementById('spaceInvadersCanvas');
+        if (canvas) {
+            canvas.style.display = 'none';
+        }
+        // Re-enable the start button
+        const startButton = document.getElementById('startSpaceInvaders');
+        if (startButton) {
+            startButton.disabled = false;
         }
         // Reset Game
         resetGame();
@@ -464,7 +472,7 @@ function startSpaceInvadersGame() {
         createEnemies();
         setupLevel();
         gameOver = false;
-        update();
+        // The existing update loop continues
     }
 
     // Handle Key Down
@@ -540,7 +548,6 @@ function startSpaceInvadersGame() {
         drawScoreAndLives();
         checkCollisions();
         checkPowerUpCollisions();
-        drawShields();
         bossShoot();
         requestAnimationFrame(update);
     }
@@ -571,17 +578,6 @@ function startSpaceInvadersGame() {
                 }
             });
         });
-    }
-
-    // Define the Missing drawShields Function
-    function drawShields() {
-        if (player.shield) {
-            ctx.strokeStyle = 'cyan';
-            ctx.lineWidth = 3;
-            ctx.beginPath();
-            ctx.arc(player.x + player.width / 2, player.y + player.height / 2, player.width, 0, Math.PI * 2);
-            ctx.stroke();
-        }
     }
 
     // Start the Update Loop
