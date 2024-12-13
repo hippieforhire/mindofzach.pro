@@ -423,7 +423,15 @@ function startSpaceInvadersGame() {
 
         // Spawn Power-Ups periodically
         if (currentLevel === 1) {
-            setInterval(createPowerUps, 10000); // Every 10 seconds
+            // Ensure only one interval is set per game instance
+            if (!window.powerUpInterval) {
+                window.powerUpInterval = setInterval(createPowerUps, 10000); // Every 10 seconds
+            }
+        } else {
+            // For higher levels, continue spawning power-ups
+            if (!window.powerUpInterval) {
+                window.powerUpInterval = setInterval(createPowerUps, 10000); // Every 10 seconds
+            }
         }
     }
 
@@ -431,6 +439,11 @@ function startSpaceInvadersGame() {
     function endGame() {
         gameOver = true;
         alert(`Game Over! Your score: ${score}`);
+        // Clear power-up interval to prevent memory leaks
+        if (window.powerUpInterval) {
+            clearInterval(window.powerUpInterval);
+            window.powerUpInterval = null;
+        }
         // Reset Game
         resetGame();
     }
@@ -526,7 +539,6 @@ function startSpaceInvadersGame() {
         movePowerUps();
         drawScoreAndLives();
         checkCollisions();
-        checkPlayerBulletCollisions();
         checkPowerUpCollisions();
         drawShields();
         bossShoot();
@@ -561,6 +573,18 @@ function startSpaceInvadersGame() {
         });
     }
 
+    // Define the Missing drawShields Function
+    function drawShields() {
+        if (player.shield) {
+            ctx.strokeStyle = 'cyan';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(player.x + player.width / 2, player.y + player.height / 2, player.width, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+    }
+
+    // Start the Update Loop
     update();
 }
 
@@ -569,7 +593,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const startButton = document.getElementById('startSpaceInvaders');
     if (startButton) {
         startButton.addEventListener('click', function() {
-            startSpaceInvadersGame();
+            // Prevent multiple game instances
+            if (!startButton.disabled) {
+                startSpaceInvadersGame();
+                startButton.disabled = true;
+            }
         });
     } else {
         console.error('Start button with id "startSpaceInvaders" not found.');
