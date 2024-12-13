@@ -474,7 +474,10 @@
             // Hide the canvas
             canvas.style.display = 'none';
             // Re-enable the start button
-            startButton.style.display = 'inline-block';
+            const startButton = document.getElementById('startSpaceInvaders');
+            if (startButton) {
+                startButton.style.display = 'inline-block';
+            }
         }
 
         // Reset Game
@@ -542,7 +545,7 @@
             }
         }
 
-        function touchEnd(e) {
+        function touchEnd() {
             player.dx = 0;
         }
 
