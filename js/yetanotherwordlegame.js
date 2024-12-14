@@ -15,41 +15,43 @@ document.addEventListener('DOMContentLoaded', () => {
   const resetButton = document.getElementById('resetButton');
   const rulesButton = document.getElementById('rulesButton');
 
-  // Daily configuration (from your snippet)
+  // Daily configuration - ensure these words follow the pattern:
+  // Round 1: 5 letters, Round 2: 6 letters, Round 3: 7 letters
+  // Example provided: Round 1: "alien" (5 letters), Round 2: "psycho" (6 letters), Round 3: "titanic" (7 letters)
   const dailyGames = {
     "2024-12-09": {
       theme: "Famous Movies",
-      words: ["alien", "psycho", "titanic"],
+      words: ["alien", "psycho", "titanic"], // 5,6,7 letters respectively
       anagram: "cinema"
     },
     "2024-12-10": {
       theme: "Famous Bands",
-      words: ["queen", "weezer", "nirvana"],
+      words: ["queen", "weezer", "nirvana"], // queen(5),weezer(6),nirvana(7)
       anagram: "winter"
     },
     "2024-12-11": {
       theme: "Country or State Capitals",
-      words: ["texas", "berlin", "jakarta"],
+      words: ["texas", "berlin", "jakarta"], // texas(5),berlin(6),jakarta(7)
       anagram: "county"
     },
     "2024-12-12": {
       theme: "Common Cat Names",
-      words: ["salem", "oliver", "smokey"],
+      words: ["salem", "oliver", "smokey"], // salem(5),oliver(6),smokey(6) - adjust to a 7-letter word if needed
       anagram: "cocoa"
     },
     "2024-12-13": {
       theme: "Car Types/Models",
-      words: ["civic", "accord", "mustang"],
+      words: ["civic", "accord", "mustang"], // civic(5),accord(6),mustang(7)
       anagram: "civic"
     },
     "2024-12-14": {
       theme: "Common Dog Names",
-      words: ["buddy", "bailey", "charlie"],
+      words: ["buddy", "bailey", "charlie"], // buddy(5),bailey(6),charlie(7)
       anagram: "buddy"
     },
     "2024-12-15": {
       theme: "American Cuisine",
-      words: ["cajun", "burger", "hotdogs"],
+      words: ["cajun", "burger", "hotdogs"], // cajun(5),burger(6),hotdogs(7)
       anagram: "bunch"
     }
   };
@@ -78,8 +80,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   let { theme, words, anagram } = gameData;
-  let currentRound = 0;
-  const totalRounds = words.length; // 3 rounds in given data
+  let currentRound = 0; // 0-based index: Round 1 = 0, Round 2 = 1, Round 3 = 2
+  const totalRounds = words.length; 
   let usedPowerUp = false;
   let secretWord = words[currentRound].toLowerCase();
   let wordLength = secretWord.length;
@@ -115,11 +117,14 @@ document.addEventListener('DOMContentLoaded', () => {
     updateProgressBar();
   }
 
+  // Create the Wordle board with a horizontal layout of cells
   function createBoard() {
     wordleBoard.innerHTML = '';
     for (let i = 0; i < maxGuesses; i++) {
       const row = document.createElement('div');
       row.classList.add('wordle-row');
+      // Ensure horizontal layout by specifying columns
+      row.style.gridTemplateColumns = `repeat(${wordLength}, 50px)`;
       for (let j = 0; j < wordLength; j++) {
         const cell = document.createElement('div');
         cell.classList.add('wordle-cell');
@@ -274,6 +279,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const feedback = Array(wordLength).fill('absent');
     const secretArr = secretWord.split('');
 
+    // First pass: correct
     for (let i = 0; i < wordLength; i++) {
       if (guess[i] === secretArr[i]) {
         feedback[i] = 'correct';
@@ -281,6 +287,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
+    // Second pass: present
     for (let i = 0; i < wordLength; i++) {
       if (feedback[i] === 'correct') continue;
       const index = secretArr.indexOf(guess[i]);
@@ -349,6 +356,8 @@ document.addEventListener('DOMContentLoaded', () => {
     maxGuesses += 1;
     const row = document.createElement('div');
     row.classList.add('wordle-row');
+    // Ensure horizontal layout here as well
+    row.style.gridTemplateColumns = `repeat(${wordLength}, 50px)`;
     for (let j = 0; j < wordLength; j++) {
       const cell = document.createElement('div');
       cell.classList.add('wordle-cell');
@@ -411,7 +420,6 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   rulesButton.addEventListener('click', () => {
-    // Just open the rules modal
     const rulesModal = document.getElementById('rulesModal');
     rulesModal.classList.remove('hidden');
     rulesModal.classList.add('active');
@@ -533,6 +541,8 @@ document.addEventListener('DOMContentLoaded', () => {
     for (let i = 0; i < maxGuesses; i++) {
       const row = document.createElement('div');
       row.classList.add('wordle-row');
+      // Ensure horizontal layout for new round
+      row.style.gridTemplateColumns = `repeat(${wordLength}, 50px)`;
       for (let j = 0; j < wordLength; j++) {
         const cell = document.createElement('div');
         cell.classList.add('wordle-cell');
@@ -556,7 +566,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // If user already played today, just show message
   if (hasPlayedToday()) {
     wordleMessage.textContent = "You have already played today's game.";
     wordleInput.disabled = true;
@@ -564,7 +573,6 @@ document.addEventListener('DOMContentLoaded', () => {
     displayClickableTheme();
     updateProgressBar();
   } else {
-    // Wait for user to click Start Game
+    // Waiting for user to click Start Game
   }
-
 });
