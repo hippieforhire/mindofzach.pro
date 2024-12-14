@@ -1,662 +1,570 @@
-// spaceinvaders.js
+// yetanotherwordlegame.js
 
-(function() {
-    // Game Initialization Function
-    function startSpaceInvadersGame() {
-        const canvas = document.getElementById('spaceInvadersCanvas');
-        const startButton = document.getElementById('startSpaceInvaders');
+document.addEventListener('DOMContentLoaded', () => {
+  const wordleBoard = document.getElementById('wordleBoard');
+  const wordleInput = document.getElementById('wordleInput');
+  const wordleMessage = document.getElementById('wordleMessage');
+  const startWordleButton = document.getElementById('startWordleButton');
+  const powerUpButton = document.getElementById('powerUpButton');
+  const wordleKeyboard = document.getElementById('wordleKeyboard');
+  const currentThemeSpan = document.getElementById('currentTheme');
+  const roundIndicator = document.getElementById('roundIndicator');
+  const correctGuessMessage = document.getElementById('correctGuessMessage');
+  const confettiContainer = document.getElementById('confetti');
+  const progressBar = document.getElementById('progressBar');
+  const resetButton = document.getElementById('resetButton');
+  const rulesButton = document.getElementById('rulesButton');
 
-        if (!canvas) {
-            console.error('Canvas with id "spaceInvadersCanvas" not found.');
-            return;
-        }
-        if (!startButton) {
-            console.error('Start button with id "startSpaceInvaders" not found.');
-            return;
-        }
+  // Daily configuration (from your snippet)
+  const dailyGames = {
+    "2024-12-09": {
+      theme: "Famous Movies",
+      words: ["alien", "psycho", "titanic"],
+      anagram: "cinema"
+    },
+    "2024-12-10": {
+      theme: "Famous Bands",
+      words: ["queen", "weezer", "nirvana"],
+      anagram: "winter"
+    },
+    "2024-12-11": {
+      theme: "Country or State Capitals",
+      words: ["texas", "berlin", "jakarta"],
+      anagram: "county"
+    },
+    "2024-12-12": {
+      theme: "Common Cat Names",
+      words: ["salem", "oliver", "smokey"],
+      anagram: "cocoa"
+    },
+    "2024-12-13": {
+      theme: "Car Types/Models",
+      words: ["civic", "accord", "mustang"],
+      anagram: "civic"
+    },
+    "2024-12-14": {
+      theme: "Common Dog Names",
+      words: ["buddy", "bailey", "charlie"],
+      anagram: "buddy"
+    },
+    "2024-12-15": {
+      theme: "American Cuisine",
+      words: ["cajun", "burger", "hotdogs"],
+      anagram: "bunch"
+    }
+  };
 
-        // Show the canvas and hide the start button
-        canvas.style.display = 'block';
-        startButton.style.display = 'none';
+  function getCurrentDate() {
+    const now = new Date();
+    const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+    const centralTime = new Date(utc - (3600000 * 6)); // CST
+    const year = centralTime.getFullYear();
+    let month = centralTime.getMonth() + 1;
+    let day = centralTime.getDate();
+    month = month < 10 ? '0' + month : month;
+    day = day < 10 ? '0' + day : day;
+    return `${year}-${month}-${day}`;
+  }
 
-        const ctx = canvas.getContext('2d');
+  let currentDate = getCurrentDate();
+  let gameData = dailyGames[currentDate];
 
-        // Set canvas dimensions based on rendered size
-        function resizeCanvas() {
-            const rect = canvas.getBoundingClientRect();
-            canvas.width = rect.width;
-            canvas.height = rect.height;
-        }
+  // If no game data for today, use first available date
+  if (!gameData) {
+    const dates = Object.keys(dailyGames);
+    const firstDate = dates[0];
+    gameData = dailyGames[firstDate];
+    currentDate = firstDate;
+  }
 
-        // Initial resize
-        resizeCanvas();
+  let { theme, words, anagram } = gameData;
+  let currentRound = 0;
+  const totalRounds = words.length; // 3 rounds in given data
+  let usedPowerUp = false;
+  let secretWord = words[currentRound].toLowerCase();
+  let wordLength = secretWord.length;
+  let maxGuesses = 6;
+  let guesses = [];
+  let currentGuess = '';
+  let gameOver = false;
+  let anagramGuess = '';
+  let anagramFound = false;
 
-        // Resize canvas on window resize
-        window.addEventListener('resize', resizeCanvas);
+  function initializeWordleGame() {
+    currentRound = 0;
+    usedPowerUp = false;
+    anagramFound = false;
+    secretWord = words[currentRound].toLowerCase();
+    wordLength = secretWord.length;
+    maxGuesses = 6;
+    guesses = [];
+    currentGuess = '';
+    anagramGuess = '';
+    gameOver = false;
+    wordleMessage.textContent = `Theme: ${theme}`;
+    displayClickableTheme();
+    createBoard();
+    createKeyboard();
+    wordleInput.disabled = false;
+    wordleInput.value = '';
+    wordleInput.focus();
+    powerUpButton.disabled = false;
+    powerUpButton.textContent = "Use Power-Up";
+    updateKeyboard();
+    showRoundIndicator();
+    updateProgressBar();
+  }
 
-        // Game Variables
-        let gameOver = false;
-        let score = 0;
-        let currentLevel = 1;
-        const maxLevels = 5;
-        let powerUpInterval = null;
+  function createBoard() {
+    wordleBoard.innerHTML = '';
+    for (let i = 0; i < maxGuesses; i++) {
+      const row = document.createElement('div');
+      row.classList.add('wordle-row');
+      for (let j = 0; j < wordLength; j++) {
+        const cell = document.createElement('div');
+        cell.classList.add('wordle-cell');
+        row.appendChild(cell);
+      }
+      wordleBoard.appendChild(row);
+    }
+  }
 
-        // Player Object
-        const player = {
-            width: 40,
-            height: 20,
-            x: canvas.width / 2 - 20,
-            y: canvas.height - 50,
-            speed: 5,
-            dx: 0,
-            doubleBullets: false,
-            shield: false,
-            lives: 3
-        };
+  function createKeyboard() {
+    const keys = 'QWERTYUIOPASDFGHJKLEntZXCVBNMBCK'.split('');
+    wordleKeyboard.innerHTML = '';
 
-        // Arrays to hold game entities
-        const bullets = [];
-        const enemyBullets = [];
-        const enemies = [];
-        const bosses = [];
-        const powerUps = [];
+    const firstRowKeys = keys.slice(0,10);
+    const secondRowKeys = keys.slice(10,19);
+    const thirdRowKeys = keys.slice(19);
 
-        // Starfield for Background
-        const stars = [];
-        for (let i = 0; i < 150; i++) { // Increased number for a denser background
-            stars.push({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                radius: Math.random() * 1.5,
-                speed: Math.random() * 0.5 + 0.5,
-                color: getRandomStarColor()
-            });
-        }
+    const firstRow = document.createElement('div');
+    firstRow.classList.add('flex', 'justify-center', 'mb-2');
+    firstRowKeys.forEach(key => {
+      const btn = createKeyButton(key);
+      firstRow.appendChild(btn);
+    });
+    wordleKeyboard.appendChild(firstRow);
 
-        // Enemy Configuration
-        const enemyConfig = {
-            rows: 3,
-            cols: 7,
-            width: 30,
-            height: 20,
-            margin: 20,
-            speed: 2
-        };
+    const secondRow = document.createElement('div');
+    secondRow.classList.add('flex', 'justify-center', 'mb-2');
+    secondRowKeys.forEach(key => {
+      const btn = createKeyButton(key);
+      secondRow.appendChild(btn);
+    });
+    wordleKeyboard.appendChild(secondRow);
 
-        // Boss Configuration
-        const bossConfig = {
-            width: 80,
-            height: 40,
-            speed: 1.5,
-            health: 100
-        };
+    const thirdRow = document.createElement('div');
+    thirdRow.classList.add('flex', 'justify-center');
+    thirdRowKeys.forEach(key => {
+      const btn = createKeyButton(key);
+      thirdRow.appendChild(btn);
+    });
+    wordleKeyboard.appendChild(thirdRow);
+  }
 
-        // Power-Up Types
-        const powerUpTypes = ['double-bullets', 'shield', 'extra-life'];
+  function createKeyButton(key) {
+    const keyButton = document.createElement('div');
+    keyButton.classList.add('wordle-key');
+    keyButton.textContent = key === 'Ent' ? 'Ent' : (key === 'BCK' ? '←' : key);
+    keyButton.addEventListener('click', () => handleKeyPress(key));
+    return keyButton;
+  }
 
-        // Initialize Enemies for Current Level
-        function createEnemies() {
-            enemies.length = 0; // Clear existing enemies
-            for (let row = 0; row < enemyConfig.rows; row++) {
-                for (let col = 0; col < enemyConfig.cols; col++) {
-                    const enemy = {
-                        x: 50 + col * (enemyConfig.width + enemyConfig.margin),
-                        y: 50 + row * (enemyConfig.height + enemyConfig.margin),
-                        width: enemyConfig.width,
-                        height: enemyConfig.height,
-                        dx: enemyConfig.speed,
-                        dy: 0,
-                        health: 20
-                    };
-                    enemies.push(enemy);
-                }
+  function updateKeyboard() {
+    guesses.forEach(guessObj => {
+      const { guess, feedback } = guessObj;
+      guess.split('').forEach((letter, index) => {
+        const key = letter.toUpperCase();
+        const keyButton = Array.from(wordleKeyboard.querySelectorAll('.wordle-key')).find(btn => btn.textContent === key || (btn.textContent === '←' && key==='BCK'));
+        if (keyButton) {
+          if (feedback[index] === 'correct') {
+            keyButton.classList.remove('present', 'absent');
+            keyButton.classList.add('correct', 'animate-press');
+            setTimeout(() => keyButton.classList.remove('animate-press'), 600);
+          } else if (feedback[index] === 'present') {
+            if (!keyButton.classList.contains('correct')) {
+              keyButton.classList.remove('absent');
+              keyButton.classList.add('present', 'animate-press');
+              setTimeout(() => keyButton.classList.remove('animate-press'), 600);
             }
-        }
-
-        // Initialize Boss for Specific Levels
-        function createBoss() {
-            const boss = {
-                x: canvas.width / 2 - bossConfig.width / 2,
-                y: 30,
-                width: bossConfig.width,
-                height: bossConfig.height,
-                dx: bossConfig.speed,
-                health: bossConfig.health,
-                shootInterval: 1000, // Boss shoots every second
-                lastShot: Date.now()
-            };
-            bosses.push(boss);
-        }
-
-        // Draw Stars (Background)
-        function drawBackground() {
-            ctx.fillStyle = 'black';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            stars.forEach(star => {
-                ctx.fillStyle = star.color;
-                ctx.beginPath();
-                ctx.arc(star.x, star.y, star.radius, 0, 2 * Math.PI);
-                ctx.fill();
-                star.y += star.speed;
-                if (star.y > canvas.height) {
-                    star.y = 0;
-                    star.x = Math.random() * canvas.width;
-                    star.color = getRandomStarColor();
-                }
-            });
-        }
-
-        // Utility Function to Get Random Star Color
-        function getRandomStarColor() {
-            const colors = ['#FFFFFF', '#FFD700', '#ADD8E6', '#FF69B4', '#7FFFD4'];
-            return colors[Math.floor(Math.random() * colors.length)];
-        }
-
-        // Draw Player
-        function drawPlayer() {
-            if (player.shield) {
-                ctx.strokeStyle = 'cyan';
-                ctx.lineWidth = 3;
-                ctx.beginPath();
-                ctx.arc(player.x + player.width / 2, player.y + player.height / 2, player.width, 0, Math.PI * 2);
-                ctx.stroke();
+          } else {
+            if (!keyButton.classList.contains('correct') && !keyButton.classList.contains('present')) {
+              keyButton.classList.add('absent', 'animate-press');
+              setTimeout(() => keyButton.classList.remove('animate-press'), 600);
             }
-            ctx.fillStyle = 'green';
-            ctx.fillRect(player.x, player.y, player.width, player.height);
+          }
         }
+      });
+    });
+  }
 
-        // Move Player
-        function movePlayer() {
-            player.x += player.dx;
-            if (player.x < 0) player.x = 0;
-            if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
-        }
+  wordleInput.addEventListener('keydown', (e) => {
+    if (gameOver) return;
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      submitGuess();
+    } else if (e.key === 'Backspace') {
+      currentGuess = currentGuess.slice(0, -1);
+      updateBoardUI();
+    } else if (/^[a-zA-Z]$/.test(e.key) && currentGuess.length < wordLength) {
+      currentGuess += e.key.toUpperCase();
+      updateBoardUI();
+    }
+  });
 
-        // Draw Bullets
-        function drawBullets() {
-            ctx.fillStyle = 'red';
-            bullets.forEach(bullet => {
-                ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
-            });
-        }
+  function handleKeyPress(key) {
+    if (gameOver) return;
+    if (key === 'Ent') {
+      submitGuess();
+    } else if (key === 'BCK') {
+      currentGuess = currentGuess.slice(0, -1);
+      updateBoardUI();
+    } else if (/^[A-Z]$/.test(key) && currentGuess.length < wordLength) {
+      currentGuess += key;
+      updateBoardUI();
+    }
+  }
 
-        // Move Bullets
-        function moveBullets() {
-            for (let i = bullets.length - 1; i >= 0; i--) {
-                bullets[i].y -= bullets[i].speed;
-                if (bullets[i].y < 0) {
-                    bullets.splice(i, 1);
-                }
-            }
-        }
+  function updateBoardUI() {
+    const currentRow = wordleBoard.children[guesses.length];
+    Array.from(currentRow.children).forEach((cell, i) => {
+      cell.textContent = currentGuess[i] || '';
+    });
+  }
 
-        // Draw Enemy Bullets
-        function drawEnemyBullets() {
-            ctx.fillStyle = 'orange';
-            enemyBullets.forEach(bullet => {
-                ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
-            });
-        }
-
-        // Move Enemy Bullets
-        function moveEnemyBullets() {
-            for (let i = enemyBullets.length - 1; i >= 0; i--) {
-                enemyBullets[i].y += enemyBullets[i].speed;
-                if (enemyBullets[i].y > canvas.height) {
-                    enemyBullets.splice(i, 1);
-                    continue;
-                }
-                // Check collision with player
-                if (isColliding(enemyBullets[i], player)) {
-                    enemyBullets.splice(i, 1);
-                    if (!player.shield) {
-                        player.lives -= 1;
-                        if (player.lives <= 0) {
-                            alert("Game Over!");
-                            endGame();
-                        }
-                    }
-                }
-            }
-        }
-
-        // Draw Enemies
-        function drawEnemies() {
-            ctx.fillStyle = 'blue';
-            enemies.forEach(enemy => {
-                ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
-            });
-        }
-
-        // Move Enemies
-        function moveEnemies() {
-            enemies.forEach(enemy => {
-                enemy.x += enemy.dx;
-            });
-
-            if (enemies.length > 0) {
-                const leftmostEnemy = enemies.reduce((prev, curr) => prev.x < curr.x ? prev : curr);
-                const rightmostEnemy = enemies.reduce((prev, curr) => prev.x > curr.x ? prev : curr);
-
-                if (leftmostEnemy.x <= 0 || rightmostEnemy.x + enemyConfig.width >= canvas.width) {
-                    enemies.forEach(enemy => {
-                        enemy.dx *= -1;
-                        enemy.y += enemyConfig.margin;
-                        // Check if enemies reach the player
-                        if (enemy.y + enemy.height >= player.y) {
-                            alert("Game Over!");
-                            endGame();
-                        }
-                    });
-                }
-            }
-        }
-
-        // Draw Bosses
-        function drawBosses() {
-            ctx.fillStyle = 'purple';
-            bosses.forEach(boss => {
-                ctx.fillRect(boss.x, boss.y, boss.width, boss.height);
-            });
-        }
-
-        // Move Bosses
-        function moveBosses() {
-            bosses.forEach(boss => {
-                boss.x += boss.dx;
-                if (boss.x <= 0 || boss.x + boss.width >= canvas.width) {
-                    boss.dx *= -1;
-                }
-            });
-        }
-
-        // Draw Power-Ups
-        function drawPowerUps() {
-            powerUps.forEach(powerUp => {
-                switch(powerUp.type) {
-                    case 'double-bullets':
-                        ctx.fillStyle = 'yellow';
-                        break;
-                    case 'shield':
-                        ctx.fillStyle = 'cyan';
-                        break;
-                    case 'extra-life':
-                        ctx.fillStyle = 'magenta';
-                        break;
-                    default:
-                        ctx.fillStyle = 'white';
-                }
-                ctx.fillRect(powerUp.x, powerUp.y, powerUp.width, powerUp.height);
-            });
-        }
-
-        // Check Collisions between Bullets and Enemies/Bosses
-        function checkCollisions() {
-            // Clone the bullets array to avoid issues when modifying it during iteration
-            const bulletsClone = bullets.slice();
-            bulletsClone.forEach((bullet, bulletIndex) => {
-                // Check collision with regular enemies
-                enemies.forEach((enemy, enemyIndex) => {
-                    if (isColliding(bullet, enemy)) {
-                        // Remove bullet and enemy
-                        const actualBulletIndex = bullets.indexOf(bullet);
-                        if (actualBulletIndex > -1) bullets.splice(actualBulletIndex, 1);
-                        enemies.splice(enemyIndex, 1);
-                        score += 10;
-                    }
-                });
-
-                // Check collision with bosses
-                bosses.forEach((boss, bossIndex) => {
-                    if (isColliding(bullet, boss)) {
-                        // Remove bullet
-                        const actualBulletIndex = bullets.indexOf(bullet);
-                        if (actualBulletIndex > -1) bullets.splice(actualBulletIndex, 1);
-                        // Decrease boss health
-                        boss.health -= player.doubleBullets ? 20 : 10;
-                        score += player.doubleBullets ? 20 : 10;
-                        if (boss.health <= 0) {
-                            bosses.splice(bossIndex, 1);
-                            score += 100;
-                            alert("Boss Defeated! Level Up!");
-                            currentLevel++;
-                            if (currentLevel > maxLevels) {
-                                alert("Congratulations! You've completed all levels!");
-                                endGame();
-                            } else {
-                                setupLevel();
-                            }
-                        }
-                    }
-                });
-            });
-        }
-
-        // Utility Function to Check Collision Between Two Rectangles
-        function isColliding(rect1, rect2) {
-            return (
-                rect1.x < rect2.x + rect2.width &&
-                rect1.x + rect1.width > rect2.x &&
-                rect1.y < rect2.y + rect2.height &&
-                rect1.y + rect1.height > rect2.y
-            );
-        }
-
-        // Draw Score and Lives
-        function drawScoreAndLives() {
-            ctx.fillStyle = 'white';
-            ctx.font = '20px Arial';
-            ctx.fillText(`Score: ${score}`, 10, 30);
-            ctx.fillText(`Lives: ${player.lives}`, canvas.width - 120, 30);
-            if (player.shield) {
-                ctx.fillStyle = 'cyan';
-                ctx.font = '16px Arial';
-                ctx.fillText(`Shield Active`, canvas.width / 2 - 60, 30);
-            }
-        }
-
-        // Create Power-Ups
-        function createPowerUps() {
-            const powerUp = {
-                x: Math.random() * (canvas.width - 20),
-                y: Math.random() * (canvas.height - 200),
-                width: 20,
-                height: 20,
-                type: powerUpTypes[Math.floor(Math.random() * powerUpTypes.length)],
-                speed: 2
-            };
-            powerUps.push(powerUp);
-        }
-
-        // Move Power-Ups
-        function movePowerUps() {
-            for (let i = powerUps.length - 1; i >= 0; i--) {
-                powerUps[i].y += powerUps[i].speed;
-                if (powerUps[i].y > canvas.height) {
-                    powerUps.splice(i, 1);
-                }
-            }
-        }
-
-        // Check Power-Up Collection
-        function checkPowerUpCollisions() {
-            for (let i = powerUps.length - 1; i >= 0; i--) {
-                if (isColliding(player, powerUps[i])) {
-                    applyPowerUp(powerUps[i].type);
-                    powerUps.splice(i, 1);
-                }
-            }
-        }
-
-        // Apply Power-Up Effects
-        function applyPowerUp(type) {
-            switch(type) {
-                case 'double-bullets':
-                    player.doubleBullets = true;
-                    setTimeout(() => {
-                        player.doubleBullets = false;
-                    }, 10000); // Double bullets for 10 seconds
-                    break;
-                case 'shield':
-                    player.shield = true;
-                    setTimeout(() => {
-                        player.shield = false;
-                    }, 10000); // Shield for 10 seconds
-                    break;
-                case 'extra-life':
-                    player.lives += 1;
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        // Boss Shooting
-        function bossShoot() {
-            bosses.forEach(boss => {
-                if (Date.now() - boss.lastShot > boss.shootInterval) {
-                    const bullet = {
-                        x: boss.x + boss.width / 2 - 2,
-                        y: boss.y + boss.height,
-                        width: 4,
-                        height: 10,
-                        speed: 4
-                    };
-                    enemyBullets.push(bullet);
-                    boss.lastShot = Date.now();
-                }
-            });
-        }
-
-        // Handle Player Shooting
-        function shoot() {
-            const bullet1 = {
-                x: player.x + player.width / 2 - 2,
-                y: player.y,
-                width: 4,
-                height: 10,
-                speed: 7
-            };
-            bullets.push(bullet1);
-
-            if (player.doubleBullets) {
-                const bullet2 = {
-                    x: player.x + player.width / 4 - 2,
-                    y: player.y,
-                    width: 4,
-                    height: 10,
-                    speed: 7
-                };
-                const bullet3 = {
-                    x: player.x + (3 * player.width) / 4 - 2,
-                    y: player.y,
-                    width: 4,
-                    height: 10,
-                    speed: 7
-                };
-                bullets.push(bullet2);
-                bullets.push(bullet3);
-            }
-        }
-
-        // Setup Level
-        function setupLevel() {
-            enemyConfig.speed += 0.5; // Increase enemy speed each level
-            createEnemies();
-
-            // Every 3 levels, introduce a boss
-            if (currentLevel % 3 === 0) {
-                createBoss();
-            }
-
-            // Spawn Power-Ups periodically
-            if (!powerUpInterval) {
-                powerUpInterval = setInterval(createPowerUps, 10000); // Every 10 seconds
-            }
-        }
-
-        // End Game
-        function endGame() {
-            gameOver = true;
-            alert(`Game Over! Your score: ${score}`);
-            // Clear power-up interval to prevent memory leaks
-            if (powerUpInterval) {
-                clearInterval(powerUpInterval);
-                powerUpInterval = null;
-            }
-            // Hide the canvas
-            canvas.style.display = 'none';
-            // Re-enable the start button
-            const startButton = document.getElementById('startSpaceInvaders');
-            if (startButton) {
-                startButton.style.display = 'inline-block';
-            }
-            // Remove resize listener
-            window.removeEventListener('resize', resizeCanvas);
-        }
-
-        // Reset Game
-        function resetGame() {
-            player.lives = 3;
-            player.doubleBullets = false;
-            player.shield = false;
-            currentLevel = 1;
-            score = 0;
-            enemies.length = 0;
-            bullets.length = 0;
-            enemyBullets.length = 0;
-            powerUps.length = 0;
-            bosses.length = 0;
-            enemyConfig.speed = 2;
-            createEnemies();
-            setupLevel();
-            gameOver = false;
-            // Restart the update loop
-            requestAnimationFrame(update);
-        }
-
-        // Handle Key Down
-        function keyDown(e) {
-            if (e.key === 'ArrowRight') {
-                player.dx = player.speed;
-                // Debugging: Log movement direction
-                console.log('ArrowRight pressed: Moving Right');
-            }
-            if (e.key === 'ArrowLeft') {
-                player.dx = -player.speed;
-                // Debugging: Log movement direction
-                console.log('ArrowLeft pressed: Moving Left');
-            }
-            if (e.key === ' ') {
-                shoot();
-                // Debugging: Log shooting
-                console.log('Spacebar pressed: Shooting');
-            }
-        }
-
-        // Handle Key Up
-        function keyUp(e) {
-            if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
-                player.dx = 0;
-                // Debugging: Log stopping movement
-                console.log('Arrow key released: Stopping movement');
-            }
-        }
-
-        // Handle Touch Controls
-        function touchStart(e) {
-            const rect = canvas.getBoundingClientRect();
-            const touch = e.touches[0];
-            const scaleX = canvas.width / rect.width;
-            const scaleY = canvas.height / rect.height;
-            const xPos = (touch.clientX - rect.left) * scaleX;
-            const yPos = (touch.clientY - rect.top) * scaleY;
-
-            console.log(`TouchStart - xPos: ${xPos}, yPos: ${yPos}`);
-
-            if (yPos < canvas.height / 2) {
-                shoot();
-                console.log('TouchStart - Top half: Shooting');
-            } else {
-                if (xPos < canvas.width / 2) {
-                    player.dx = -player.speed;
-                    console.log('TouchStart - Bottom left: Moving Left');
-                } else {
-                    player.dx = player.speed;
-                    console.log('TouchStart - Bottom right: Moving Right');
-                }
-            }
-        }
-
-        function touchMove(e) {
-            const rect = canvas.getBoundingClientRect();
-            const touch = e.touches[0];
-            const scaleX = canvas.width / rect.width;
-            const scaleY = canvas.height / rect.height;
-            const xPos = (touch.clientX - rect.left) * scaleX;
-            const yPos = (touch.clientY - rect.top) * scaleY;
-
-            console.log(`TouchMove - xPos: ${xPos}, yPos: ${yPos}`);
-
-            if (yPos >= canvas.height / 2) {
-                if (xPos < canvas.width / 2) {
-                    player.dx = -player.speed;
-                    console.log('TouchMove - Bottom left: Moving Left');
-                } else {
-                    player.dx = player.speed;
-                    console.log('TouchMove - Bottom right: Moving Right');
-                }
-            }
-        }
-
-        function touchEnd() {
-            player.dx = 0;
-            console.log('TouchEnd - Stopping movement');
-        }
-
-        // Event Listeners
-        document.addEventListener('keydown', keyDown);
-        document.addEventListener('keyup', keyUp);
-
-        canvas.addEventListener('touchstart', function(e) {
-            e.preventDefault();
-            touchStart(e);
-        }, { passive: false });
-
-        canvas.addEventListener('touchmove', function(e) {
-            e.preventDefault();
-            touchMove(e);
-        }, { passive: false });
-
-        canvas.addEventListener('touchend', function(e) {
-            e.preventDefault();
-            touchEnd(e);
-        }, { passive: false });
-
-        // Initialize Enemies and Start Level
-        createEnemies();
-        setupLevel();
-
-        // Main Update Loop
-        function update() {
-            if (gameOver) return;
-            drawBackground();
-            drawPlayer();
-            movePlayer();
-            drawBullets();
-            moveBullets();
-            drawEnemies();
-            moveEnemies();
-            drawBosses();
-            moveBosses();
-            drawEnemyBullets();
-            moveEnemyBullets();
-            drawPowerUps();
-            movePowerUps();
-            drawScoreAndLives();
-            checkCollisions();
-            checkPowerUpCollisions();
-            bossShoot();
-            requestAnimationFrame(update);
-        }
-
-        // Start the Update Loop
-        requestAnimationFrame(update);
+  function submitGuess() {
+    if (gameOver) return;
+    if (currentGuess.length !== wordLength) {
+      wordleMessage.textContent = `Please enter a ${wordLength}-letter word.`;
+      return;
     }
 
-    // Hook up the startSpaceInvaders button after the DOM is fully loaded
-    document.addEventListener('DOMContentLoaded', function() {
-        const startButton = document.getElementById('startSpaceInvaders');
-        if (startButton) {
-            startButton.addEventListener('click', function() {
-                // Prevent multiple game instances by checking if the canvas is already displayed
-                const canvas = document.getElementById('spaceInvadersCanvas');
-                if (canvas.style.display !== 'block') {
-                    startSpaceInvadersGame();
-                }
-            });
-        } else {
-            console.error('Start button with id "startSpaceInvaders" not found.');
-        }
+    const feedback = getFeedback(currentGuess.toLowerCase());
+    guesses.push({ guess: currentGuess.toLowerCase(), feedback });
+    updateBoardColors(feedback);
+    updateKeyboard();
+    currentGuess = '';
+    updateBoardUI();
+    wordleMessage.textContent = '';
+
+    updateProgressBar();
+
+    if (guesses[guesses.length - 1].guess === secretWord) {
+      wordleMessage.textContent = "Congratulations! You've guessed the word!";
+      wordleInput.disabled = true;
+      powerUpButton.disabled = true;
+      displayCorrectGuess();
+      triggerConfetti();
+      proceedToNextRound(true);
+      saveGameState(true);
+      return;
+    }
+
+    if (guesses.length === maxGuesses) {
+      wordleMessage.textContent = `Out of guesses! The word was "${secretWord.toUpperCase()}".`;
+      wordleInput.disabled = true;
+      powerUpButton.disabled = true;
+      proceedToNextRound(false);
+      saveGameState(false);
+      return;
+    }
+  }
+
+  function getFeedback(guess) {
+    const feedback = Array(wordLength).fill('absent');
+    const secretArr = secretWord.split('');
+
+    for (let i = 0; i < wordLength; i++) {
+      if (guess[i] === secretArr[i]) {
+        feedback[i] = 'correct';
+        secretArr[i] = null;
+      }
+    }
+
+    for (let i = 0; i < wordLength; i++) {
+      if (feedback[i] === 'correct') continue;
+      const index = secretArr.indexOf(guess[i]);
+      if (index !== -1) {
+        feedback[i] = 'present';
+        secretArr[index] = null;
+      }
+    }
+
+    return feedback;
+  }
+
+  function updateBoardColors(feedback) {
+    const currentRow = wordleBoard.children[guesses.length - 1];
+    Array.from(currentRow.children).forEach((cell, i) => {
+      cell.classList.remove('animate-flip', 'bounce');
+      void cell.offsetWidth;
+      cell.classList.add(feedback[i], 'animate-flip', 'bounce');
+      setTimeout(() => {
+        cell.classList.remove('animate-flip', 'bounce');
+      }, 1000);
     });
-})();
+  }
+
+  powerUpButton.addEventListener('click', () => {
+    if (usedPowerUp) {
+      wordleMessage.textContent = "Power-Up already used.";
+      return;
+    }
+    const powerUpChoice = prompt("Choose a Power-Up:\n1. Reveal a Letter\n2. Get an Extra Guess");
+    if (powerUpChoice === '1') {
+      revealLetterFunction();
+      usedPowerUp = true;
+    } else if (powerUpChoice === '2') {
+      getExtraGuessFunction();
+      usedPowerUp = true;
+    } else {
+      wordleMessage.textContent = "Invalid Power-Up choice.";
+    }
+  });
+
+  function revealLetterFunction() {
+    for (let i = 0; i < wordLength; i++) {
+      const cell = wordleBoard.children[guesses.length].children[i];
+      if (cell.textContent === '') {
+        cell.classList.remove('correct','present','absent','animate-flip','bounce');
+        void cell.offsetWidth;
+        cell.textContent = secretWord[i].toUpperCase();
+        cell.classList.add('correct','animate-flip','bounce');
+        setTimeout(() => cell.classList.remove('animate-flip','bounce'), 1000);
+
+        const key = secretWord[i].toUpperCase();
+        const keyButton = Array.from(wordleKeyboard.querySelectorAll('.wordle-key')).find(btn => btn.textContent === key);
+        if (keyButton) {
+          keyButton.classList.remove('present','absent','animate-press');
+          void keyButton.offsetWidth;
+          keyButton.classList.add('correct','animate-press');
+          setTimeout(() => keyButton.classList.remove('animate-press'), 600);
+        }
+        break;
+      }
+    }
+  }
+
+  function getExtraGuessFunction() {
+    maxGuesses += 1;
+    const row = document.createElement('div');
+    row.classList.add('wordle-row');
+    for (let j = 0; j < wordLength; j++) {
+      const cell = document.createElement('div');
+      cell.classList.add('wordle-cell');
+      row.appendChild(cell);
+    }
+    wordleBoard.appendChild(row);
+    wordleMessage.textContent = "An extra guess added!";
+    updateProgressBar();
+  }
+
+  function proceedToNextRound(won) {
+    if (won && currentRound < totalRounds - 1) {
+      currentRound++;
+      secretWord = words[currentRound].toLowerCase();
+      wordLength = secretWord.length;
+      maxGuesses = 6;
+      guesses = [];
+      currentGuess = '';
+      anagramGuess = '';
+      gameOver = false;
+      anagramFound = false;
+      wordleMessage.textContent = `Round ${currentRound + 1}: ${theme}`;
+      resetThemeDisplay();
+      adjustBoardForNewRound();
+      createKeyboard();
+      wordleInput.disabled = false;
+      wordleInput.value = '';
+      wordleInput.focus();
+      powerUpButton.disabled = false;
+      powerUpButton.textContent = "Use Power-Up";
+      updateKeyboard();
+      showRoundIndicator();
+      updateProgressBar();
+    } else {
+      wordleMessage.textContent += " Game Over.";
+      gameOver = true;
+    }
+  }
+
+  function saveGameState(won) {
+    const today = getCurrentDate();
+    localStorage.setItem('wordle_last_played', today);
+    localStorage.setItem('wordle_won', won);
+  }
+
+  function hasPlayedToday() {
+    const lastPlayed = localStorage.getItem('wordle_last_played');
+    const today = getCurrentDate();
+    return lastPlayed === today;
+  }
+
+  startWordleButton.addEventListener('click', () => {
+    if (hasPlayedToday()) {
+      wordleMessage.textContent = "Already played today's game.";
+      wordleInput.disabled = true;
+      powerUpButton.disabled = true;
+      return;
+    }
+    initializeWordleGame();
+  });
+
+  rulesButton.addEventListener('click', () => {
+    // Just open the rules modal
+    const rulesModal = document.getElementById('rulesModal');
+    rulesModal.classList.remove('hidden');
+    rulesModal.classList.add('active');
+    rulesModal.style.zIndex = '100';
+  });
+
+  resetButton.addEventListener('click', () => {
+    initializeWordleGame();
+    wordleMessage.textContent = "Game has been reset.";
+  });
+
+  function showRoundIndicator() {
+    const roundText = `Round ${currentRound + 1}`;
+    roundIndicator.textContent = roundText;
+    roundIndicator.classList.remove('animate-fade-out');
+    roundIndicator.classList.add('animate-fade-in');
+
+    setTimeout(() => {
+      roundIndicator.classList.remove('animate-fade-in');
+      roundIndicator.classList.add('animate-fade-out');
+    }, 2500);
+  }
+
+  function displayCorrectGuess() {
+    correctGuessMessage.textContent = "Correct Guess!";
+    correctGuessMessage.style.display = 'flex';
+    correctGuessMessage.classList.remove('hidden');
+    correctGuessMessage.classList.add('animate-fade-in');
+
+    setTimeout(() => {
+      correctGuessMessage.classList.remove('animate-fade-in');
+      correctGuessMessage.classList.add('animate-fade-out');
+      setTimeout(() => {
+        correctGuessMessage.classList.add('hidden');
+        correctGuessMessage.classList.remove('animate-fade-out');
+        correctGuessMessage.textContent = '';
+      }, 1000);
+    }, 3000);
+  }
+
+  function triggerConfetti() {
+    const confettiCount = 100;
+    const colors = ['#FFC700', '#FF0000', '#2E3192', '#41BBC7'];
+    for (let i = 0; i < confettiCount; i++) {
+      const confetti = document.createElement('div');
+      confetti.classList.add('confetti-piece');
+      confetti.style.left = `${Math.random() * 100}%`;
+      confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+      confetti.style.animationDelay = `${Math.random() * 5}s`;
+      confettiContainer.appendChild(confetti);
+
+      confetti.addEventListener('animationend', () => {
+        confetti.remove();
+      });
+    }
+  }
+
+  function updateProgressBar() {
+    const progress = (guesses.length / maxGuesses) * 100;
+    progressBar.style.width = `${progress}%`;
+  }
+
+  function displayClickableTheme() {
+    currentThemeSpan.innerHTML = '';
+    const themeText = theme;
+    const letters = themeText.split('');
+    letters.forEach(letter => {
+      const span = document.createElement('span');
+      span.textContent = letter;
+      span.classList.add('theme-letter');
+      span.addEventListener('click', handleThemeLetterClick);
+      currentThemeSpan.appendChild(span);
+    });
+  }
+
+  function handleThemeLetterClick(e) {
+    if (gameOver || anagramFound) return;
+    const cell = e.target;
+    const letter = cell.textContent.toLowerCase();
+
+    if (cell.classList.contains('selected')) {
+      cell.classList.remove('selected');
+      anagramGuess = anagramGuess.slice(0, -1);
+    } else {
+      cell.classList.add('selected');
+      anagramGuess += letter;
+    }
+
+    if (anagramGuess.length === anagram.length) {
+      if (anagramGuess === anagram.toLowerCase()) {
+        wordleMessage.textContent = "Anagram Correct! Extra Power-Up!";
+        triggerAnagramSuccessAnimation();
+        awardExtraPowerUp();
+        anagramFound = true;
+      } else {
+        wordleMessage.textContent = "Incorrect Anagram. Try again!";
+      }
+      anagramGuess = '';
+      const allLetters = document.querySelectorAll('.theme-letter');
+      allLetters.forEach(l => l.classList.remove('selected'));
+    }
+  }
+
+  function awardExtraPowerUp() {
+    if (usedPowerUp) {
+      usedPowerUp = false;
+      powerUpButton.disabled = false;
+      powerUpButton.textContent = "Use Power-Up";
+      wordleMessage.textContent += " Another Power-Up available.";
+    }
+  }
+
+  function resetThemeDisplay() {
+    displayClickableTheme();
+  }
+
+  function adjustBoardForNewRound() {
+    wordleBoard.innerHTML = '';
+    for (let i = 0; i < maxGuesses; i++) {
+      const row = document.createElement('div');
+      row.classList.add('wordle-row');
+      for (let j = 0; j < wordLength; j++) {
+        const cell = document.createElement('div');
+        cell.classList.add('wordle-cell');
+        row.appendChild(cell);
+      }
+      wordleBoard.appendChild(row);
+    }
+  }
+
+  function triggerAnagramSuccessAnimation() {
+    const allLetters = document.querySelectorAll('.theme-letter');
+    allLetters.forEach(letterSpan => {
+      const random = Math.random();
+      if (random < 0.3) {
+        letterSpan.style.transition = 'background-color 0.5s';
+        letterSpan.style.backgroundColor = '#9ca3af';
+        setTimeout(() => {
+          letterSpan.style.backgroundColor = '';
+        }, 1000);
+      }
+    });
+  }
+
+  // If user already played today, just show message
+  if (hasPlayedToday()) {
+    wordleMessage.textContent = "You have already played today's game.";
+    wordleInput.disabled = true;
+    powerUpButton.disabled = true;
+    displayClickableTheme();
+    updateProgressBar();
+  } else {
+    // Wait for user to click Start Game
+  }
+
+});
