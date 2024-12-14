@@ -28,13 +28,13 @@
         const maxLevels = 5;
         let powerUpInterval = null;
 
-        // Player Object
+        // Player Object (INCREASED SPEED FROM 5 TO 10)
         const player = {
             width: 40,
             height: 20,
             x: canvas.width / 2 - 20,
             y: canvas.height - 50,
-            speed: 5,
+            speed: 10,
             dx: 0,
             doubleBullets: false,
             shield: false,
@@ -50,7 +50,7 @@
 
         // Starfield for Background
         const stars = [];
-        for (let i = 0; i < 150; i++) { // Increased number for a denser background
+        for (let i = 0; i < 150; i++) {
             stars.push({
                 x: Math.random() * canvas.width,
                 y: Math.random() * canvas.height,
@@ -81,9 +81,8 @@
         // Power-Up Types
         const powerUpTypes = ['double-bullets', 'shield', 'extra-life'];
 
-        // Initialize Enemies for Current Level
         function createEnemies() {
-            enemies.length = 0; // Clear existing enemies
+            enemies.length = 0;
             for (let row = 0; row < enemyConfig.rows; row++) {
                 for (let col = 0; col < enemyConfig.cols; col++) {
                     const enemy = {
@@ -100,7 +99,6 @@
             }
         }
 
-        // Initialize Boss for Specific Levels
         function createBoss() {
             const boss = {
                 x: canvas.width / 2 - bossConfig.width / 2,
@@ -109,13 +107,12 @@
                 height: bossConfig.height,
                 dx: bossConfig.speed,
                 health: bossConfig.health,
-                shootInterval: 1000, // Boss shoots every second
+                shootInterval: 1000,
                 lastShot: Date.now()
             };
             bosses.push(boss);
         }
 
-        // Draw Stars (Background)
         function drawBackground() {
             ctx.fillStyle = 'black';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -133,13 +130,11 @@
             });
         }
 
-        // Utility Function to Get Random Star Color
         function getRandomStarColor() {
             const colors = ['#FFFFFF', '#FFD700', '#ADD8E6', '#FF69B4', '#7FFFD4'];
             return colors[Math.floor(Math.random() * colors.length)];
         }
 
-        // Draw Player
         function drawPlayer() {
             if (player.shield) {
                 ctx.strokeStyle = 'cyan';
@@ -152,14 +147,12 @@
             ctx.fillRect(player.x, player.y, player.width, player.height);
         }
 
-        // Move Player
         function movePlayer() {
             player.x += player.dx;
             if (player.x < 0) player.x = 0;
             if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
         }
 
-        // Draw Bullets
         function drawBullets() {
             ctx.fillStyle = 'red';
             bullets.forEach(bullet => {
@@ -167,7 +160,6 @@
             });
         }
 
-        // Move Bullets
         function moveBullets() {
             for (let i = bullets.length - 1; i >= 0; i--) {
                 bullets[i].y -= bullets[i].speed;
@@ -177,7 +169,6 @@
             }
         }
 
-        // Draw Enemy Bullets
         function drawEnemyBullets() {
             ctx.fillStyle = 'orange';
             enemyBullets.forEach(bullet => {
@@ -185,7 +176,6 @@
             });
         }
 
-        // Move Enemy Bullets
         function moveEnemyBullets() {
             for (let i = enemyBullets.length - 1; i >= 0; i--) {
                 enemyBullets[i].y += enemyBullets[i].speed;
@@ -193,12 +183,10 @@
                     enemyBullets.splice(i, 1);
                     continue;
                 }
-                // Check collision with player
                 if (isColliding(enemyBullets[i], player)) {
                     enemyBullets.splice(i, 1);
                     if (!player.shield) {
                         player.lives -= 1;
-                        console.log("Player hit! Lives left:", player.lives);
                         if (player.lives <= 0) {
                             alert("Game Over!");
                             endGame();
@@ -208,7 +196,6 @@
             }
         }
 
-        // Draw Enemies
         function drawEnemies() {
             ctx.fillStyle = 'blue';
             enemies.forEach(enemy => {
@@ -216,7 +203,6 @@
             });
         }
 
-        // Move Enemies
         function moveEnemies() {
             enemies.forEach(enemy => {
                 enemy.x += enemy.dx;
@@ -230,7 +216,6 @@
                     enemies.forEach(enemy => {
                         enemy.dx *= -1;
                         enemy.y += enemyConfig.margin;
-                        // Check if enemies reach the player
                         if (enemy.y + enemy.height >= player.y) {
                             alert("Game Over!");
                             endGame();
@@ -240,7 +225,6 @@
             }
         }
 
-        // Draw Bosses
         function drawBosses() {
             ctx.fillStyle = 'purple';
             bosses.forEach(boss => {
@@ -248,7 +232,6 @@
             });
         }
 
-        // Move Bosses
         function moveBosses() {
             bosses.forEach(boss => {
                 boss.x += boss.dx;
@@ -258,7 +241,6 @@
             });
         }
 
-        // Draw Power-Ups
         function drawPowerUps() {
             powerUps.forEach(powerUp => {
                 switch(powerUp.type) {
@@ -278,33 +260,23 @@
             });
         }
 
-        // Check Collisions between Bullets and Enemies/Bosses
         function checkCollisions() {
-            // Clone the bullets array to avoid issues when modifying it during iteration
             const bulletsClone = bullets.slice();
             bulletsClone.forEach((bullet, bulletIndex) => {
-                // Check collision with regular enemies
                 enemies.forEach((enemy, enemyIndex) => {
                     if (isColliding(bullet, enemy)) {
-                        // Remove bullet and enemy
                         const actualBulletIndex = bullets.indexOf(bullet);
                         if (actualBulletIndex > -1) bullets.splice(actualBulletIndex, 1);
                         enemies.splice(enemyIndex, 1);
                         score += 10;
-                        console.log("Enemy hit! Score:", score);
                     }
                 });
-
-                // Check collision with bosses
                 bosses.forEach((boss, bossIndex) => {
                     if (isColliding(bullet, boss)) {
-                        // Remove bullet
                         const actualBulletIndex = bullets.indexOf(bullet);
                         if (actualBulletIndex > -1) bullets.splice(actualBulletIndex, 1);
-                        // Decrease boss health
                         boss.health -= player.doubleBullets ? 20 : 10;
                         score += player.doubleBullets ? 20 : 10;
-                        console.log(`Boss hit! Boss Health: ${boss.health}, Score: ${score}`);
                         if (boss.health <= 0) {
                             bosses.splice(bossIndex, 1);
                             score += 100;
@@ -322,7 +294,6 @@
             });
         }
 
-        // Utility Function to Check Collision Between Two Rectangles
         function isColliding(rect1, rect2) {
             return (
                 rect1.x < rect2.x + rect2.width &&
@@ -332,7 +303,6 @@
             );
         }
 
-        // Draw Score and Lives
         function drawScoreAndLives() {
             ctx.fillStyle = 'white';
             ctx.font = '20px Arial';
@@ -345,7 +315,6 @@
             }
         }
 
-        // Create Power-Ups
         function createPowerUps() {
             const powerUp = {
                 x: Math.random() * (canvas.width - 20),
@@ -356,10 +325,8 @@
                 speed: 2
             };
             powerUps.push(powerUp);
-            console.log(`Power-Up Spawned: ${powerUp.type}`);
         }
 
-        // Move Power-Ups
         function movePowerUps() {
             for (let i = powerUps.length - 1; i >= 0; i--) {
                 powerUps[i].y += powerUps[i].speed;
@@ -369,46 +336,37 @@
             }
         }
 
-        // Check Power-Up Collection
         function checkPowerUpCollisions() {
             for (let i = powerUps.length - 1; i >= 0; i--) {
                 if (isColliding(player, powerUps[i])) {
                     applyPowerUp(powerUps[i].type);
                     powerUps.splice(i, 1);
-                    console.log(`Power-Up Collected: ${powerUps[i].type}`);
                 }
             }
         }
 
-        // Apply Power-Up Effects
         function applyPowerUp(type) {
             switch(type) {
                 case 'double-bullets':
                     player.doubleBullets = true;
-                    console.log("Double Bullets Activated!");
                     setTimeout(() => {
                         player.doubleBullets = false;
-                        console.log("Double Bullets Deactivated!");
-                    }, 10000); // Double bullets for 10 seconds
+                    }, 10000);
                     break;
                 case 'shield':
                     player.shield = true;
-                    console.log("Shield Activated!");
                     setTimeout(() => {
                         player.shield = false;
-                        console.log("Shield Deactivated!");
-                    }, 10000); // Shield for 10 seconds
+                    }, 10000);
                     break;
                 case 'extra-life':
                     player.lives += 1;
-                    console.log("Extra Life Gained! Lives:", player.lives);
                     break;
                 default:
                     break;
             }
         }
 
-        // Boss Shooting
         function bossShoot() {
             bosses.forEach(boss => {
                 if (Date.now() - boss.lastShot > boss.shootInterval) {
@@ -421,12 +379,10 @@
                     };
                     enemyBullets.push(bullet);
                     boss.lastShot = Date.now();
-                    console.log("Boss Shot!");
                 }
             });
         }
 
-        // Handle Player Shooting
         function shoot() {
             const bullet1 = {
                 x: player.x + player.width / 2 - 2,
@@ -436,7 +392,6 @@
                 speed: 7
             };
             bullets.push(bullet1);
-            console.log("Bullet Fired!");
 
             if (player.doubleBullets) {
                 const bullet2 = {
@@ -455,48 +410,34 @@
                 };
                 bullets.push(bullet2);
                 bullets.push(bullet3);
-                console.log("Double Bullets Fired!");
             }
         }
 
-        // Setup Level
         function setupLevel() {
-            enemyConfig.speed += 0.5; // Increase enemy speed each level
+            enemyConfig.speed += 0.5;
             createEnemies();
-
-            // Every 3 levels, introduce a boss
             if (currentLevel % 3 === 0) {
                 createBoss();
-                console.log("Boss Introduced!");
             }
-
-            // Spawn Power-Ups periodically
             if (!powerUpInterval) {
-                powerUpInterval = setInterval(createPowerUps, 10000); // Every 10 seconds
-                console.log("Power-Up Interval Started");
+                powerUpInterval = setInterval(createPowerUps, 10000);
             }
         }
 
-        // End Game
         function endGame() {
             gameOver = true;
-            console.log("Game Over!");
             alert(`Game Over! Your score: ${score}`);
-            // Clear power-up interval to prevent memory leaks
             if (powerUpInterval) {
                 clearInterval(powerUpInterval);
                 powerUpInterval = null;
             }
-            // Hide the canvas
             canvas.style.display = 'none';
-            // Re-enable the start button
             const startButton = document.getElementById('startSpaceInvaders');
             if (startButton) {
                 startButton.style.display = 'inline-block';
             }
         }
 
-        // Reset Game
         function resetGame() {
             player.lives = 3;
             player.doubleBullets = false;
@@ -512,54 +453,41 @@
             createEnemies();
             setupLevel();
             gameOver = false;
-            // Restart the update loop
             requestAnimationFrame(update);
-            console.log("Game Reset!");
         }
 
-        // Handle Key Down
         function keyDown(e) {
             if (e.key === 'ArrowRight') {
                 player.dx = player.speed;
-                console.log("Moving Right");
             }
             if (e.key === 'ArrowLeft') {
                 player.dx = -player.speed;
-                console.log("Moving Left");
             }
             if (e.key === ' ') {
                 shoot();
-                console.log("Shooting");
             }
         }
 
-        // Handle Key Up
         function keyUp(e) {
             if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
                 player.dx = 0;
-                console.log("Stopping Movement");
             }
         }
 
-        // Handle Touch Controls
+        // REMOVED SCALING FOR TOUCH, USING RAW COORDS ONLY
         function touchStart(e) {
             const rect = canvas.getBoundingClientRect();
             const touch = e.touches[0];
-            const scaleX = canvas.width / rect.width;
-            const scaleY = canvas.height / rect.height;
-            const xPos = (touch.clientX - rect.left) * scaleX;
-            const yPos = (touch.clientY - rect.top) * scaleY;
+            const xPos = touch.clientX - rect.left;
+            const yPos = touch.clientY - rect.top;
 
             if (yPos < canvas.height / 2) {
                 shoot();
-                console.log("Touch: Shooting");
             } else {
                 if (xPos < canvas.width / 2) {
                     player.dx = -player.speed;
-                    console.log("Touch: Moving Left");
                 } else {
                     player.dx = player.speed;
-                    console.log("Touch: Moving Right");
                 }
             }
         }
@@ -567,28 +495,22 @@
         function touchMove(e) {
             const rect = canvas.getBoundingClientRect();
             const touch = e.touches[0];
-            const scaleX = canvas.width / rect.width;
-            const scaleY = canvas.height / rect.height;
-            const xPos = (touch.clientX - rect.left) * scaleX;
-            const yPos = (touch.clientY - rect.top) * scaleY;
+            const xPos = touch.clientX - rect.left;
+            const yPos = touch.clientY - rect.top;
 
             if (yPos >= canvas.height / 2) {
                 if (xPos < canvas.width / 2) {
                     player.dx = -player.speed;
-                    console.log("Touch Move: Moving Left");
                 } else {
                     player.dx = player.speed;
-                    console.log("Touch Move: Moving Right");
                 }
             }
         }
 
         function touchEnd() {
             player.dx = 0;
-            console.log("Touch End: Stopping Movement");
         }
 
-        // Event Listeners
         document.addEventListener('keydown', keyDown);
         document.addEventListener('keyup', keyUp);
 
@@ -607,11 +529,9 @@
             touchEnd(e);
         }, { passive: false });
 
-        // Initialize Enemies and Start Level
         createEnemies();
         setupLevel();
 
-        // Main Update Loop
         function update() {
             if (gameOver) return;
             drawBackground();
@@ -634,16 +554,13 @@
             requestAnimationFrame(update);
         }
 
-        // Start the Update Loop
         requestAnimationFrame(update);
     }
 
-    // Hook up the startSpaceInvaders button after the DOM is fully loaded
     document.addEventListener('DOMContentLoaded', function() {
         const startButton = document.getElementById('startSpaceInvaders');
         if (startButton) {
             startButton.addEventListener('click', function() {
-                // Prevent multiple game instances by checking if the canvas is already displayed
                 const canvas = document.getElementById('spaceInvadersCanvas');
                 if (canvas.style.display !== 'block') {
                     startSpaceInvadersGame();
