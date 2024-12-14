@@ -37,13 +37,13 @@
     .text-center {
       text-align: center;
     }
-    /* Styles for Yet Another Wordle Type Game (Now Zachdle) */
+    /* Zachdle Styles (Already existing) */
     #wordleBoard {
       display: grid;
       gap: 5px;
       justify-items: center;
       margin-bottom: 20px;
-      perspective: 1000px; /* Added for 3D transforms */
+      perspective: 1000px;
     }
     .wordle-row {
       display: grid;
@@ -52,7 +52,7 @@
     .wordle-cell {
       width: 50px;
       height: 50px;
-      background-color: #add8e6; /* Light blue */
+      background-color: #add8e6;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -65,20 +65,20 @@
       transition: background-color 0.3s ease, border-color 0.3s ease;
       backface-visibility: hidden;
       transform: rotateY(0deg);
-      transform-style: preserve-3d; /* Added to preserve 3D space */
+      transform-style: preserve-3d;
     }
     .wordle-cell.correct {
-      background-color: #6aaa64; /* Green */
+      background-color: #6aaa64;
       color: white;
       border-color: #6aaa64;
     }
     .wordle-cell.present {
-      background-color: #c9b458; /* Yellow */
+      background-color: #c9b458;
       color: white;
       border-color: #c9b458;
     }
     .wordle-cell.absent {
-      background-color: #787c7e; /* Grey */
+      background-color: #787c7e;
       color: white;
       border-color: #787c7e;
     }
@@ -92,7 +92,7 @@
     .wordle-key {
       width: 40px;
       height: 40px;
-      background-color: #d3d6da; /* Light grey */
+      background-color: #d3d6da;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -106,26 +106,26 @@
       transform: scale(1);
     }
     .wordle-key.correct {
-      background-color: #6aaa64; /* Green */
+      background-color: #6aaa64;
       color: white;
     }
     .wordle-key.present {
-      background-color: #c9b458; /* Yellow */
+      background-color: #c9b458;
       color: white;
     }
     .wordle-key.absent {
-      background-color: #787c7e; /* Grey */
+      background-color: #787c7e;
       color: white;
     }
     .wordle-key:hover {
-      background-color: #b0bec5; /* Slightly darker grey */
+      background-color: #b0bec5;
       transform: scale(1.05);
     }
     .wordle-key:active {
       transform: scale(0.95);
     }
     .power-up-button {
-      background-color: #f59e0b; /* Amber */
+      background-color: #f59e0b;
       color: white;
       padding: 5px 10px;
       border: none;
@@ -135,7 +135,7 @@
       transition: background-color 0.3s ease, transform 0.2s ease;
     }
     .power-up-button:hover {
-      background-color: #d97706; /* Darker Amber */
+      background-color: #d97706;
       transform: scale(1.05);
     }
 
@@ -266,14 +266,14 @@
     <button class="px-6 py-3 bg-indigo-600 rounded-lg hover:bg-indigo-500" onclick="showGame('zork')">Zork Adventure</button>
     <button class="px-6 py-3 bg-teal-600 rounded-lg hover:bg-teal-500" onclick="showGame('numberguess')">Number Guess</button>
 
-    <!-- CHANGED BUTTON NAME FROM 'Yet Another Wordle Type Game' TO 'Zachdle' -->
+    <!-- Zachdle Button -->
     <button class="px-6 py-3 bg-pink-600 rounded-lg hover:bg-pink-500" onclick="openWordleModal()">Zachdle</button>
 
     <!-- NEW BUTTON FOR WRITINGS -->
     <button class="px-6 py-3 bg-gray-600 rounded-lg hover:bg-gray-500" onclick="openWritings()">Writings</button>
   </main>
 
-  <!-- Existing Modals -->
+  <!-- Flappy Bird Modal -->
   <div id="flappyModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <div class="bg-white rounded-lg shadow-lg p-6 text-black w-full max-w-2xl">
       <h2 class="text-3xl fun-font my-4 text-center">Flappy Bird</h2>
@@ -287,6 +287,7 @@
     </div>
   </div>
 
+  <!-- Tic Tac Toe Modal -->
   <div id="ticTacToeModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <div class="bg-white rounded-lg shadow-lg p-6 text-black w-full max-w-md">
       <h2 class="text-3xl fun-font my-4 text-center">Tic Tac Toe</h2>
@@ -300,10 +301,11 @@
     </div>
   </div>
 
+  <!-- Space Invaders Modal -->
   <div id="spaceInvadersModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <div class="bg-white rounded-lg shadow-lg p-6 text-black w-full max-w-5xl overflow-auto">
       <h2 class="text-3xl fun-font my-4 text-center">Space Invaders</h2>
-      <canvas id="spaceInvadersCanvas" width="800" height="400" class="bg-black"></canvas>
+      <canvas id="spaceInvadersCanvas" class="bg-black"></canvas>
       <button id="startSpaceInvaders" class="mt-4 px-6 py-3 bg-gray-800 rounded-lg hover:bg-gray-700">Start Game</button>
       <div class="text-center mt-4">
         <button class="px-6 py-3 bg-red-600 rounded-lg hover:bg-red-500" onclick="closeSpaceInvadersModal()">Close</button>
@@ -311,7 +313,7 @@
     </div>
   </div>
 
-  <!-- MODAL FOR ZACHDLE (RENAMED FROM 'Yet Another Wordle Type Game') -->
+  <!-- Zachdle Modal -->
   <div id="wordleModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-auto">
     <div class="bg-white rounded-lg shadow-lg p-6 text-black w-full max-w-2xl mx-4 relative modal-content">
       <div id="roundIndicator"></div>
@@ -320,24 +322,28 @@
       <div id="progressBarContainer">
         <div id="progressBar"></div>
       </div>
-      <!-- CHANGED TITLE FROM 'Yet Another Wordle Type Game' TO 'Zachdle' -->
       <h2 class="text-3xl fun-font my-4 text-center">Zachdle</h2>
       <p id="wordleTheme" class="text-center text-lg mb-4">Theme: <span id="currentTheme">Loading...</span></p>
-      <div class="text-center">
-        <button class="power-up-button" id="powerUpButton">Use Power-Up</button>
+      
+      <!-- Control Buttons (added Reset and Rules as from snippet) -->
+      <div class="mt-6 flex flex-wrap justify-center gap-4">
+        <button id="startWordleButton" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition transform hover:scale-105 shadow">Start Game</button>
+        <button id="rulesButton" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition transform hover:scale-105 shadow">Rules</button>
+        <button id="resetButton" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition transform hover:scale-105 shadow">Reset</button>
+        <button id="powerUpButton" class="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600 transition transform hover:scale-105 shadow">Power-Up</button>
       </div>
+
       <div id="wordleBoard" class="mt-4"></div>
       <div id="wordleKeyboard" class="mt-4"></div>
       <input id="wordleInput" type="text" class="invisible-input" autofocus>
       <p id="wordleMessage" class="text-center text-gray-800 mt-4"></p>
       <div class="text-center mt-4">
-        <button class="px-6 py-3 bg-pink-600 text-white rounded-lg hover:bg-pink-500" id="startWordleButton">Start Game</button>
         <button class="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-500" onclick="closeWordleModal()">Close</button>
       </div>
     </div>
   </div>
 
-  <!-- NEW MODAL FOR RULES (EXACT FROM YOUR SNIPPET) -->
+  <!-- Rules Modal -->
   <div id="rulesModal" class="modal fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center">
     <div class="modal-content relative">
       <span class="modal-close">&times;</span>
@@ -404,7 +410,6 @@
     <button class="mt-4 game-button" onclick="playNumberGuess()">Play Number Guess</button>
   </section>
 
-  <!-- NEW SECTION FOR WRITINGS -->
   <section id="writings" class="hidden">
     <h2 class="text-3xl fun-font my-4">My Writings</h2>
     <div id="writings-container" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
@@ -413,7 +418,7 @@
     </div>
   </section>
 
-  <!-- Existing Scripts -->
+  <!-- Scripts -->
   <script src="js/flappybird.js"></script>
   <script src="js/tictactoe.js"></script>
   <script src="js/rockpaperscissors.js"></script>
@@ -423,7 +428,7 @@
   <script src="js/numberguess.js"></script>
   <script src="js/writings.js"></script>
   <script src="js/yetanotherwordlegame.js"></script>
-
+  
   <script>
     function showGame(gameId) {
       document.querySelectorAll("section").forEach(section => section.classList.add("hidden"));
@@ -455,11 +460,9 @@
       document.getElementById("spaceInvadersModal").classList.add("hidden");
     }
 
-    // OPEN ZACHDLE MODAL AND ALSO SHOW RULES MODAL
     function openWordleModal() {
       document.getElementById("wordleModal").classList.remove("hidden");
       document.body.classList.add('modal-open');
-      // Also open the rules modal when the Wordle (Zachdle) game is opened
       openRulesModal();
     }
     function closeWordleModal() {
@@ -467,13 +470,12 @@
       document.body.classList.remove('modal-open');
     }
 
-    // NEW FUNCTIONS FOR WRITINGS
     function openWritings() {
       document.querySelectorAll("section").forEach(section => section.classList.add("hidden"));
       document.getElementById("writings").classList.remove("hidden");
     }
 
-    // RULES MODAL SCRIPTS (TAKEN FROM YOUR SNIPPET EXACTLY)
+    // RULES MODAL
     const rulesModal = document.getElementById('rulesModal');
     const closeRulesButton = document.getElementById('closeRulesButton');
     const modalClose = rulesModal.querySelector('.modal-close');
