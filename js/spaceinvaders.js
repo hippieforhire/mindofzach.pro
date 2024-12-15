@@ -1,11 +1,7 @@
-// Updated Space Invaders
-// - Shoot button in the middle, left/right on sides
-// - Removed canvas-based touch movement logic (no dragging on canvas)
-// - Only on-screen buttons and keyboard for movement/shooting
-// - Multiple levels, power-ups, and bosses
-// - After clearing all enemies, show "Next Level" button to proceed
-// - Power-ups fall from enemies, enhance player stats
-// - One shot per button press
+// spaceinvaders.js with multiple levels, power-ups, bosses
+// No canvas drag touch control, only buttons & keys
+// Shoot button center, left/right on sides
+// More variety: first 2 levels normal enemies, 3rd level a boss with more health and power-ups.
 
 (function() {
     const canvas = document.getElementById('spaceGameCanvas');
@@ -46,13 +42,11 @@
         canvas.width = 800;
         canvas.height = 400;
 
-        // Difficulty and pattern
         if (level === 1) {
             spawnEnemies(2,8,false);
         } else if (level === 2) {
             spawnEnemies(3,8,false);
         } else {
-            // Boss level
             spawnBoss();
         }
     }
@@ -63,7 +57,6 @@
         const padding = 10;
         const offsetTop = 50;
         const offsetLeft = 50;
-
         for (let r = 0; r < rows; r++) {
             for (let c = 0; c < cols; c++) {
                 enemies.push({
@@ -165,9 +158,9 @@
             if (powerUps[i].y + powerUps[i].size >= player.y &&
                 powerUps[i].x < player.x + player.width &&
                 powerUps[i].x + powerUps[i].size > player.x) {
-                // Collected
-                player.power++;
-                player.speed += 1;
+                // Collected power-up
+                player.power += 1;
+                player.speed += 1; // Increase speed
                 powerUps.splice(i, 1);
             } else if (powerUps[i].y > canvas.height) {
                 powerUps.splice(i, 1);
@@ -200,8 +193,7 @@
             for (let j = 0; j < enemies.length; j++) {
                 const e = enemies[j];
                 if (e.alive && b.x < e.x + e.width && b.x + b.width > e.x && b.y < e.y + e.height && b.y + b.height > e.y) {
-                    // Hit enemy
-                    e.health = e.health ? e.health - 1 : 0;
+                    e.health -= 1;
                     if (e.health <= 0) {
                         e.alive = false;
                         score += e.boss ? 100 : 10;
@@ -255,7 +247,7 @@
         drawScore();
 
         if (enemies.every(e => !e.alive)) {
-            // Level cleared
+            // Level complete
             ctx.fillStyle = 'white';
             ctx.font = '30px sans-serif';
             if (level < 3) {
@@ -298,24 +290,21 @@
         delete keys[e.key];
     });
 
-    // On-screen buttons (no canvas touch movement)
-    leftButton.addEventListener('touchstart', () => { moveLeftActive = true; }, {passive:true});
-    leftButton.addEventListener('touchend', () => { moveLeftActive = false; }, {passive:true});
-
-    rightButton.addEventListener('touchstart', () => { moveRightActive = true; }, {passive:true});
-    rightButton.addEventListener('touchend', () => { moveRightActive = false; }, {passive:true});
-
-    shootButton.addEventListener('touchstart', () => { shoot(); }, {passive:true});
-
+    // On-screen buttons only
     leftButton.addEventListener('mousedown', () => { moveLeftActive = true; });
     leftButton.addEventListener('mouseup', () => { moveLeftActive = false; });
     leftButton.addEventListener('mouseleave', () => { moveLeftActive = false; });
+    leftButton.addEventListener('touchstart', () => { moveLeftActive = true; }, {passive:true});
+    leftButton.addEventListener('touchend', () => { moveLeftActive = false; }, {passive:true});
 
     rightButton.addEventListener('mousedown', () => { moveRightActive = true; });
     rightButton.addEventListener('mouseup', () => { moveRightActive = false; });
     rightButton.addEventListener('mouseleave', () => { moveRightActive = false; });
+    rightButton.addEventListener('touchstart', () => { moveRightActive = true; }, {passive:true});
+    rightButton.addEventListener('touchend', () => { moveRightActive = false; }, {passive:true});
 
     shootButton.addEventListener('mousedown', () => { shoot(); });
+    shootButton.addEventListener('touchstart', () => { shoot(); }, {passive:true});
 
     startButton.addEventListener('click', startGame);
 })();
