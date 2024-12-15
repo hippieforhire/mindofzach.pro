@@ -37,7 +37,7 @@
     .text-center {
       text-align: center;
     }
-    /* Zachdle Styles (Already existing) */
+    /* Zachdle Styles (Already existing + Updated for Keyboard & Modal) */
     #wordleBoard {
       display: grid;
       gap: 5px;
@@ -83,15 +83,14 @@
       border-color: #787c7e;
     }
     #wordleKeyboard {
-      display: grid;
-      grid-template-columns: repeat(10, 40px);
-      gap: 5px;
-      justify-content: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       margin-top: 20px;
     }
     .wordle-key {
       width: 40px;
-      height: 40px;
+      height: 50px;
       background-color: #d3d6da;
       display: flex;
       align-items: center;
@@ -104,6 +103,7 @@
       transition: background-color 0.3s ease, color 0.3s ease, transform 0.1s ease;
       backface-visibility: hidden;
       transform: scale(1);
+      margin: 3px;
     }
     .wordle-key.correct {
       background-color: #6aaa64;
@@ -249,6 +249,39 @@
       transform: scale(1);
       opacity: 1;
     }
+
+    /* Additional modal styling to match snippet's nicer layout */
+    .modal {
+      transition: opacity 0.5s ease;
+      z-index: 50;
+    }
+    .active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .modal-header {
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+    .modal-close {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #6b7280;
+      transition: color 0.3s;
+    }
+    .modal-close:hover {
+      color: #374151;
+    }
+    /* Ensure keyboard rows display properly */
+    #wordleKeyboard div.flex {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 5px;
+    }
   </style>
 </head>
 <body class="bg-gray-900 text-white min-h-screen flex flex-col items-center">
@@ -269,7 +302,8 @@
     <button class="px-6 py-3 bg-green-600 rounded-lg hover:bg-green-500" onclick="openTicTacToeModal()">Tic Tac Toe</button>
     <button class="px-6 py-3 bg-purple-600 rounded-lg hover:bg-purple-500" onclick="openRpsModal()">Rock Paper Scissors</button>
     <button class="px-6 py-3 bg-yellow-600 rounded-lg hover:bg-yellow-500" onclick="showGame('quotes')">Quotes</button>
-    <button class="px-6 py-3 bg-red-600 rounded-lg hover:bg-red-500" onclick="openSpaceInvadersModal()">Space Invaders</button>
+    <!-- Removed Space Invaders modal and replaced with link to space.html -->
+    <button class="px-6 py-3 bg-red-600 rounded-lg hover:bg-red-500" onclick="window.location.href='space.html'">Space Invaders</button>
     <button class="px-6 py-3 bg-indigo-600 rounded-lg hover:bg-indigo-500" onclick="showGame('zork')">Zork Adventure</button>
     <button class="px-6 py-3 bg-teal-600 rounded-lg hover:bg-teal-500" onclick="showGame('numberguess')">Number Guess</button>
 
@@ -308,17 +342,7 @@
     </div>
   </div>
 
-  <!-- Space Invaders Modal -->
-  <div id="spaceInvadersModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div class="bg-white rounded-lg shadow-lg p-6 text-black w-full max-w-5xl overflow-auto">
-      <h2 class="text-3xl fun-font my-4 text-center">Space Invaders</h2>
-      <canvas id="spaceInvadersCanvas" class="bg-black"></canvas>
-      <button id="startSpaceInvaders" class="mt-4 px-6 py-3 bg-gray-800 rounded-lg hover:bg-gray-700">Start Game</button>
-      <div class="text-center mt-4">
-        <button class="px-6 py-3 bg-red-600 rounded-lg hover:bg-red-500" onclick="closeSpaceInvadersModal()">Close</button>
-      </div>
-    </div>
-  </div>
+  <!-- Removed Space Invaders Modal and related code entirely as requested -->
 
   <!-- Zachdle Modal -->
   <div id="wordleModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-auto">
@@ -332,7 +356,7 @@
       <h2 class="text-3xl fun-font my-4 text-center">Zachdle</h2>
       <p id="wordleTheme" class="text-center text-lg mb-4">Theme: <span id="currentTheme">Loading...</span></p>
       
-      <!-- Control Buttons (added Reset and Rules as from snippet) -->
+      <!-- Control Buttons (Reset, Rules, etc.) -->
       <div class="mt-6 flex flex-wrap justify-center gap-4">
         <button id="startWordleButton" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition transform hover:scale-105 shadow">Start Game</button>
         <button id="rulesButton" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition transform hover:scale-105 shadow">Rules</button>
@@ -350,7 +374,7 @@
     </div>
   </div>
 
-  <!-- Rules Modal for Zachdle -->
+  <!-- Rules Modal for Zachdle (styled like snippet) -->
   <div id="rulesModal" class="modal fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center">
     <div class="modal-content relative">
       <span class="modal-close">&times;</span>
@@ -430,7 +454,7 @@
   <script src="js/tictactoe.js"></script>
   <script src="js/rockpaperscissors.js"></script>
   <script src="js/quotes.js"></script>
-  <script src="js/spaceinvaders.js"></script>
+  <!-- Removed spaceinvaders.js here since we now have separate space.html -->
   <script src="js/zork.js"></script>
   <script src="js/numberguess.js"></script>
   <script src="js/writings.js"></script>
@@ -458,13 +482,6 @@
     }
     function closeTicTacToeModal() {
       document.getElementById("ticTacToeModal").classList.add("hidden");
-    }
-
-    function openSpaceInvadersModal() {
-      document.getElementById("spaceInvadersModal").classList.remove("hidden");
-    }
-    function closeSpaceInvadersModal() {
-      document.getElementById("spaceInvadersModal").classList.add("hidden");
     }
 
     function openWordleModal() {
