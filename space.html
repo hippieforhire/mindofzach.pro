@@ -13,17 +13,39 @@
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+      justify-content: start;
+      align-items: center;
+      overflow-x: hidden;
+      margin: 0;
+      padding: 0;
     }
     header, main {
       display: flex;
       flex-direction: column;
       align-items: center;
+      width: 100%;
+    }
+    .game-container {
+      width: 100%;
+      max-width: 800px;
+      margin: 0 auto;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow: hidden;
+    }
+    .canvas-wrapper {
+      width: 100%;
+      position: relative;
     }
     canvas {
       display: block;
+      width: 100%;
+      height: auto;
       margin: 20px auto;
-      border: 2px solid #fff;
       background: #000;
+      border: 2px solid #fff;
     }
     .game-button {
       display: inline-block;
@@ -34,11 +56,16 @@
       margin: 10px 0;
       border-radius: 8px;
       cursor: pointer;
-      transition: background-color 0.3s ease;
+      transition: background-color 0.3s ease, transform 0.2s ease;
     }
     .game-button:hover {
       background-color: #2d3748;
+      transform: scale(1.05);
     }
+    .game-button:active {
+      transform: scale(0.95);
+    }
+
     .starfield {
       position: fixed;
       top: 0;
@@ -50,7 +77,6 @@
       z-index: 0;
       overflow: hidden;
     }
-    /* Simple starfield effect */
     .star {
       position: absolute;
       border-radius: 50%;
@@ -61,18 +87,63 @@
       from { opacity: 0.1; }
       to { opacity: 1; }
     }
+
+    .controls-container {
+      display: flex;
+      justify-content: space-around;
+      width: 100%;
+      max-width: 500px;
+      margin: 10px 0;
+    }
+    .control-button {
+      background-color: #4a5568;
+      color: #fff;
+      width: 60px;
+      height: 60px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+    .control-button:hover {
+      background-color: #2d3748;
+      transform: scale(1.05);
+    }
+    .control-button:active {
+      transform: scale(0.95);
+    }
+
+    /* On smaller screens, make controls even smaller */
+    @media (max-width: 400px) {
+      .control-button {
+        width: 50px;
+        height: 50px;
+        font-size: 1.2rem;
+      }
+    }
   </style>
 </head>
 <body>
-  <!-- Simple link back home -->
   <header class="p-4 w-full flex justify-center">
     <a href="index.html" class="game-button">Back to Home</a>
   </header>
 
-  <main>
-    <h1 class="text-3xl font-bold mb-4 mt-4">Space Invaders</h1>
-    <canvas id="spaceGameCanvas" width="800" height="400"></canvas>
+  <main class="game-container">
+    <h1 class="text-3xl font-bold mb-4 mt-4 text-center">Space Invaders</h1>
+    <div class="canvas-wrapper">
+      <canvas id="spaceGameCanvas"></canvas>
+    </div>
     <button id="startSpaceGame" class="game-button">Start Game</button>
+
+    <!-- On-screen controls for mobile -->
+    <div class="controls-container">
+      <div class="control-button" id="leftButton">←</div>
+      <div class="control-button" id="rightButton">→</div>
+      <div class="control-button" id="shootButton">★</div>
+    </div>
   </main>
 
   <div class="starfield" id="starfield"></div>
