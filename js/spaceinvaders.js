@@ -1,46 +1,63 @@
-// Improved Space Invaders with responsive canvas, multi-touch, and on-screen buttons
+// Updated Space Invaders
+// - Shoot button in the middle, left/right on sides
+// - Removed canvas-based touch movement logic (no dragging on canvas)
+// - Only on-screen buttons and keyboard for movement/shooting
+// - Multiple levels, power-ups, and bosses
+// - After clearing all enemies, show "Next Level" button to proceed
+// - Power-ups fall from enemies, enhance player stats
+// - One shot per button press
+
 (function() {
     const canvas = document.getElementById('spaceGameCanvas');
     const startButton = document.getElementById('startSpaceGame');
+    const nextLevelButton = document.getElementById('nextLevelButton');
     const leftButton = document.getElementById('leftButton');
     const rightButton = document.getElementById('rightButton');
     const shootButton = document.getElementById('shootButton');
     let ctx;
+
     let gameStarted = false;
     let animationId;
+    let player, bullets, enemies, powerUps, keys, gameOver, score, level, enemyDirection;
 
-    let player, bullets, enemies, keys, gameOver, score;
-    let enemyDirection = 1; 
-
-    // Movement and shooting states for touch/buttons
     let moveLeftActive = false;
     let moveRightActive = false;
-    let shootActive = false;
 
-    function init() {
+    function init(levelNum=1) {
         player = {
             x: 400 - 20,
             y: 400 - 50,
             width: 40,
             height: 20,
             speed: 5,
-            dx: 0
+            dx: 0,
+            power: 1
         };
 
         bullets = [];
         enemies = [];
+        powerUps = [];
         keys = {};
         gameOver = false;
         score = 0;
+        level = levelNum;
         enemyDirection = 1;
 
-        // Resize canvas for ratio
         canvas.width = 800;
         canvas.height = 400;
 
-        // Create a row of enemies
-        const rows = 2;
-        const cols = 8;
+        // Difficulty and pattern
+        if (level === 1) {
+            spawnEnemies(2,8,false);
+        } else if (level === 2) {
+            spawnEnemies(3,8,false);
+        } else {
+            // Boss level
+            spawnBoss();
+        }
+    }
+
+    function spawnEnemies(rows, cols, isBoss) {
         const enemyWidth = 30;
         const enemyHeight = 20;
         const padding = 10;
@@ -54,10 +71,24 @@
                     y: offsetTop + r * (enemyHeight + padding),
                     width: enemyWidth,
                     height: enemyHeight,
-                    alive: true
+                    alive: true,
+                    boss: false,
+                    health: 1
                 });
             }
         }
+    }
+
+    function spawnBoss() {
+        enemies.push({
+            x: canvas.width/2 - 40,
+            y: 50,
+            width: 80,
+            height: 40,
+            alive: true,
+            boss: true,
+            health: 50
+        });
     }
 
     function drawBackground() {
@@ -71,7 +102,6 @@
     }
 
     function movePlayer() {
-        // Determine dx from input
         player.dx = 0;
         if (keys['ArrowRight'] || moveRightActive) player.dx = player.speed;
         if (keys['ArrowLeft'] || moveLeftActive) player.dx = -player.speed;
@@ -122,26 +152,25 @@
         }
     }
 
-    function checkCollisions() {
-        // Bullets vs Enemies
-        for (let i = bullets.length - 1; i >= 0; i--) {
-            for (let j = 0; j < enemies.length; j++) {
-                const b = bullets[i];
-                const e = enemies[j];
-                if (e.alive && b.x < e.x + e.width && b.x + b.width > e.x && b.y < e.y + e.height && b.y + b.height > e.y) {
-                    // Hit enemy
-                    e.alive = false;
-                    bullets.splice(i,1);
-                    score += 10;
-                    break;
-                }
-            }
-        }
+    function drawPowerUps() {
+        ctx.fillStyle = 'yellow';
+        powerUps.forEach(p => {
+            ctx.fillRect(p.x, p.y, p.size, p.size);
+        });
+    }
 
-        // Check if enemies reach player
-        for (let e of enemies) {
-            if (e.alive && e.y + e.height >= player.y) {
-                gameOver = true;
+    function movePowerUps() {
+        for (let i = powerUps.length - 1; i >= 0; i--) {
+            powerUps[i].y += powerUps[i].speed;
+            if (powerUps[i].y + powerUps[i].size >= player.y &&
+                powerUps[i].x < player.x + player.width &&
+                powerUps[i].x + powerUps[i].size > player.x) {
+                // Collected
+                player.power++;
+                player.speed += 1;
+                powerUps.splice(i, 1);
+            } else if (powerUps[i].y > canvas.height) {
+                powerUps.splice(i, 1);
             }
         }
     }
@@ -152,104 +181,124 @@
             y: player.y,
             width:4,
             height:10,
-            speed:7
+            speed:7 + player.power
         });
+    }
+
+    function dropPowerUp(x, y) {
+        powerUps.push({
+            x: x,
+            y: y,
+            size: 10,
+            speed: 2
+        });
+    }
+
+    function checkCollisions() {
+        for (let i = bullets.length - 1; i >= 0; i--) {
+            const b = bullets[i];
+            for (let j = 0; j < enemies.length; j++) {
+                const e = enemies[j];
+                if (e.alive && b.x < e.x + e.width && b.x + b.width > e.x && b.y < e.y + e.height && b.y + b.height > e.y) {
+                    // Hit enemy
+                    e.health = e.health ? e.health - 1 : 0;
+                    if (e.health <= 0) {
+                        e.alive = false;
+                        score += e.boss ? 100 : 10;
+                        if (Math.random() < 0.2) {
+                            dropPowerUp(e.x + e.width/2, e.y + e.height);
+                        }
+                    }
+                    bullets.splice(i,1);
+                    break;
+                }
+            }
+        }
+
+        for (let e of enemies) {
+            if (e.alive && e.y + e.height >= player.y) {
+                gameOver = true;
+            }
+        }
     }
 
     function drawScore() {
         ctx.fillStyle = 'white';
         ctx.font = '16px sans-serif';
         ctx.fillText('Score: ' + score, 10, 20);
+        ctx.fillText('Level: ' + level, 100, 20);
     }
 
-    function keyDown(e) {
+    function update() {
+        if (gameOver) {
+            ctx.fillStyle = 'white';
+            ctx.font = '30px sans-serif';
+            ctx.fillText("Game Over!", canvas.width/2 - 70, canvas.height/2);
+            cancelAnimationFrame(animationId);
+            return;
+        }
+
+        drawBackground();
+        movePlayer();
+        drawPlayer();
+
+        moveBullets();
+        drawBullets();
+
+        moveEnemies();
+        drawEnemies();
+
+        movePowerUps();
+        drawPowerUps();
+
+        checkCollisions();
+        drawScore();
+
+        if (enemies.every(e => !e.alive)) {
+            // Level cleared
+            ctx.fillStyle = 'white';
+            ctx.font = '30px sans-serif';
+            if (level < 3) {
+                ctx.fillText("Level Complete!", canvas.width/2 - 100, canvas.height/2);
+                nextLevelButton.style.display = 'inline-block';
+            } else {
+                ctx.fillText("You Win the Game!", canvas.width/2 - 120, canvas.height/2);
+            }
+            cancelAnimationFrame(animationId);
+            return;
+        }
+
+        animationId = requestAnimationFrame(update);
+    }
+
+    function startGame() {
+        if (gameStarted) return;
+        gameStarted = true;
+        ctx = canvas.getContext('2d');
+        init(1);
+        startButton.style.display = 'none';
+        nextLevelButton.style.display = 'none';
+        update();
+    }
+
+    nextLevelButton.addEventListener('click', () => {
+        level++;
+        init(level);
+        nextLevelButton.style.display = 'none';
+        update();
+    });
+
+    document.addEventListener('keydown', (e) => {
         keys[e.key] = true;
-    }
-
-    function keyUp(e) {
+        if (e.key === ' ') {
+            shoot();
+        }
+    });
+    document.addEventListener('keyup', (e) => {
         delete keys[e.key];
-    }
+    });
 
-    // Touch Controls for canvas
-    // Already have buttons, but we keep shoot on tap top half as well
-    canvas.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        if (e.touches.length >= 2) {
-          // Multi-touch: if second finger top half => shoot, bottom half => direction
-          for (let t of e.touches) {
-            const rect = canvas.getBoundingClientRect();
-            const xPos = t.clientX - rect.left;
-            const yPos = t.clientY - rect.top;
-            if (yPos < canvas.height/2) {
-              shoot();
-            } else {
-              if (xPos < canvas.width/2) moveLeftActive = true;
-              else moveRightActive = true;
-            }
-          }
-        } else {
-          const rect = canvas.getBoundingClientRect();
-          const touch = e.touches[0];
-          const xPos = touch.clientX - rect.left;
-          const yPos = touch.clientY - rect.top;
-          if (yPos < canvas.height / 2) {
-              shoot();
-          } else {
-              if (xPos < canvas.width / 2) moveLeftActive = true;
-              else moveRightActive = true;
-          }
-        }
-    }, {passive:false});
-
-    canvas.addEventListener('touchmove', (e) => {
-        e.preventDefault();
-        // Move finger around
-        const rect = canvas.getBoundingClientRect();
-        let leftTouched = false;
-        let rightTouched = false;
-        let shootTouched = false;
-        for (let i=0;i<e.touches.length;i++){
-            const touch = e.touches[i];
-            const xPos = touch.clientX - rect.left;
-            const yPos = touch.clientY - rect.top;
-            if (yPos < canvas.height/2) {
-              shootTouched = true;
-            } else {
-              if (xPos < canvas.width/2) leftTouched = true;
-              else rightTouched = true;
-            }
-        }
-        moveLeftActive = leftTouched;
-        moveRightActive = rightTouched;
-        if (shootTouched) shoot(); 
-    }, {passive:false});
-
-    canvas.addEventListener('touchend', (e) => {
-        e.preventDefault();
-        // If no touches remain
-        if (e.touches.length === 0) {
-          moveLeftActive = false;
-          moveRightActive = false;
-        } else {
-          // Recheck remaining touches
-          const rect = canvas.getBoundingClientRect();
-          let leftTouched = false;
-          let rightTouched = false;
-          for (let i=0;i<e.touches.length;i++){
-              const touch = e.touches[i];
-              const xPos = touch.clientX - rect.left;
-              const yPos = touch.clientY - rect.top;
-              if (yPos >= canvas.height/2) {
-                if (xPos < canvas.width/2) leftTouched = true;
-                else rightTouched = true;
-              }
-          }
-          moveLeftActive = leftTouched;
-          moveRightActive = rightTouched;
-        }
-    }, {passive:false});
-
-    // On-screen buttons
+    // On-screen buttons (no canvas touch movement)
     leftButton.addEventListener('touchstart', () => { moveLeftActive = true; }, {passive:true});
     leftButton.addEventListener('touchend', () => { moveLeftActive = false; }, {passive:true});
 
@@ -267,50 +316,6 @@
     rightButton.addEventListener('mouseleave', () => { moveRightActive = false; });
 
     shootButton.addEventListener('mousedown', () => { shoot(); });
-    // no need to hold shoot button
-
-    function update() {
-        if (gameOver) {
-            ctx.fillStyle = 'white';
-            ctx.font = '30px sans-serif';
-            ctx.fillText("Game Over!", canvas.width/2 - 70, canvas.height/2);
-            cancelAnimationFrame(animationId);
-            return;
-        }
-        drawBackground();
-        movePlayer();
-        drawPlayer();
-
-        moveBullets();
-        drawBullets();
-
-        moveEnemies();
-        drawEnemies();
-        checkCollisions();
-        drawScore();
-
-        // Check if all enemies dead
-        if (enemies.every(e => !e.alive)) {
-            ctx.fillStyle = 'white';
-            ctx.font = '30px sans-serif';
-            ctx.fillText("You Win!", canvas.width/2 - 60, canvas.height/2);
-            cancelAnimationFrame(animationId);
-            return;
-        }
-
-        animationId = requestAnimationFrame(update);
-    }
-
-    function startGame() {
-        if (gameStarted) return;
-        gameStarted = true;
-        ctx = canvas.getContext('2d');
-        init();
-        update();
-    }
-
-    document.addEventListener('keydown', keyDown);
-    document.addEventListener('keyup', keyUp);
 
     startButton.addEventListener('click', startGame);
 })();
