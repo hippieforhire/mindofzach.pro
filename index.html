@@ -254,13 +254,20 @@
 <body class="bg-gray-900 text-white min-h-screen flex flex-col items-center">
   <header class="py-10 text-center">
     <h1 class="text-5xl fun-font mb-4">Welcome to the Mind of Zach!</h1>
-    <p class="text-lg text-gray-400">Click a button to start a game or view a fun feature!</p>
+    <p class="text-lg text-gray-400">Hello! I’m Zach Rogers, welcome to my page. Click a button!</p>
   </header>
-  
+
+  <!-- Quotes Section Moved Above Flappy Bird -->
+  <section id="quotes" class="hidden">
+    <h2 class="text-3xl fun-font my-4">Inspirational Quotes</h2>
+    <p id="quote" class="text-xl text-center italic">Click below for a random quote!</p>
+    <button class="mt-4 game-button" onclick="displayRandomQuote()">Get Quote</button>
+  </section>
+
   <main class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 w-3/4">
     <button class="px-6 py-3 bg-blue-600 rounded-lg hover:bg-blue-500" onclick="openFlappyModal()">Flappy Bird</button>
     <button class="px-6 py-3 bg-green-600 rounded-lg hover:bg-green-500" onclick="openTicTacToeModal()">Tic Tac Toe</button>
-    <button class="px-6 py-3 bg-purple-600 rounded-lg hover:bg-purple-500" onclick="showGame('rps')">Rock Paper Scissors</button>
+    <button class="px-6 py-3 bg-purple-600 rounded-lg hover:bg-purple-500" onclick="openRpsModal()">Rock Paper Scissors</button>
     <button class="px-6 py-3 bg-yellow-600 rounded-lg hover:bg-yellow-500" onclick="showGame('quotes')">Quotes</button>
     <button class="px-6 py-3 bg-red-600 rounded-lg hover:bg-red-500" onclick="openSpaceInvadersModal()">Space Invaders</button>
     <button class="px-6 py-3 bg-indigo-600 rounded-lg hover:bg-indigo-500" onclick="showGame('zork')">Zork Adventure</button>
@@ -343,7 +350,7 @@
     </div>
   </div>
 
-  <!-- Rules Modal -->
+  <!-- Rules Modal for Zachdle -->
   <div id="rulesModal" class="modal fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center">
     <div class="modal-content relative">
       <span class="modal-close">&times;</span>
@@ -386,16 +393,16 @@
     </div>
   </div>
 
-  <section id="rps" class="hidden">
-    <h2 class="text-3xl fun-font my-4">Rock Paper Scissors</h2>
-    <button class="mt-4 game-button" onclick="playRockPaperScissors()">Play Rock Paper Scissors</button>
-  </section>
-
-  <section id="quotes" class="hidden">
-    <h2 class="text-3xl fun-font my-4">Inspirational Quotes</h2>
-    <p id="quote" class="text-xl text-center italic">Click below for a random quote!</p>
-    <button class="mt-4 game-button" onclick="displayRandomQuote()">Get Quote</button>
-  </section>
+  <!-- Rock Paper Scissors Modal -->
+  <div id="rpsModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-lg p-6 text-black w-full max-w-md">
+      <h2 class="text-3xl fun-font my-4 text-center">Rock Paper Scissors</h2>
+      <div id="rpsOutput" class="text-center text-xl mt-4"></div>
+      <div class="text-center mt-4">
+        <button class="px-6 py-3 bg-red-600 rounded-lg hover:bg-red-500" onclick="closeRpsModal()">Close</button>
+      </div>
+    </div>
+  </div>
 
   <section id="zork" class="hidden">
     <h2 class="text-3xl fun-font my-4">Zork Adventure</h2>
@@ -428,7 +435,7 @@
   <script src="js/numberguess.js"></script>
   <script src="js/writings.js"></script>
   <script src="js/yetanotherwordlegame.js"></script>
-  
+
   <script>
     function showGame(gameId) {
       document.querySelectorAll("section").forEach(section => section.classList.add("hidden"));
@@ -493,6 +500,14 @@
 
     modalClose.addEventListener('click', closeRulesModal);
     closeRulesButton.addEventListener('click', closeRulesModal);
+
+    function openRpsModal() {
+      document.getElementById("rpsModal").classList.remove("hidden");
+      playRockPaperScissors();
+    }
+    function closeRpsModal() {
+      document.getElementById("rpsModal").classList.add("hidden");
+    }
   </script>
 </body>
 </html>
