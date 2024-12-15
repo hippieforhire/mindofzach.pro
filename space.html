@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Space Invaders</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background: radial-gradient(circle at center, #000000 0%, #1a1a1a 100%);
+      font-family: 'Poppins', sans-serif;
+      color: #ffffff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header, main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    canvas {
+      display: block;
+      margin: 20px auto;
+      border: 2px solid #fff;
+      background: #000;
+    }
+    .game-button {
+      display: inline-block;
+      text-align: center;
+      background-color: #4a5568;
+      color: #f7fafc;
+      padding: 10px 20px;
+      margin: 10px 0;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .game-button:hover {
+      background-color: #2d3748;
+    }
+    .starfield {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+    /* Simple starfield effect */
+    .star {
+      position: absolute;
+      border-radius: 50%;
+      background: white;
+      animation: twinkle 2s infinite ease-in-out alternate;
+    }
+    @keyframes twinkle {
+      from { opacity: 0.1; }
+      to { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Simple link back home -->
+  <header class="p-4 w-full flex justify-center">
+    <a href="index.html" class="game-button">Back to Home</a>
+  </header>
+
+  <main>
+    <h1 class="text-3xl font-bold mb-4 mt-4">Space Invaders</h1>
+    <canvas id="spaceGameCanvas" width="800" height="400"></canvas>
+    <button id="startSpaceGame" class="game-button">Start Game</button>
+  </main>
+
+  <div class="starfield" id="starfield"></div>
+
+  <script src="js/spaceinvaders.js"></script>
+  <script>
+    // Generate some stars for a starfield effect
+    const starfield = document.getElementById('starfield');
+    for (let i = 0; i < 100; i++) {
+      const star = document.createElement('div');
+      star.classList.add('star');
+      const size = Math.random() * 3;
+      star.style.width = size + 'px';
+      star.style.height = size + 'px';
+      star.style.top = Math.random() * 100 + '%';
+      star.style.left = Math.random() * 100 + '%';
+      starfield.appendChild(star);
+    }
+  </script>
+</body>
+</html>
