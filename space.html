@@ -92,7 +92,7 @@
       display: flex;
       justify-content: space-around;
       width: 100%;
-      max-width: 500px;
+      max-width: 300px;
       margin: 10px 0;
     }
     .control-button {
@@ -116,7 +116,10 @@
       transform: scale(0.95);
     }
 
-    /* On smaller screens, make controls even smaller */
+    #nextLevelButton {
+      display: none;
+    }
+
     @media (max-width: 400px) {
       .control-button {
         width: 50px;
@@ -137,12 +140,13 @@
       <canvas id="spaceGameCanvas"></canvas>
     </div>
     <button id="startSpaceGame" class="game-button">Start Game</button>
+    <button id="nextLevelButton" class="game-button">Next Level</button>
 
-    <!-- On-screen controls for mobile -->
+    <!-- On-screen controls: Left, Shoot (middle), Right -->
     <div class="controls-container">
       <div class="control-button" id="leftButton">←</div>
-      <div class="control-button" id="rightButton">→</div>
       <div class="control-button" id="shootButton">★</div>
+      <div class="control-button" id="rightButton">→</div>
     </div>
   </main>
 
@@ -150,7 +154,6 @@
 
   <script src="js/spaceinvaders.js"></script>
   <script>
-    // Generate some stars for a starfield effect
     const starfield = document.getElementById('starfield');
     for (let i = 0; i < 100; i++) {
       const star = document.createElement('div');
