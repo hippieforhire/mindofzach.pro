@@ -1,12 +1,10 @@
 // writings.js
-
 document.addEventListener('DOMContentLoaded', () => {
   const writingsContainer = document.getElementById('writings-container');
-  const loadWritingsButton = document.querySelector('#writings button');
 
   window.loadWritings = function() {
-    // Changed path to go one level up (assuming writings.json is in same dir as index.html)
-    fetch('../writings.json')
+    // Reverting to ./writings.json so it matches the original structure
+    fetch('./writings.json')
       .then(response => {
         if (!response.ok) {
           throw new Error('Network response was not ok');
