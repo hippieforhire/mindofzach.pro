@@ -1,5 +1,4 @@
 // yetanotherwordlegame.js
-
 document.addEventListener('DOMContentLoaded', () => {
   const wordleBoard = document.getElementById('wordleBoard');
   const wordleInput = document.getElementById('wordleInput');
