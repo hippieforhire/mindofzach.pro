@@ -11,6 +11,7 @@
     body {
       font-family: 'Poppins', sans-serif;
       background: linear-gradient(135deg, #1a202c, #2d3748);
+      /* Subtle star-like background */
       background-image: radial-gradient(#444 1px, transparent 1px);
       background-size: 40px 40px;
       color: #fff;
@@ -75,7 +76,7 @@
       to { opacity:1; }
     }
 
-    /* Wordle Styles retained */
+    /* Wordle Styles */
     #wordleBoard {
       display: grid;
       gap: 5px;
@@ -83,80 +84,200 @@
       margin-bottom: 20px;
       perspective: 1000px;
     }
-    .wordle-row { display: grid; gap: 5px; }
+    .wordle-row {
+      display: grid;
+      gap: 5px;
+    }
     .wordle-cell {
-      width: 50px; height: 50px; background-color: #add8e6;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 24px; font-weight: bold; text-transform: uppercase;
-      color: black; border-radius: 5px; border: 2px solid #d3d6da;
+      width: 50px;
+      height: 50px;
+      background-color: #add8e6; /* light blue for "white" tiles */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: bold;
+      text-transform: uppercase;
+      color: black;
+      border-radius: 5px;
+      border: 2px solid #d3d6da;
       transition: background-color 0.3s ease, border-color 0.3s ease;
-      backface-visibility: hidden; transform: rotateY(0deg);
+      backface-visibility: hidden;
+      transform: rotateY(0deg);
       transform-style: preserve-3d;
     }
-    .wordle-cell.correct { background-color: #6aaa64; color: white; border-color: #6aaa64; }
-    .wordle-cell.present { background-color: #c9b458; color: white; border-color: #c9b458; }
-    .wordle-cell.absent { background-color: #787c7e; color: white; border-color: #787c7e; }
+    .wordle-cell.correct {
+      background-color: #6aaa64;
+      color: white;
+      border-color: #6aaa64;
+    }
+    .wordle-cell.present {
+      background-color: #c9b458;
+      color: white;
+      border-color: #c9b458;
+    }
+    .wordle-cell.absent {
+      background-color: #787c7e;
+      color: white;
+      border-color: #787c7e;
+    }
 
     #wordleKeyboard {
-      display: flex; flex-direction: column; align-items: center; margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 20px;
     }
     .wordle-key {
-      width: 38px; height: 48px; background-color: #d3d6da; display: flex; align-items: center; justify-content: center;
-      border-radius: 5px; cursor: pointer; user-select: none; font-weight: bold; text-transform: uppercase;
-      transition: background-color 0.3s ease, color 0.3s ease, transform 0.1s ease; backface-visibility: hidden;
-      transform: scale(1); margin: 3px; font-size: 0.9rem;
+      width: 35px; /* slightly smaller to fit ENT/BCK fully on screen */
+      height: 48px;
+      background-color: #d3d6da;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 5px;
+      cursor: pointer;
+      user-select: none;
+      font-weight: bold;
+      text-transform: uppercase;
+      transition: background-color 0.3s ease, color 0.3s ease, transform 0.1s ease;
+      backface-visibility: hidden;
+      transform: scale(1);
+      margin: 3px;
+      font-size: 0.85rem; /* slightly smaller font */
     }
-    .wordle-key.correct { background-color: #6aaa64; color: white; }
-    .wordle-key.present { background-color: #c9b458; color: white; }
-    .wordle-key.absent { background-color: #787c7e; color: white; }
-    .wordle-key:hover { background-color: #b0bec5; transform: scale(1.05); }
-    .wordle-key:active { transform: scale(0.95); }
+    .wordle-key.correct {
+      background-color: #6aaa64;
+      color: white;
+    }
+    .wordle-key.present {
+      background-color: #c9b458;
+      color: white;
+    }
+    .wordle-key.absent {
+      background-color: #787c7e;
+      color: white;
+    }
+    .wordle-key:hover {
+      background-color: #b0bec5;
+      transform: scale(1.05);
+    }
+    .wordle-key:active {
+      transform: scale(0.95);
+    }
 
     #roundIndicator {
-      position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
-      background-color: rgba(255, 255, 255, 0.8); color: #333; padding: 10px 20px; border-radius: 10px;
-      font-size: 1.5rem; font-weight: bold; opacity: 0; pointer-events: none;
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: rgba(255, 255, 255, 0.8);
+      color: #333;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-size: 1.5rem;
+      font-weight: bold;
+      opacity: 0;
+      pointer-events: none;
     }
     #correctGuessMessage {
-      position: absolute; top: 60px; left: 50%; transform: translateX(-50%);
-      background-color: rgba(106, 170, 100, 0.9); color: white; padding: 10px 20px; border-radius: 10px;
-      font-size: 1.2rem; font-weight: bold; opacity: 0; pointer-events: none; transition: opacity 0.5s ease;
+      position: absolute;
+      top: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: rgba(106, 170, 100, 0.9);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
     }
 
     #confetti {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; overflow: hidden; z-index: 1000;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 1000;
     }
     .confetti-piece {
-      position: absolute; width: 10px; height: 10px; background-color: rgba(255, 255, 255, 0.8);
-      opacity: 0; animation: confetti-fall 3s forwards;
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background-color: rgba(255, 255, 255, 0.8);
+      opacity: 0;
+      animation: confetti-fall 3s forwards;
     }
     @keyframes confetti-fall {
-      0% { transform: translateY(-10px) rotate(0deg); opacity: 1; }
-      100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+      0% {
+        transform: translateY(-10px) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
+      }
     }
 
     #progressBarContainer {
-      width: 100%; background-color: #e0e0e0; border-radius: 5px; overflow: hidden; margin-bottom: 20px;
+      width: 100%;
+      background-color: #e0e0e0;
+      border-radius: 5px;
+      overflow: hidden;
+      margin-bottom: 20px;
     }
     #progressBar {
-      width: 0%; height: 10px; background-color: #4caf50; transition: width 0.3s ease;
+      width: 0%;
+      height: 10px;
+      background-color: #4caf50;
+      transition: width 0.3s ease;
     }
     .modal-content {
       background: linear-gradient(135deg, #ffffff, #f0f0f0);
-      border-radius: 15px; transition: transform 0.3s ease, opacity 0.3s ease; transform: scale(0.9); opacity: 0;
+      border-radius: 15px;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      transform: scale(0.9);
+      opacity: 0;
     }
-    .modal-open .modal-content { transform: scale(1); opacity: 1; }
+    .modal-open .modal-content {
+      transform: scale(1);
+      opacity: 1;
+    }
 
-    .modal { transition: opacity 0.5s ease; z-index: 50; }
-    .active { opacity: 1; pointer-events: auto; }
-    .modal-header { font-size: 1.5rem; margin-bottom: 10px; text-align: center; color: #1f2937; }
+    .modal {
+      transition: opacity 0.5s ease;
+      z-index: 50;
+    }
+    .active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .modal-header {
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+      text-align: center;
+      color: #1f2937;
+    }
     .modal-close {
-      position: absolute; top: 10px; right: 15px; font-size: 1.5rem; cursor: pointer; color: #6b7280;
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #6b7280;
       transition: color 0.3s;
     }
-    .modal-close:hover { color: #374151; }
+    .modal-close:hover {
+      color: #374151;
+    }
 
-    /* Make the quotes section readable */
+    /* Make quotes readable */
     #quotes {
       background: rgba(0,0,0,0.3);
       padding: 20px;
@@ -250,17 +371,17 @@
   </div>
 
   <!-- Rules Modal for Zachdle -->
-  <!-- Using only the textual instructions from the provided code snippet, integrated into current modal -->
   <div id="rulesModal" class="modal fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center">
     <div class="relative bg-white rounded-lg p-6 w-full max-w-md shadow-lg modal-content">
       <span class="modal-close">&times;</span>
       <h2 class="modal-header mb-4 text-2xl font-bold">How to Play</h2>
       <p class="mb-6 text-center">Guess the secret word, based on the theme, within six tries each round. There are a total of 3 rounds.</p>
-      <!-- Incorporating the exact instructions from the snippet into the existing modal -->
+      <!-- Example Tiles with correct instructions -->
       <div class="mb-6">
         <div class="flex space-x-2 justify-center mb-2">
-          <!-- Correct example -->
+          <!-- Correct (Z) green -->
           <div class="wordle-cell correct" style="background-color:#6aaa64;color:white;border:none;">Z</div>
+          <!-- Blue "white" tiles -->
           <div class="wordle-cell" style="background-color:#add8e6;border:none;">A</div>
           <div class="wordle-cell" style="background-color:#add8e6;border:none;">C</div>
           <div class="wordle-cell" style="background-color:#add8e6;border:none;">H</div>
@@ -272,7 +393,7 @@
       <div class="mb-6">
         <div class="flex space-x-2 justify-center mb-2">
           <div class="wordle-cell" style="background-color:#add8e6;border:none;">C</div>
-          <!-- Present example -->
+          <!-- Present (O) yellow -->
           <div class="wordle-cell present" style="background-color:#c9b458;color:white;border:none;">O</div>
           <div class="wordle-cell" style="background-color:#add8e6;border:none;">D</div>
           <div class="wordle-cell" style="background-color:#add8e6;border:none;">E</div>
@@ -285,13 +406,14 @@
         <div class="flex space-x-2 justify-center mb-2">
           <div class="wordle-cell" style="background-color:#add8e6;border:none;">G</div>
           <div class="wordle-cell" style="background-color:#add8e6;border:none;">A</div>
-          <!-- Absent example -->
+          <!-- Absent (M) gray -->
           <div class="wordle-cell absent" style="background-color:#787c7e;color:white;border:none;">M</div>
           <div class="wordle-cell" style="background-color:#add8e6;border:none;">E</div>
           <div class="wordle-cell" style="background-color:#add8e6;border:none;">S</div>
         </div>
         <p class="text-center">The letter <strong>M</strong> is not in the word in any spot.</p>
       </div>
+
       <button id="closeRulesButton" class="mt-4 px-6 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition transform hover:scale-105 shadow">
         Got It!
       </button>
