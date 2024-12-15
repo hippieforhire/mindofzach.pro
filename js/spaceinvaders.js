@@ -1,20 +1,26 @@
-// New Basic Space Invaders Implementation
-// Allows left/right movement, shooting, basic enemy row
-// Works with keyboard and touch controls
-
+// Improved Space Invaders with responsive canvas, multi-touch, and on-screen buttons
 (function() {
     const canvas = document.getElementById('spaceGameCanvas');
     const startButton = document.getElementById('startSpaceGame');
+    const leftButton = document.getElementById('leftButton');
+    const rightButton = document.getElementById('rightButton');
+    const shootButton = document.getElementById('shootButton');
     let ctx;
     let gameStarted = false;
     let animationId;
 
-    let player, bullets, enemies, enemyBullets, keys, touchActive, gameOver, score;
+    let player, bullets, enemies, keys, gameOver, score;
+    let enemyDirection = 1; 
+
+    // Movement and shooting states for touch/buttons
+    let moveLeftActive = false;
+    let moveRightActive = false;
+    let shootActive = false;
 
     function init() {
         player = {
-            x: canvas.width / 2 - 20,
-            y: canvas.height - 50,
+            x: 400 - 20,
+            y: 400 - 50,
             width: 40,
             height: 20,
             speed: 5,
@@ -23,11 +29,14 @@
 
         bullets = [];
         enemies = [];
-        enemyBullets = [];
         keys = {};
-        touchActive = false;
         gameOver = false;
         score = 0;
+        enemyDirection = 1;
+
+        // Resize canvas for ratio
+        canvas.width = 800;
+        canvas.height = 400;
 
         // Create a row of enemies
         const rows = 2;
@@ -62,6 +71,11 @@
     }
 
     function movePlayer() {
+        // Determine dx from input
+        player.dx = 0;
+        if (keys['ArrowRight'] || moveRightActive) player.dx = player.speed;
+        if (keys['ArrowLeft'] || moveLeftActive) player.dx = -player.speed;
+
         player.x += player.dx;
         if (player.x < 0) player.x = 0;
         if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
@@ -89,10 +103,6 @@
             if (e.alive) ctx.fillRect(e.x, e.y, e.width, e.height);
         });
     }
-
-    // Simple enemy movement: move sideways and down over time
-    let enemyDirection = 1; 
-    let moveDownCount = 0;
 
     function moveEnemies() {
         let hitEdge = false;
@@ -154,57 +164,110 @@
 
     function keyDown(e) {
         keys[e.key] = true;
-        if (e.key === 'ArrowRight') player.dx = player.speed;
-        if (e.key === 'ArrowLeft') player.dx = -player.speed;
-        if (e.key === ' ') shoot();
     }
 
     function keyUp(e) {
         delete keys[e.key];
-        if (!keys['ArrowRight'] && !keys['ArrowLeft']) player.dx = 0;
     }
 
-    function touchStart(e) {
+    // Touch Controls for canvas
+    // Already have buttons, but we keep shoot on tap top half as well
+    canvas.addEventListener('touchstart', (e) => {
         e.preventDefault();
-        const rect = canvas.getBoundingClientRect();
-        const touch = e.touches[0];
-        const xPos = touch.clientX - rect.left;
-        const yPos = touch.clientY - rect.top;
-
-        // If touch in upper half, shoot
-        if (yPos < canvas.height / 2) {
-            shoot();
+        if (e.touches.length >= 2) {
+          // Multi-touch: if second finger top half => shoot, bottom half => direction
+          for (let t of e.touches) {
+            const rect = canvas.getBoundingClientRect();
+            const xPos = t.clientX - rect.left;
+            const yPos = t.clientY - rect.top;
+            if (yPos < canvas.height/2) {
+              shoot();
+            } else {
+              if (xPos < canvas.width/2) moveLeftActive = true;
+              else moveRightActive = true;
+            }
+          }
         } else {
-            // Move left or right
-            if (xPos < canvas.width / 2) {
-                player.dx = -player.speed;
-            } else {
-                player.dx = player.speed;
-            }
+          const rect = canvas.getBoundingClientRect();
+          const touch = e.touches[0];
+          const xPos = touch.clientX - rect.left;
+          const yPos = touch.clientY - rect.top;
+          if (yPos < canvas.height / 2) {
+              shoot();
+          } else {
+              if (xPos < canvas.width / 2) moveLeftActive = true;
+              else moveRightActive = true;
+          }
         }
-        touchActive = true;
-    }
+    }, {passive:false});
 
-    function touchMove(e) {
+    canvas.addEventListener('touchmove', (e) => {
         e.preventDefault();
+        // Move finger around
         const rect = canvas.getBoundingClientRect();
-        const touch = e.touches[0];
-        const xPos = touch.clientX - rect.left;
-        const yPos = touch.clientY - rect.top;
-
-        if (yPos >= canvas.height/2) {
-            if (xPos < canvas.width/2) {
-                player.dx = -player.speed;
+        let leftTouched = false;
+        let rightTouched = false;
+        let shootTouched = false;
+        for (let i=0;i<e.touches.length;i++){
+            const touch = e.touches[i];
+            const xPos = touch.clientX - rect.left;
+            const yPos = touch.clientY - rect.top;
+            if (yPos < canvas.height/2) {
+              shootTouched = true;
             } else {
-                player.dx = player.speed;
+              if (xPos < canvas.width/2) leftTouched = true;
+              else rightTouched = true;
             }
         }
-    }
+        moveLeftActive = leftTouched;
+        moveRightActive = rightTouched;
+        if (shootTouched) shoot(); 
+    }, {passive:false});
 
-    function touchEnd() {
-        player.dx = 0;
-        touchActive = false;
-    }
+    canvas.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        // If no touches remain
+        if (e.touches.length === 0) {
+          moveLeftActive = false;
+          moveRightActive = false;
+        } else {
+          // Recheck remaining touches
+          const rect = canvas.getBoundingClientRect();
+          let leftTouched = false;
+          let rightTouched = false;
+          for (let i=0;i<e.touches.length;i++){
+              const touch = e.touches[i];
+              const xPos = touch.clientX - rect.left;
+              const yPos = touch.clientY - rect.top;
+              if (yPos >= canvas.height/2) {
+                if (xPos < canvas.width/2) leftTouched = true;
+                else rightTouched = true;
+              }
+          }
+          moveLeftActive = leftTouched;
+          moveRightActive = rightTouched;
+        }
+    }, {passive:false});
+
+    // On-screen buttons
+    leftButton.addEventListener('touchstart', () => { moveLeftActive = true; }, {passive:true});
+    leftButton.addEventListener('touchend', () => { moveLeftActive = false; }, {passive:true});
+
+    rightButton.addEventListener('touchstart', () => { moveRightActive = true; }, {passive:true});
+    rightButton.addEventListener('touchend', () => { moveRightActive = false; }, {passive:true});
+
+    shootButton.addEventListener('touchstart', () => { shoot(); }, {passive:true});
+
+    leftButton.addEventListener('mousedown', () => { moveLeftActive = true; });
+    leftButton.addEventListener('mouseup', () => { moveLeftActive = false; });
+    leftButton.addEventListener('mouseleave', () => { moveLeftActive = false; });
+
+    rightButton.addEventListener('mousedown', () => { moveRightActive = true; });
+    rightButton.addEventListener('mouseup', () => { moveRightActive = false; });
+    rightButton.addEventListener('mouseleave', () => { moveRightActive = false; });
+
+    shootButton.addEventListener('mousedown', () => { shoot(); });
+    // no need to hold shoot button
 
     function update() {
         if (gameOver) {
@@ -248,10 +311,6 @@
 
     document.addEventListener('keydown', keyDown);
     document.addEventListener('keyup', keyUp);
-
-    canvas.addEventListener('touchstart', touchStart, {passive:false});
-    canvas.addEventListener('touchmove', touchMove, {passive:false});
-    canvas.addEventListener('touchend', function(e){ e.preventDefault(); touchEnd(); }, {passive:false});
 
     startButton.addEventListener('click', startGame);
 })();
