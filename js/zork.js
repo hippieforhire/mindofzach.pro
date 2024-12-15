@@ -45,8 +45,6 @@ const gameData = {
         },
     },
     synonyms: {
-        // (All the synonyms remain exactly as you had them)
-        // No changes to synonyms or logic, as requested
         look: [
             "look","examine","inspect","view","peer","see","observe","check","glance","stare","gaze","scrutinize",
             "study","scan","perceive","watch","consider","survey","have a look","take a look","look around",
@@ -285,6 +283,12 @@ function matchesSynonym(input, synonym) {
 }
 
 function processCommand(input) {
+    if (input === "") {
+        return;
+    }
+    // Record user command before response
+    addOutput("> " + input);
+
     let commandRecognized = false;
     for (let action in gameData.synonyms) {
         for (let synonym of gameData.synonyms[action]) {
