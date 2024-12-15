@@ -5,7 +5,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const loadWritingsButton = document.querySelector('#writings button');
 
   window.loadWritings = function() {
-    fetch('./writings.json')
+    // Changed path to go one level up (assuming writings.json is in same dir as index.html)
+    fetch('../writings.json')
       .then(response => {
         if (!response.ok) {
           throw new Error('Network response was not ok');
