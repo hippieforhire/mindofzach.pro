@@ -1,4 +1,4 @@
-// zork.js
+// zork.js with greatly expanded synonyms and improved command interpretation
 
 let outputBox, inputBox;
 
@@ -44,6 +44,8 @@ const gameData = {
             next: { east: "forest" },
         },
     },
+
+    // Extensive synonyms including "enter", "go into", etc.
     synonyms: {
         look: [
             "look","examine","inspect","view","peer","see","observe","check","glance","stare","gaze","scrutinize",
@@ -51,78 +53,33 @@ const gameData = {
             "examine surroundings","inspect area","scan room","check place","survey surroundings","examine room",
             "look closely","look carefully","look here","what do i see","describe area","inspect environment",
             "look over","examine carefully","check out","look upon","eye the area","look about","inspect surroundings",
-            "look around carefully","look thoroughly","examine in detail","look here closely","i look around","i examine this place"
+            "look around carefully","look thoroughly","examine in detail","look here closely","i look around","i examine this place",
+            "look at","examine the","check the"
         ],
         take: [
             "take","grab","pick","take x","take the x","take the","pick up","seize","collect","acquire","obtain",
             "get hold of","snatch","remove","lift","get","claim","retrieve","fetch","steal","pluck","harvest","bag",
             "pocket","add to inventory","take item","get item","yank","pull","hoard","pickup","scoop up","gather",
             "took","i took","i take","have taken","i have taken","grabbed","pick it up","pick that up","snatched",
-            "i grabbed","i got","i obtained",
-            "i pick it","i pick it up now","take that item","grab that thing","add that to my inventory","acquire that"
+            "i grabbed","i got","i obtained","i pick it","i pick it up now","take that item","grab that thing",
+            "add that to my inventory","acquire that","get that"
         ],
         attack: [
             "attack","fight","hit","strike","punch","stab","slash","swing at","assault","bash","smack","clobber",
             "whack","beat up","engage","pummel","thrash","clout","hammer","lunge at","charge at","go after","kick",
             "headbutt","wrestle","duel","clash with","swing sword","swing weapon","use weapon","smite","jab",
-            "cut","slice","bash skull","try to kill",
-            "i attack","i hit","i strike","i fight","go on the offensive","launch an attack","throw a punch",
-            "slash at","stab at","hack at",
-            "i swing at the enemy","i try to harm it","i assault it","i attempt to kill this enemy","i try to strike"
+            "cut","slice","bash skull","try to kill","i attack","i hit","i strike","i fight","go on the offensive",
+            "launch an attack","throw a punch","slash at","stab at","hack at","i swing at the enemy","i try to harm it",
+            "i assault it","i attempt to kill this enemy","i try to strike"
         ],
-        north: [
-            "north","go north","move north","head north","proceed north","travel north","northward","to north",
-            "venture north","walk north","step north","head up","go upwards","north direction",
-            "i go north","i head north","move upward","northwards","go toward north",
-            "proceed upwards","move in northern direction","advance north"
-        ],
-        south: [
-            "south","go south","move south","head south","proceed south","travel south","southward","to south",
-            "venture south","walk south","step south","head down","go downwards","south direction",
-            "i go south","i head south","move downward","southwards","go toward south",
-            "move in southern direction","proceed southwards","advance south"
-        ],
-        east: [
-            "east","go east","move east","head east","proceed east","travel east","eastward","to east",
-            "venture east","walk east","step east","east direction","go right way",
-            "i go east","i head east","eastwards","move right","go towards east",
-            "move in eastern direction","proceed eastwards","advance east"
-        ],
-        west: [
-            "west","go west","move west","head west","proceed west","travel west","westward","to west",
-            "venture west","walk west","step west","west direction","go left way",
-            "i go west","i head west","westwards","move left","go towards west",
-            "move in western direction","proceed westwards","advance west"
-        ],
-        up: [
-            "up","go up","move up","climb up","head up","ascend","upward","go upward","go upstairs","go upward path",
-            "i go up","i ascend","move upwards","head upwards","ascend upward",
-            "climb upwards","advance upwards","go higher"
-        ],
-        down: [
-            "down","go down","move down","climb down","descend","downward","go downward","go downstairs","go downward path",
-            "i go down","i descend","move downwards","head downwards",
-            "move lower","go beneath","descend lower"
-        ],
-        left: [
-            "left","go left","move left","step left","head left","turn left","veer left","to the left",
-            "i go left","i move left","move to the left side","head to the left",
-            "proceed left","advance left","go in left direction"
-        ],
-        right: [
-            "right","go right","move right","step right","head right","turn right","veer right","to the right",
-            "i go right","i move right","move to the right side","head to the right",
-            "proceed right","advance right","go in right direction"
-        ],
-        back: [
-            "back","go back","move back","head back","return","go backward","go backwards","go behind","retreat",
-            "i go back","i return","move backwards","head backward","retreat back",
-            "go back where I came from","step back","move backward"
-        ],
-        forward: [
-            "forward","go forward","move forward","head forward","proceed forward","advance","go forth","go straight",
-            "i go forward","i move forward","i advance","move straight ahead","go straight ahead",
-            "go straight on","proceed ahead","continue forward"
+        // We will treat directions and location movement more flexibly
+        // We'll also handle "enter", "go into", etc. by checking location names
+        move: [
+            "go","move","head","proceed","travel","venture","walk","step","go towards","go to","approach","advance",
+            "i go","i head","i move","i proceed","i travel","i venture","i walk","i step","i go towards","i approach",
+            "i advance","continue to","make my way to","head to","going to","go into","enter","go in","move into","move in",
+            "walk into","walk in","venture into","head into","enter the","go inside","climb into","crawl into",
+            "i enter","i go in","i go inside","i go into","i try to enter","i move into"
         ],
         run: [
             "run","sprint","dash","bolt","hurry","rush","flee","escape","leg it","make a run for it","race",
@@ -132,23 +89,20 @@ const gameData = {
         ],
         jump: [
             "jump","leap","hop","bounce","spring","vault","bound","skip",
-            "i jump","i leap","i hop","i bounce","i spring",
-            "i vault","i bound","i skip around","i try jumping"
+            "i jump","i leap","i hop","i bounce","i spring","i vault","i bound","i skip around","i try jumping"
         ],
         climb: [
-            "climb","scaling","go climbing","scramble up","clamber","ascend using hands","climb upwards",
-            "i climb","i scramble","i clamber up","i scale","attempt to climb",
-            "i try to climb up","i try scaling","i climb carefully","climb higher"
+            "climb","scaling","go climbing","scramble up","clamber","ascend using hands","climb upwards","climb up","climb down",
+            "i climb","i scramble","i clamber up","i scale","attempt to climb","i try to climb up","i try scaling",
+            "i climb carefully","climb higher","climb lower","clamber down","scramble down"
         ],
         crawl: [
-            "crawl","creep","go on all fours","slither","move low","crawl around","crawl slowly",
-            "i crawl","i creep","move lowly","go crawling","i slither",
-            "i crawl around","i creep along","i slink","i move on hands and knees"
+            "crawl","creep","go on all fours","slither","move low","crawl around","crawl slowly","i crawl","i creep","move lowly",
+            "go crawling","i slither","i crawl around","i creep along","i slink","i move on hands and knees"
         ],
         duck: [
             "duck","crouch","bend down","lower yourself","kneel","stoop","hunch down",
-            "i duck","i crouch","i kneel","i lower myself","bend low",
-            "i stoop down","i hunch down","i get low","i duck low"
+            "i duck","i crouch","i kneel","i lower myself","bend low","i stoop down","i hunch down","i get low","i duck low"
         ],
         dance: [
             "dance","boogie","groove","shake it","jig","twirl","waltz","tap dance","breakdance",
@@ -219,9 +173,7 @@ const gameData = {
             "i take a sip","i try to drink","i swallow some","i imbibe","i quench thirst"
         ],
         goto: [
-            "go to","approach","move to","walk to","head to","approach the","go towards","move towards",
-            "i go to","i approach","i move to","i walk to","i head to","i go towards","move closer","approach that",
-            "i move closer to it","i try approaching","i head toward it","i attempt to approach","go near it"
+            // This category was folded into move
         ]
     },
     inventory: [],
@@ -276,36 +228,50 @@ function handleZorkInput(event) {
     }
 }
 
-function matchesSynonym(input, synonym) {
+function matchesSynonym(input, synonyms) {
     const spacedInput = " " + input + " ";
-    const spacedSynonym = " " + synonym + " ";
-    return spacedInput.includes(spacedSynonym);
+    return synonyms.some(syn => {
+        const spacedSyn = " " + syn + " ";
+        return spacedInput.includes(spacedSyn);
+    });
 }
 
 function processCommand(input) {
     if (input === "") {
         return;
     }
-    // Record user command before response
     addOutput("> " + input);
 
-    let commandRecognized = false;
-    for (let action in gameData.synonyms) {
-        for (let synonym of gameData.synonyms[action]) {
-            if (matchesSynonym(input, synonym)) {
-                executeCommand(action, input, gameData.rooms[gameData.currentRoom]);
-                commandRecognized = true;
-                return;
-            }
+    const currentRoom = gameData.rooms[gameData.currentRoom];
+
+    // Determine action
+    let action = null;
+    for (let key in gameData.synonyms) {
+        if (matchesSynonym(input, gameData.synonyms[key])) {
+            action = key;
+            break;
         }
     }
-    if (!commandRecognized) {
-        addOutput("I don't understand that command. Try something else.");
+
+    if (!action) {
+        // Check if it's a movement (enter a place) command
+        // If user typed something like "enter cave" or "go into forest"
+        // We'll try to interpret location words.
+
+        // We'll consider all the move synonyms combined with location detection
+        if (matchesSynonym(input, gameData.synonyms.move)) {
+            action = 'move';
+        } else {
+            addOutput("I don't understand that command. Try something else.");
+            return;
+        }
     }
+
+    executeCommand(action, input, currentRoom);
 }
 
-function executeCommand(action, input, currentRoom) {
 
+function executeCommand(action, input, currentRoom) {
     function showRoomDetails() {
         addOutput(currentRoom.description);
         if (currentRoom.items && currentRoom.items.length > 0) addOutput(`You see: ${currentRoom.items.join(", ")}`);
@@ -374,6 +340,79 @@ function executeCommand(action, input, currentRoom) {
         }
     }
 
+    function tryMove(input, currentRoom) {
+        // Try to interpret location name from input and move there if possible
+        const destinations = Object.values(currentRoom.next || {});
+        const keys = Object.keys(currentRoom.next || {});
+
+        // If user said "enter cave" and caveEntrance leads north to deepCave which might be 'cave', we guess:
+        // We'll check known room names from next:
+        // We'll match partial words: 'cave', 'forest', 'riverbank', 'hillside', etc.
+        let foundDirection = null;
+        for (let dir in currentRoom.next) {
+            const roomKey = currentRoom.next[dir];
+            const roomName = roomKey.toLowerCase();
+            if (input.includes(roomName) || input.includes(roomName.replace(/[^a-z]/g,''))) {
+                foundDirection = dir;
+                break;
+            }
+        }
+
+        // If still not found, try keywords from description:
+        // E.g. if "enter cave" and no direct match, but we know going north is cave:
+        // We'll guess direction if user says "enter cave" and "cave" is in description and leads to deepCave from north:
+        if (!foundDirection) {
+            // Simple heuristic: if user typed 'cave' and north leads to deepCave with 'cave' in name:
+            for (let dir in currentRoom.next) {
+                const targetRoomKey = currentRoom.next[dir];
+                if (targetRoomKey.toLowerCase().includes("cave") && input.includes("cave")) {
+                    foundDirection = dir;
+                    break;
+                }
+                if (targetRoomKey.toLowerCase().includes("forest") && input.includes("forest")) {
+                    foundDirection = dir;
+                    break;
+                }
+                if (targetRoomKey.toLowerCase().includes("riverbank") && input.includes("river")) {
+                    foundDirection = dir;
+                    break;
+                }
+                if (targetRoomKey.toLowerCase().includes("hillside") && input.includes("hill")) {
+                    foundDirection = dir;
+                    break;
+                }
+            }
+        }
+
+        // If still no found direction, try standard directions:
+        // If user typed "go north" etc.
+        if (!foundDirection) {
+            const directionMap = {
+                north: ["north","n","up"],
+                south: ["south","s","down"],
+                east: ["east","e","right"],
+                west: ["west","w","left"]
+            };
+            for (let dir in directionMap) {
+                for (let syn of directionMap[dir]) {
+                    if (input.includes(syn)) {
+                        foundDirection = dir;
+                        break;
+                    }
+                }
+                if (foundDirection) break;
+            }
+        }
+
+        if (foundDirection && currentRoom.next[foundDirection]) {
+            gameData.currentRoom = currentRoom.next[foundDirection];
+            addOutput(gameData.rooms[gameData.currentRoom].description);
+        } else {
+            addOutput("You can't go that way or enter that place right now.");
+        }
+    }
+
+    // Execute based on action
     if (action === "take") {
         const item = currentRoom.items ? currentRoom.items.find(i => input.includes(i)) : null;
         if (item) {
@@ -387,21 +426,6 @@ function executeCommand(action, input, currentRoom) {
     } else if (action === "look") {
         showRoomDetails();
 
-    } else if (["north","south","east","west","up","down","left","right","back","forward"].includes(action)) {
-        const directionMap = {
-            north: "north", south: "south", east: "east", west: "west",
-            up: "north", down: "south",
-            left: "west", right: "east",
-            back: "south", forward: "north"
-        };
-        const dir = directionMap[action];
-        if (dir && currentRoom.next && currentRoom.next[dir]) {
-            gameData.currentRoom = currentRoom.next[dir];
-            addOutput(gameData.rooms[gameData.currentRoom].description);
-        } else {
-            addOutput("You can't go that way.");
-        }
-
     } else if (action === "attack") {
         if (currentRoom.enemies && currentRoom.enemies.length > 0) {
             const enemy = currentRoom.enemies[0];
@@ -410,14 +434,18 @@ function executeCommand(action, input, currentRoom) {
             addOutput("There's nothing here to attack.");
         }
 
+    } else if (action === "move") {
+        // This covers "go", "enter", etc.
+        tryMove(input, currentRoom);
+
     } else if (action === "run") {
-        addOutput("You try to run, but end up where you started. Perhaps choose a direction instead.");
+        addOutput("You try to run, but end up where you started. Perhaps choose a direction or location instead.");
 
     } else if (action === "jump") {
         addOutput("You jump around. It doesn't accomplish much.");
 
     } else if (action === "climb") {
-        addOutput("You try to climb but find nothing suitable to scale.");
+        addOutput("You try to climb, but there's nothing suitable here for climbing that helps you progress.");
 
     } else if (action === "crawl") {
         addOutput("You crawl on the floor. It's cold and uncomfortable.");
@@ -445,15 +473,16 @@ function executeCommand(action, input, currentRoom) {
         }
 
     } else if (action === "help") {
-        addOutput("You can look, take items, attack enemies, move in directions, check inventory, run, jump, climb, dance, sing, yell, use or equip items, talk to NPCs, trade, give items, and more. Experiment and see what happens!");
-        addOutput("You might find swords to increase your attack power, potions to heal, and NPCs offering quests or moral dilemmas.");
+        addOutput("You can move using various commands like 'go north', 'enter cave', 'go into forest', 'head west', etc.");
+        addOutput("You can look around, take items, attack enemies, talk to NPCs, use items, and more. Try natural phrases!");
+        addOutput("Experiment and see what happens!");
 
     } else if (action === "use" || action === "equip") {
         if (input.includes("sword") && gameData.inventory.includes("sword")) {
             gameData.player.weapon = "sword";
             addOutput("You equip the sword, feeling its weight. Your attack power grows!");
         } else if (input.includes("potion") && gameData.inventory.includes("healing potion")) {
-            addOutput("You drink the healing potion. You feel invigorated! (For now, this just makes you feel good.)");
+            addOutput("You drink the healing potion. You feel invigorated!");
             const potIndex = gameData.inventory.indexOf("healing potion");
             if (potIndex !== -1) {
                 gameData.inventory.splice(potIndex, 1);
@@ -491,27 +520,6 @@ function executeCommand(action, input, currentRoom) {
 
     } else if (action === "drink") {
         addOutput("You don't have anything suitable to drink right now.");
-
-    } else if (action === "goto") {
-        let recognizedTarget = false;
-        if (currentRoom.items) {
-            for (let i of currentRoom.items) {
-                if (input.includes(i)) {
-                    addOutput(`You move closer to the ${i}. It's right here at your feet.`);
-                    recognizedTarget = true;
-                    break;
-                }
-            }
-        }
-
-        if (!recognizedTarget && currentRoom.npc && input.includes(currentRoom.npc.name)) {
-            addOutput(`You approach the ${currentRoom.npc.name}. They acknowledge your presence.`);
-            recognizedTarget = true;
-        }
-
-        if (!recognizedTarget) {
-            addOutput("Good try, but you can't do that.");
-        }
 
     } else {
         addOutput("You can't do that here.");
