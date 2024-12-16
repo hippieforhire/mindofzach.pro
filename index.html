@@ -4,16 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Mind of Zach</title>
+  
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@300;400;600&display=swap');
-
-    /* Apply box-sizing to all elements to prevent overflow */
-    *, *::before, *::after {
-      box-sizing: border-box;
-    }
 
     body {
       font-family: 'Poppins', sans-serif;
@@ -24,7 +20,7 @@
       background: transparent;
       color: #fff;
       position: relative;
-      overflow-x: hidden; /* Prevent horizontal scrolling */
+      overflow-x: hidden;
     }
 
     .fun-font {
@@ -652,7 +648,7 @@
       const backgroundColor = 'hsla(60,50%,3%,1)';
 
       let container;
-      let bgCanvas;
+      let bgCanvas; // Renamed to avoid conflict
       let ctx;
       let center = [0, 0];
       let tick;
@@ -760,8 +756,7 @@
         bgCanvas.b.style.left = '0';
         bgCanvas.b.style.width = '100%';
         bgCanvas.b.style.height = '100%';
-        bgCanvas.b.style.pointerEvents = 'none';
-        bgCanvas.b.style.zIndex = '-1';
+        bgCanvas.b.style.zIndex = '-1'; // Ensure it's behind all other content
         container.appendChild(bgCanvas.b);
         ctx = {
           a: bgCanvas.a.getContext('2d'),
@@ -771,26 +766,22 @@
       }
 
       function resize() {
-        // Calculate the full document width and height
-        const width = Math.max(document.documentElement.scrollWidth, window.innerWidth);
-        const height = Math.max(document.documentElement.scrollHeight, window.innerHeight);
+        const { innerWidth, innerHeight } = window;
 
-        bgCanvas.a.width = width;
-        bgCanvas.a.height = height;
+        bgCanvas.a.width = innerWidth;
+        bgCanvas.a.height = innerHeight;
 
-        // Draw the existing canvas onto the new one
         ctx.a.drawImage(bgCanvas.b, 0, 0);
 
-        bgCanvas.b.width = width;
-        bgCanvas.b.height = height;
+        bgCanvas.b.width = innerWidth;
+        bgCanvas.b.height = innerHeight;
 
         ctx.b.drawImage(bgCanvas.a, 0, 0);
 
-        // Update center
         center[0] = 0.5 * bgCanvas.a.width;
         center[1] = 0.5 * bgCanvas.a.height;
 
-        console.log(`Coalesce: Canvas resized to ${width}x${height}`);
+        console.log(`Coalesce: Canvas resized to ${innerWidth}x${innerHeight}`);
       }
 
       function renderGlow() {
