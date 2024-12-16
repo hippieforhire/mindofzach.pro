@@ -9,18 +9,21 @@
   <script src="https://cdn.tailwindcss.com"></script>
   
   <style>
+    /* Import Google Fonts */
     @import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@300;400;600&display=swap');
+
+    /* Global Box Sizing */
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
 
     body {
       font-family: 'Poppins', sans-serif;
-      /* Removed body background to allow background canvas to be visible */
-      /* background: linear-gradient(135deg, #1a202c, #2d3748);
-      background-image: radial-gradient(#444 1px, transparent 1px);
-      background-size: 40px 40px; */
       background: transparent;
       color: #fff;
       position: relative;
-      overflow-x: hidden;
+      overflow-x: hidden; /* Prevent horizontal scroll */
+      margin: 0; /* Remove default margin */
     }
 
     .fun-font {
@@ -39,6 +42,7 @@
       cursor: pointer;
       transition: background-color 0.3s ease, transform 0.2s ease;
       box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+      width: 100%; /* Make buttons full width within their grid */
     }
     .game-button:hover {
       background-color: #2d3748;
@@ -48,11 +52,13 @@
       transform: scale(0.95);
     }
 
+    /* Ensure canvas elements are responsive */
     canvas {
       display: block;
       margin: 0 auto;
-      max-width: 90vw;
+      width: 100%;
       height: auto;
+      max-width: 100%; /* Prevent exceeding parent width */
     }
 
     .text-center { text-align: center; }
@@ -337,6 +343,12 @@
       /* background-color: #1a202c; */
     }
 
+    /* Responsive Modals */
+    @media (max-width: 768px) {
+      .modal-content {
+        max-width: 90%;
+      }
+    }
   </style>
 </head>
 <body class="min-h-screen flex flex-col items-center">
@@ -355,7 +367,7 @@
     <button class="mt-4 game-button" onclick="displayRandomQuote()">Get Quote</button>
   </section>
 
-  <main class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 w-3/4 mt-10">
+  <main class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-screen-lg w-full px-4 mt-10">
     <button class="px-6 py-3 bg-blue-600 rounded-lg hover:bg-blue-500" onclick="openFlappyModal()">Flappy Bird</button>
     <button class="px-6 py-3 bg-green-600 rounded-lg hover:bg-green-500" onclick="openTicTacToeModal()">Tic Tac Toe</button>
     <button class="px-6 py-3 bg-purple-600 rounded-lg hover:bg-purple-500" onclick="openRpsModal()">Rock Paper Scissors</button>
@@ -375,12 +387,12 @@
   <div id="flappyModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <div class="bg-white rounded-lg shadow-lg p-6 text-black w-full max-w-2xl">
       <h2 class="text-3xl fun-font my-4 text-center">Flappy Bird</h2>
-      <canvas id="gameCanvas" width="800" height="400" class="bg-gray-200 mx-auto"></canvas>
+      <canvas id="gameCanvas" class="bg-gray-200"></canvas>
       <p id="score" class="text-center text-lg mt-4">Score: 0</p>
-      <div class="text-center mt-4">
+      <div class="text-center mt-4 space-x-4">
         <button class="px-6 py-3 bg-blue-600 rounded-lg hover:bg-blue-500" id="startGameButton">Start</button>
         <button class="px-6 py-3 bg-red-600 rounded-lg hover:bg-red-500" onclick="closeFlappyModal()">Close</button>
-        <button class="px-6 py-3 bg-blue-600 rounded-lg hover:bg-blue-500" id="restartButton" style="display: none;">Restart</button>
+        <button class="px-6 py-3 bg-blue-600 rounded-lg hover:bg-blue-500 hidden" id="restartButton">Restart</button>
       </div>
     </div>
   </div>
@@ -390,7 +402,7 @@
     <div class="bg-white rounded-lg shadow-lg p-6 text-black w-full max-w-md">
       <h2 class="text-3xl fun-font my-4 text-center">Tic Tac Toe</h2>
       <div id="ticTacToeBoard" class="grid grid-cols-3 gap-2 mx-auto"></div>
-      <div class="text-center">
+      <div class="text-center mt-4">
         <button class="mt-4 game-button" onclick="initializeTicTacToe()">Start Game</button>
       </div>
       <div class="text-center mt-4">
@@ -513,13 +525,13 @@
   <div id="tetrisModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <div class="bg-white rounded-lg shadow-lg p-6 text-black w-full max-w-2xl">
       <h2 class="text-3xl fun-font my-4 text-center">Tetris</h2>
-      <canvas id="tetrisCanvas" width="240" height="400" class="bg-gray-200 mx-auto"></canvas>
+      <canvas id="tetrisCanvas" class="bg-gray-200"></canvas>
       <p id="tetrisScore" class="text-center text-lg mt-4">Score: 0</p>
-      <div class="text-center mt-4">
+      <div class="text-center mt-4 space-x-4">
         <button class="px-6 py-3 bg-blue-600 rounded-lg hover:bg-blue-500" id="startTetrisButton">Start</button>
         <button class="px-6 py-3 bg-red-600 rounded-lg hover:bg-red-500" onclick="closeTetrisModal()">Close</button>
       </div>
-      <div class="control-buttons">
+      <div class="control-buttons mt-4">
         <div class="control-button" id="tetrisLeft">◀</div>
         <div class="control-button" id="tetrisRotate">⤒</div>
         <div class="control-button" id="tetrisRight">▶</div>
@@ -532,13 +544,13 @@
   <div id="snakeModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <div class="bg-white rounded-lg shadow-lg p-6 text-black w-full max-w-md">
       <h2 class="text-3xl fun-font my-4 text-center">Snake</h2>
-      <canvas id="snakeCanvas" width="400" height="400" class="bg-gray-200 mx-auto"></canvas>
+      <canvas id="snakeCanvas" class="bg-gray-200"></canvas>
       <p id="snakeScore" class="text-center text-lg mt-4">Score: 0</p>
-      <div class="text-center mt-4">
+      <div class="text-center mt-4 space-x-4">
         <button class="px-6 py-3 bg-blue-600 rounded-lg hover:bg-blue-500" id="startSnakeButton">Start</button>
         <button class="px-6 py-3 bg-red-600 rounded-lg hover:bg-red-500" onclick="closeSnakeModal()">Close</button>
       </div>
-      <div class="control-buttons">
+      <div class="control-buttons mt-4">
         <div style="flex-basis:100%;text-align:center;">
           <div class="control-button" id="snakeUp">▲</div>
         </div>
@@ -553,13 +565,13 @@
   <div id="pongModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <div class="bg-white rounded-lg shadow-lg p-6 text-black w-full max-w-md">
       <h2 class="text-3xl fun-font my-4 text-center">Pong</h2>
-      <canvas id="pongCanvas" width="600" height="400" class="bg-gray-200 mx-auto"></canvas>
+      <canvas id="pongCanvas" class="bg-gray-200"></canvas>
       <p id="pongScore" class="text-center text-lg mt-4">Score: Player 0 : 0 CPU</p>
-      <div class="text-center mt-4">
+      <div class="text-center mt-4 space-x-4">
         <button class="px-6 py-3 bg-blue-600 rounded-lg hover:bg-blue-500" id="startPongButton">Start</button>
         <button class="px-6 py-3 bg-red-600 rounded-lg hover:bg-red-500" onclick="closePongModal()">Close</button>
       </div>
-      <div class="control-buttons">
+      <div class="control-buttons mt-4">
         <div class="control-button" id="pongUp">▲</div>
         <div class="control-button" id="pongDown">▼</div>
       </div>
@@ -570,18 +582,18 @@
   <div id="hangmanModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <div class="bg-white rounded-lg shadow-lg p-6 text-black w-full max-w-md">
       <h2 class="text-3xl fun-font my-4 text-center">Hangman</h2>
-      <canvas id="hangmanCanvas" width="300" height="300" class="bg-gray-200 mx-auto"></canvas>
+      <canvas id="hangmanCanvas" class="bg-gray-200"></canvas>
       <p id="hangmanWord" class="text-center text-lg mt-4">Loading...</p>
       <div id="hangmanKeyboard" class="flex flex-wrap justify-center mt-4"></div>
       <p id="hangmanMessage" class="text-center text-lg mt-4"></p>
-      <div class="text-center mt-4">
+      <div class="text-center mt-4 space-x-4">
         <button class="px-6 py-3 bg-blue-600 rounded-lg hover:bg-blue-500" id="startHangmanButton">Start</button>
         <button class="px-6 py-3 bg-red-600 rounded-lg hover:bg-red-500" onclick="closeHangmanModal()">Close</button>
       </div>
     </div>
   </div>
 
-  <!-- Existing Scripts -->
+  <!-- External Scripts -->
   <script src="js/flappybird.js"></script>
   <script src="js/tictactoe.js"></script>
   <script src="js/rockpaperscissors.js"></script>
@@ -883,8 +895,12 @@
       rulesModal.classList.add('hidden');
     }
 
-    modalClose.addEventListener('click', closeRulesModal);
-    closeRulesButton.addEventListener('click', closeRulesModal);
+    if (modalClose) {
+      modalClose.addEventListener('click', closeRulesModal);
+    }
+    if (closeRulesButton) {
+      closeRulesButton.addEventListener('click', closeRulesModal);
+    }
 
     function openRpsModal() {
       document.getElementById("rpsModal").classList.remove("hidden");
