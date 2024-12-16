@@ -255,8 +255,6 @@
     .modal {
       transition: opacity 0.5s ease;
       z-index: 50;
-      touch-action:none;
-      user-select:none;
     }
     .active {
       opacity: 1;
@@ -322,9 +320,23 @@
       transform: scale(0.95);
     }
 
+    /* Added container for coalesce background */
+    .content.content--canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events:none;
+      z-index:-1; 
+    }
+
   </style>
 </head>
 <body class="min-h-screen flex flex-col items-center">
+  <!-- New background container -->
+  <div class="content content--canvas"></div>
+
   <header class="py-10 text-center">
     <h1 class="text-5xl fun-font mb-4">Welcome to the Mind of Zach!</h1>
     <p class="text-lg text-gray-300">Hello! I’m Zach Rogers, welcome to my page. Click a button!</p>
@@ -354,7 +366,7 @@
   </main>
 
   <!-- Flappy Bird Modal -->
-  <div id="flappyModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style="touch-action:none;user-select:none;">
+  <div id="flappyModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <div class="bg-white rounded-lg shadow-lg p-6 text-black w-full max-w-2xl">
       <h2 class="text-3xl fun-font my-4 text-center">Flappy Bird</h2>
       <canvas id="gameCanvas" width="800" height="400" class="bg-gray-200 mx-auto"></canvas>
@@ -364,12 +376,11 @@
         <button class="px-6 py-3 bg-red-600 rounded-lg hover:bg-red-500" onclick="closeFlappyModal()">Close</button>
         <button class="px-6 py-3 bg-blue-600 rounded-lg hover:bg-blue-500" id="restartButton" style="display: none;">Restart</button>
       </div>
-      <!-- No extra controls needed for flappy bird currently -->
     </div>
   </div>
 
   <!-- Tic Tac Toe Modal -->
-  <div id="ticTacToeModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style="touch-action:none;user-select:none;">
+  <div id="ticTacToeModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <div class="bg-white rounded-lg shadow-lg p-6 text-black w-full max-w-md">
       <h2 class="text-3xl fun-font my-4 text-center">Tic Tac Toe</h2>
       <div id="ticTacToeBoard" class="grid grid-cols-3 gap-2 mx-auto"></div>
@@ -379,12 +390,11 @@
       <div class="text-center mt-4">
         <button class="px-6 py-3 bg-red-600 rounded-lg hover:bg-red-500" onclick="closeTicTacToeModal()">Close</button>
       </div>
-      <!-- Mouse-based, no extra controls needed -->
     </div>
   </div>
 
   <!-- Zachdle Modal -->
-  <div id="wordleModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-auto" style="touch-action:none;user-select:none;">
+  <div id="wordleModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-auto">
     <div class="bg-white rounded-lg shadow-lg p-6 text-black w-full max-w-2xl mx-4 relative modal-content">
       <div id="roundIndicator"></div>
       <div id="correctGuessMessage"></div>
@@ -409,12 +419,11 @@
       <div class="text-center mt-4">
         <button class="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-500" onclick="closeWordleModal()">Close</button>
       </div>
-      <!-- Already has on-screen keyboard -->
     </div>
   </div>
 
   <!-- Rules Modal for Zachdle -->
-  <div id="rulesModal" class="modal fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center" style="touch-action:none;user-select:none;">
+  <div id="rulesModal" class="modal fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center">
     <div class="relative bg-white rounded-lg p-6 w-full max-w-md shadow-lg modal-content">
       <span class="modal-close">&times;</span>
       <h2 class="modal-header mb-4 text-2xl font-bold">How to Play</h2>
@@ -460,7 +469,7 @@
   </div>
 
   <!-- Rock Paper Scissors Modal -->
-  <div id="rpsModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style="touch-action:none;user-select:none;">
+  <div id="rpsModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <div class="bg-white rounded-lg shadow-lg p-6 text-black w-full max-w-md">
       <h2 class="text-3xl fun-font my-4 text-center">Rock Paper Scissors</h2>
       <div id="rpsOutput" class="text-center text-xl mt-4"></div>
@@ -492,7 +501,7 @@
   </section>
 
   <!-- TETRIS MODAL -->
-  <div id="tetrisModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style="touch-action:none;user-select:none;">
+  <div id="tetrisModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <div class="bg-white rounded-lg shadow-lg p-6 text-black w-full max-w-2xl">
       <h2 class="text-3xl fun-font my-4 text-center">Tetris</h2>
       <canvas id="tetrisCanvas" width="240" height="400" class="bg-gray-200 mx-auto"></canvas>
@@ -511,7 +520,7 @@
   </div>
 
   <!-- SNAKE MODAL -->
-  <div id="snakeModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style="touch-action:none;user-select:none;">
+  <div id="snakeModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <div class="bg-white rounded-lg shadow-lg p-6 text-black w-full max-w-md">
       <h2 class="text-3xl fun-font my-4 text-center">Snake</h2>
       <canvas id="snakeCanvas" width="400" height="400" class="bg-gray-200 mx-auto"></canvas>
@@ -532,7 +541,7 @@
   </div>
 
   <!-- PONG MODAL -->
-  <div id="pongModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style="touch-action:none;user-select:none;">
+  <div id="pongModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <div class="bg-white rounded-lg shadow-lg p-6 text-black w-full max-w-md">
       <h2 class="text-3xl fun-font my-4 text-center">Pong</h2>
       <canvas id="pongCanvas" width="600" height="400" class="bg-gray-200 mx-auto"></canvas>
@@ -549,7 +558,7 @@
   </div>
 
   <!-- HANGMAN MODAL -->
-  <div id="hangmanModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style="touch-action:none;user-select:none;">
+  <div id="hangmanModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <div class="bg-white rounded-lg shadow-lg p-6 text-black w-full max-w-md">
       <h2 class="text-3xl fun-font my-4 text-center">Hangman</h2>
       <canvas id="hangmanCanvas" width="300" height="300" class="bg-gray-200 mx-auto"></canvas>
@@ -560,11 +569,10 @@
         <button class="px-6 py-3 bg-blue-600 rounded-lg hover:bg-blue-500" id="startHangmanButton">Start</button>
         <button class="px-6 py-3 bg-red-600 rounded-lg hover:bg-red-500" onclick="closeHangmanModal()">Close</button>
       </div>
-      <!-- Hangman no changes required -->
     </div>
   </div>
 
-  <!-- Scripts -->
+  <!-- Existing Scripts -->
   <script src="js/flappybird.js"></script>
   <script src="js/tictactoe.js"></script>
   <script src="js/rockpaperscissors.js"></script>
@@ -577,6 +585,11 @@
   <script src="js/snake.js"></script>
   <script src="js/pong.js"></script>
   <script src="js/hangman.js"></script>
+
+  <!-- New background scripts -->
+  <script src="js/noise.min.js"></script>
+  <script src="js/util.js"></script>
+  <script src="js/coalesce.js"></script>
 
   <script>
     function showGame(gameId) {
