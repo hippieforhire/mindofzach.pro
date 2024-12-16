@@ -78,7 +78,7 @@
       to { opacity:1; }
     }
 
-    /* Wordle Styles (no changes made here) */
+    /* Wordle Styles (unchanged) */
     #wordleBoard {
       display: grid;
       gap: 5px;
@@ -255,8 +255,8 @@
     .modal {
       transition: opacity 0.5s ease;
       z-index: 50;
-      touch-action: none; /* prevent dragging the modal on touch */
-      user-select: none;
+      touch-action:none;
+      user-select:none;
     }
     .active {
       opacity: 1;
@@ -291,7 +291,7 @@
       color: #fff;
     }
 
-    /* Control buttons styling (icons only, no text) */
+    /* Control buttons styling */
     .control-buttons {
       display: flex;
       justify-content: center;
@@ -347,17 +347,14 @@
     <button class="px-6 py-3 bg-teal-600 rounded-lg hover:bg-teal-500" onclick="showGame('numberguess')">Number Guess</button>
     <button class="px-6 py-3 bg-pink-600 rounded-lg hover:bg-pink-500" onclick="openWordleModal()">Zachdle</button>
     <button class="px-6 py-3 bg-gray-600 rounded-lg hover:bg-gray-500" onclick="openWritings()">Writings</button>
-    <!-- TETRIS BUTTON -->
     <button class="px-6 py-3 bg-orange-600 rounded-lg hover:bg-orange-500" onclick="openTetrisModal()">Tetris</button>
-    <!-- NEW BUTTONS FOR SNAKE, PONG, HANGMAN -->
     <button class="px-6 py-3 bg-lime-600 rounded-lg hover:bg-lime-500" onclick="openSnakeModal()">Snake</button>
     <button class="px-6 py-3 bg-amber-600 rounded-lg hover:bg-amber-500" onclick="openPongModal()">Pong</button>
     <button class="px-6 py-3 bg-rose-600 rounded-lg hover:bg-rose-500" onclick="openHangmanModal()">Hangman</button>
-    <!-- END NEW BUTTONS -->
   </main>
 
   <!-- Flappy Bird Modal -->
-  <div id="flappyModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+  <div id="flappyModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style="touch-action:none;user-select:none;">
     <div class="bg-white rounded-lg shadow-lg p-6 text-black w-full max-w-2xl">
       <h2 class="text-3xl fun-font my-4 text-center">Flappy Bird</h2>
       <canvas id="gameCanvas" width="800" height="400" class="bg-gray-200 mx-auto"></canvas>
@@ -367,12 +364,12 @@
         <button class="px-6 py-3 bg-red-600 rounded-lg hover:bg-red-500" onclick="closeFlappyModal()">Close</button>
         <button class="px-6 py-3 bg-blue-600 rounded-lg hover:bg-blue-500" id="restartButton" style="display: none;">Restart</button>
       </div>
-      <!-- Flappy Bird currently uses space/arrow keys. For consistency, no new controls added here. -->
+      <!-- No extra controls needed for flappy bird currently -->
     </div>
   </div>
 
   <!-- Tic Tac Toe Modal -->
-  <div id="ticTacToeModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+  <div id="ticTacToeModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style="touch-action:none;user-select:none;">
     <div class="bg-white rounded-lg shadow-lg p-6 text-black w-full max-w-md">
       <h2 class="text-3xl fun-font my-4 text-center">Tic Tac Toe</h2>
       <div id="ticTacToeBoard" class="grid grid-cols-3 gap-2 mx-auto"></div>
@@ -382,12 +379,12 @@
       <div class="text-center mt-4">
         <button class="px-6 py-3 bg-red-600 rounded-lg hover:bg-red-500" onclick="closeTicTacToeModal()">Close</button>
       </div>
-      <!-- Tic Tac Toe is mouse-based. No new controls needed. -->
+      <!-- Mouse-based, no extra controls needed -->
     </div>
   </div>
 
   <!-- Zachdle Modal -->
-  <div id="wordleModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-auto">
+  <div id="wordleModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-auto" style="touch-action:none;user-select:none;">
     <div class="bg-white rounded-lg shadow-lg p-6 text-black w-full max-w-2xl mx-4 relative modal-content">
       <div id="roundIndicator"></div>
       <div id="correctGuessMessage"></div>
@@ -412,16 +409,17 @@
       <div class="text-center mt-4">
         <button class="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-500" onclick="closeWordleModal()">Close</button>
       </div>
-      <!-- Zachdle already has on-screen keyboard. No changes. -->
+      <!-- Already has on-screen keyboard -->
     </div>
   </div>
 
   <!-- Rules Modal for Zachdle -->
-  <div id="rulesModal" class="modal fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center">
+  <div id="rulesModal" class="modal fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center" style="touch-action:none;user-select:none;">
     <div class="relative bg-white rounded-lg p-6 w-full max-w-md shadow-lg modal-content">
       <span class="modal-close">&times;</span>
       <h2 class="modal-header mb-4 text-2xl font-bold">How to Play</h2>
       <p class="mb-6 text-center">Guess the secret word, based on the theme, within six tries each round. There are a total of 3 rounds.</p>
+
       <div class="mb-6">
         <div class="flex space-x-2 justify-center mb-2">
           <div class="wordle-cell correct" style="background-color:#6aaa64;color:white;border:none;">Z</div>
@@ -462,14 +460,13 @@
   </div>
 
   <!-- Rock Paper Scissors Modal -->
-  <div id="rpsModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+  <div id="rpsModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style="touch-action:none;user-select:none;">
     <div class="bg-white rounded-lg shadow-lg p-6 text-black w-full max-w-md">
       <h2 class="text-3xl fun-font my-4 text-center">Rock Paper Scissors</h2>
       <div id="rpsOutput" class="text-center text-xl mt-4"></div>
       <div class="text-center mt-4">
         <button class="px-6 py-3 bg-red-600 rounded-lg hover:bg-red-500" onclick="closeRpsModal()">Close</button>
       </div>
-      <!-- RPS is simple click-based. No extra controls needed. -->
     </div>
   </div>
 
@@ -504,7 +501,6 @@
         <button class="px-6 py-3 bg-blue-600 rounded-lg hover:bg-blue-500" id="startTetrisButton">Start</button>
         <button class="px-6 py-3 bg-red-600 rounded-lg hover:bg-red-500" onclick="closeTetrisModal()">Close</button>
       </div>
-      <!-- Touch Controls for Tetris: Left, Right, Rotate, Drop -->
       <div class="control-buttons">
         <div class="control-button" id="tetrisLeft">◀</div>
         <div class="control-button" id="tetrisRotate">⤒</div>
@@ -524,7 +520,6 @@
         <button class="px-6 py-3 bg-blue-600 rounded-lg hover:bg-blue-500" id="startSnakeButton">Start</button>
         <button class="px-6 py-3 bg-red-600 rounded-lg hover:bg-red-500" onclick="closeSnakeModal()">Close</button>
       </div>
-      <!-- Touch Controls for Snake: Up, Left, Down, Right -->
       <div class="control-buttons">
         <div style="flex-basis:100%;text-align:center;">
           <div class="control-button" id="snakeUp">▲</div>
@@ -546,7 +541,6 @@
         <button class="px-6 py-3 bg-blue-600 rounded-lg hover:bg-blue-500" id="startPongButton">Start</button>
         <button class="px-6 py-3 bg-red-600 rounded-lg hover:bg-red-500" onclick="closePongModal()">Close</button>
       </div>
-      <!-- Touch Controls for Pong: Up, Down -->
       <div class="control-buttons">
         <div class="control-button" id="pongUp">▲</div>
         <div class="control-button" id="pongDown">▼</div>
@@ -566,7 +560,7 @@
         <button class="px-6 py-3 bg-blue-600 rounded-lg hover:bg-blue-500" id="startHangmanButton">Start</button>
         <button class="px-6 py-3 bg-red-600 rounded-lg hover:bg-red-500" onclick="closeHangmanModal()">Close</button>
       </div>
-      <!-- Hangman already has on-screen keyboard, no further controls needed -->
+      <!-- Hangman no changes required -->
     </div>
   </div>
 
