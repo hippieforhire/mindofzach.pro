@@ -311,6 +311,13 @@
     <button class="px-6 py-3 bg-teal-600 rounded-lg hover:bg-teal-500" onclick="showGame('numberguess')">Number Guess</button>
     <button class="px-6 py-3 bg-pink-600 rounded-lg hover:bg-pink-500" onclick="openWordleModal()">Zachdle</button>
     <button class="px-6 py-3 bg-gray-600 rounded-lg hover:bg-gray-500" onclick="openWritings()">Writings</button>
+    <!-- TETRIS BUTTON -->
+    <button class="px-6 py-3 bg-orange-600 rounded-lg hover:bg-orange-500" onclick="openTetrisModal()">Tetris</button>
+    <!-- NEW BUTTONS FOR SNAKE, PONG, HANGMAN -->
+    <button class="px-6 py-3 bg-lime-600 rounded-lg hover:bg-lime-500" onclick="openSnakeModal()">Snake</button>
+    <button class="px-6 py-3 bg-amber-600 rounded-lg hover:bg-amber-500" onclick="openPongModal()">Pong</button>
+    <button class="px-6 py-3 bg-rose-600 rounded-lg hover:bg-rose-500" onclick="openHangmanModal()">Hangman</button>
+    <!-- END NEW BUTTONS -->
   </main>
 
   <!-- Flappy Bird Modal -->
@@ -452,6 +459,63 @@
     </div>
   </section>
 
+  <!-- TETRIS MODAL -->
+  <div id="tetrisModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-lg p-6 text-black w-full max-w-2xl">
+      <h2 class="text-3xl fun-font my-4 text-center">Tetris</h2>
+      <canvas id="tetrisCanvas" width="240" height="400" class="bg-gray-200 mx-auto"></canvas>
+      <p id="tetrisScore" class="text-center text-lg mt-4">Score: 0</p>
+      <div class="text-center mt-4">
+        <button class="px-6 py-3 bg-blue-600 rounded-lg hover:bg-blue-500" id="startTetrisButton">Start</button>
+        <button class="px-6 py-3 bg-red-600 rounded-lg hover:bg-red-500" onclick="closeTetrisModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- NEW SNAKE MODAL -->
+  <div id="snakeModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-lg p-6 text-black w-full max-w-md">
+      <h2 class="text-3xl fun-font my-4 text-center">Snake</h2>
+      <canvas id="snakeCanvas" width="400" height="400" class="bg-gray-200 mx-auto"></canvas>
+      <p id="snakeScore" class="text-center text-lg mt-4">Score: 0</p>
+      <div class="text-center mt-4">
+        <button class="px-6 py-3 bg-blue-600 rounded-lg hover:bg-blue-500" id="startSnakeButton">Start</button>
+        <button class="px-6 py-3 bg-red-600 rounded-lg hover:bg-red-500" onclick="closeSnakeModal()">Close</button>
+      </div>
+    </div>
+  </div>
+  <!-- END SNAKE MODAL -->
+
+  <!-- NEW PONG MODAL -->
+  <div id="pongModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-lg p-6 text-black w-full max-w-md">
+      <h2 class="text-3xl fun-font my-4 text-center">Pong</h2>
+      <canvas id="pongCanvas" width="600" height="400" class="bg-gray-200 mx-auto"></canvas>
+      <p id="pongScore" class="text-center text-lg mt-4">Score: Player 0 : 0 CPU</p>
+      <div class="text-center mt-4">
+        <button class="px-6 py-3 bg-blue-600 rounded-lg hover:bg-blue-500" id="startPongButton">Start</button>
+        <button class="px-6 py-3 bg-red-600 rounded-lg hover:bg-red-500" onclick="closePongModal()">Close</button>
+      </div>
+    </div>
+  </div>
+  <!-- END PONG MODAL -->
+
+  <!-- NEW HANGMAN MODAL -->
+  <div id="hangmanModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-lg p-6 text-black w-full max-w-md">
+      <h2 class="text-3xl fun-font my-4 text-center">Hangman</h2>
+      <canvas id="hangmanCanvas" width="300" height="300" class="bg-gray-200 mx-auto"></canvas>
+      <p id="hangmanWord" class="text-center text-lg mt-4">Loading...</p>
+      <div id="hangmanKeyboard" class="flex flex-wrap justify-center mt-4"></div>
+      <p id="hangmanMessage" class="text-center text-lg mt-4"></p>
+      <div class="text-center mt-4">
+        <button class="px-6 py-3 bg-blue-600 rounded-lg hover:bg-blue-500" id="startHangmanButton">Start</button>
+        <button class="px-6 py-3 bg-red-600 rounded-lg hover:bg-red-500" onclick="closeHangmanModal()">Close</button>
+      </div>
+    </div>
+  </div>
+  <!-- END HANGMAN MODAL -->
+
   <!-- Scripts -->
   <script src="js/flappybird.js"></script>
   <script src="js/tictactoe.js"></script>
@@ -461,6 +525,12 @@
   <script src="js/numberguess.js"></script>
   <script src="js/writings.js"></script>
   <script src="js/yetanotherwordlegame.js"></script>
+  <script src="js/tetris.js"></script>
+  <!-- NEW SCRIPTS FOR SNAKE, PONG, HANGMAN -->
+  <script src="js/snake.js"></script>
+  <script src="js/pong.js"></script>
+  <script src="js/hangman.js"></script>
+  <!-- END NEW SCRIPTS -->
 
   <script>
     function showGame(gameId) {
@@ -526,6 +596,38 @@
     }
     function closeRpsModal() {
       document.getElementById("rpsModal").classList.add("hidden");
+    }
+
+    // TETRIS MODAL FUNCTIONS
+    function openTetrisModal() {
+      document.getElementById("tetrisModal").classList.remove("hidden");
+    }
+    function closeTetrisModal() {
+      document.getElementById("tetrisModal").classList.add("hidden");
+    }
+
+    // NEW SNAKE MODAL FUNCTIONS
+    function openSnakeModal() {
+      document.getElementById("snakeModal").classList.remove("hidden");
+    }
+    function closeSnakeModal() {
+      document.getElementById("snakeModal").classList.add("hidden");
+    }
+
+    // NEW PONG MODAL FUNCTIONS
+    function openPongModal() {
+      document.getElementById("pongModal").classList.remove("hidden");
+    }
+    function closePongModal() {
+      document.getElementById("pongModal").classList.add("hidden");
+    }
+
+    // NEW HANGMAN MODAL FUNCTIONS
+    function openHangmanModal() {
+      document.getElementById("hangmanModal").classList.remove("hidden");
+    }
+    function closeHangmanModal() {
+      document.getElementById("hangmanModal").classList.add("hidden");
     }
   </script>
 </body>
