@@ -3,48 +3,56 @@
 let outputBox, inputBox;
 
 const gameData = {
-    currentRoom: "caveEntrance",
+    currentRoom: "homeVillage",
     questStates: {
-        cloakedFigure: "none" // none, asked, helping, betraying, completed
+        // Reusing "cloakedFigure" state for the hermit quest about the family ring and parents rescue.
+        // Values: none, asked, helping, betraying, completed
+        cloakedFigure: "none"
     },
     rooms: {
-        caveEntrance: {
-            description: "You are standing at the entrance of a dark cave. A faint light inside. Behind you is a dense forest. A sword lies on the ground.",
-            items: ["torch", "sword"],
+        // Starting room: homeVillage (replaces caveEntrance)
+        homeVillage: {
+            description: "You stand in the small village square of Addy's home. The houses are quiet. Addy is 12 years old and has just discovered her parents, Zach and Skye, are missing, taken by a mysterious monster. On the ground lies a wooden sword and a lantern.",
+            items: ["wooden sword", "lantern"],
             enemies: [],
-            next: { north: "deepCave", south: "forest" },
+            next: { north: "forestPath", south: "farmField" },
         },
-        deepCave: {
-            description: "You are inside a dark cave. The air is damp and you hear distant sounds. A narrow passage leads deeper inside.",
-            items: ["rusty key"],
-            enemies: [{ name: "goblin", health: 20 }],
-            next: { south: "caveEntrance", north: "mysteriousChamber" },
+        // forestPath (replaces deepCave)
+        forestPath: {
+            description: "A narrow forest path stretches ahead, flanked by tall trees. You hear distant howls. On the ground is a cloth scrap that looks like it came from Skye's dress. This path might lead you closer to the monster's lair.",
+            items: ["cloth scrap"],
+            enemies: [{ name: "wild wolf", health: 20 }],
+            next: { south: "homeVillage", north: "oldRuin" },
         },
-        mysteriousChamber: {
-            description: "A mysterious underground chamber lit by glowing mushrooms. A strange pedestal stands in the center. A cloaked figure watches you silently.",
-            items: ["strange amulet"],
-            enemies: [{ name: "giant spider", health: 30 }],
-            next: { south: "deepCave" },
-            npc: { name: "cloaked figure", friendly: true, hasQuest: true }
+        // oldRuin (replaces mysteriousChamber)
+        oldRuin: {
+            description: "Deep in the woods, you find old ruins overgrown with moss and glowing mushrooms. A broken pillar stands at the center. A hermit stands silently nearby. Rumor has it this hermit knows of the monster that took Zach and Skye.",
+            items: ["family ring"],
+            enemies: [{ name: "giant rat", health: 30 }],
+            next: { south: "forestPath" },
+            npc: { name: "hermit", friendly: true, hasQuest: true }
         },
-        forest: {
-            description: "A lush forest with tall trees. Paths lead east to a riverbank and west up a hillside. A weary traveler sits against a tree.",
-            items: ["branch", "berries"],
+        // farmField (replaces forest)
+        farmField: {
+            description: "A quiet farm field with gently swaying crops. To the east, a shallow river crossing glistens. To the west, a rough hillside path leads to a bandit camp. A friendly farmer stands by a fence, perhaps she has seen something?",
+            items: ["milk bottle", "apple"],
             enemies: [],
-            next: { north: "caveEntrance", east: "riverbank", west: "hillside" },
-            npc: { name: "weary traveler", friendly: true, wantsHelp: true }
+            next: { north: "homeVillage", east: "riverCrossing", west: "banditCamp" },
+            npc: { name: "friendly farmer", friendly: true, wantsHelp: true }
         },
-        riverbank: {
-            description: "You stand by a flowing river. The water is cold and clear. To the west is the forest.",
-            items: ["fishing rod"],
+        // riverCrossing (replaces riverbank)
+        riverCrossing: {
+            description: "You stand by a shallow river crossing. The water is icy cold. To the west is the farm field.",
+            items: ["fishing net"],
             enemies: [],
-            next: { west: "forest" },
+            next: { west: "farmField" },
         },
-        hillside: {
-            description: "You stand on a hillside, overlooking the forest. A trail leads east back to the forest.",
+        // banditCamp (replaces hillside)
+        banditCamp: {
+            description: "You see a small bandit camp perched on the hillside. The bandits may know something about the monster. East leads back to the farm field.",
             items: ["rope"],
-            enemies: [{ name: "wild boar", health: 15 }],
-            next: { east: "forest" },
+            enemies: [{ name: "bandit", health: 15 }],
+            next: { east: "farmField" },
         },
     },
 
@@ -199,16 +207,17 @@ function processCommand(input) {
 
     const currentRoom = gameData.rooms[gameData.currentRoom];
 
-    // Check NPC states (cloaked figure)
-    if (gameData.currentRoom === "mysteriousChamber" && currentRoom.npc && currentRoom.npc.hasQuest) {
+    // Check NPC states (hermit quest replacing cloaked figure logic)
+    if (gameData.currentRoom === "oldRuin" && currentRoom.npc && currentRoom.npc.hasQuest) {
+        // The hermit knows about the monster that took Zach and Skye.
         if (gameData.questStates.cloakedFigure === "none" || gameData.questStates.cloakedFigure === "asked") {
             if (input.includes("help") || input.includes("assist") || input.includes("yes") || input.includes("ok") || input.includes("sure")) {
                 gameData.questStates.cloakedFigure = "helping";
-                addOutput("The cloaked figure nods: 'Excellent. Bring me the strange amulet from here. I await your return.'");
+                addOutput("The hermit nods: 'Find the family ring hidden here. Bring it to me, and I'll guide you to where the monster took your parents.'");
                 return;
             } else if (input.includes("betray") || input.includes("no") || input.includes("refuse") || input.includes("never")) {
                 gameData.questStates.cloakedFigure = "betraying";
-                addOutput("The cloaked figure hisses: 'Then be gone from my sight!'");
+                addOutput("The hermit scowls: 'Then leave, child, and never return!'");
                 return;
             }
         }
@@ -269,21 +278,21 @@ function executeCommand(action, input, currentRoom) {
             addOutput("There's no one here to talk to.");
             return;
         }
-        if (npc.name === "weary traveler" && npc.wantsHelp) {
-            addOutput("The weary traveler looks up and says: 'I'm injured. If you give me some berries to eat, I can heal. Will you help me?'");
-        } else if (npc.name === "cloaked figure" && npc.hasQuest) {
+        if (npc.name === "friendly farmer" && npc.wantsHelp) {
+            addOutput("The friendly farmer says: 'Oh, Addy! I've seen strange figures passing by. If you give me an apple from my field, I can make you a healing potion. Will you help me?'");
+        } else if (npc.name === "hermit" && npc.hasQuest) {
             if (gameData.questStates.cloakedFigure === "none") {
-                addOutput("The cloaked figure whispers: 'I seek the strange amulet. Bring it to me and I shall reward you. Will you help or betray me?'");
+                addOutput("The hermit speaks: 'I know who took Zach and Skye. Bring me the family ring you can find here, and I'll help you. Will you help or betray me?'");
                 gameData.questStates.cloakedFigure = "asked";
             } else if (gameData.questStates.cloakedFigure === "helping") {
-                addOutput("The cloaked figure awaits the amulet you must find here.");
+                addOutput("The hermit waits patiently for the family ring.");
             } else if (gameData.questStates.cloakedFigure === "betraying") {
-                addOutput("The cloaked figure ignores you, hissing softly.");
+                addOutput("The hermit ignores you, glaring silently.");
             } else {
-                addOutput("The cloaked figure stands silently.");
+                addOutput("The hermit stands silently, having said all they need.");
             }
         } else {
-            addOutput(`You talk to the ${npc.name}. It doesn't have much to say.`);
+            addOutput(`You talk to the ${npc.name}, but they have little to share right now.`);
         }
     }
 
@@ -298,16 +307,17 @@ function executeCommand(action, input, currentRoom) {
             return;
         }
 
-        if (npc.name === "weary traveler" && item === "berries") {
+        if (npc.name === "friendly farmer" && item === "apple") {
             gameData.inventory.splice(itemIndex, 1);
-            addOutput("You give the berries to the weary traveler. He thanks you and hands you a healing potion!");
+            addOutput("You give the apple to the friendly farmer. She smiles and hands you a healing potion in return!");
             gameData.inventory.push("healing potion");
             npc.wantsHelp = false;
-        } else if (npc.name === "cloaked figure" && item === "strange amulet" && gameData.questStates.cloakedFigure === "helping") {
+        } else if (npc.name === "hermit" && item === "family ring" && gameData.questStates.cloakedFigure === "helping") {
             gameData.inventory.splice(itemIndex,1);
-            addOutput("You present the strange amulet. 'Excellent,' the cloaked figure says, rewarding you with a blessed sword (+10 attack).");
+            addOutput("You present the family ring. The hermit nods: 'Excellent. The monster who took Zach and Skye lurks beyond these woods. I bless your weapon.' Your attack power increases!");
             gameData.player.attackPower += 10;
             gameData.questStates.cloakedFigure = "completed";
+            addOutput("Now you know where to go next. Seek out hidden paths and defeat that monster to save your parents!");
         } else {
             addOutput(`You give the ${item} to the ${npc.name}. They nod quietly.`);
             gameData.inventory.splice(itemIndex, 1);
@@ -328,10 +338,12 @@ function executeCommand(action, input, currentRoom) {
         if (!foundDirection) {
             for (let dir in currentRoom.next) {
                 const targetRoomKey = currentRoom.next[dir];
-                if ((targetRoomKey.toLowerCase().includes("cave") && input.includes("cave")) ||
-                    (targetRoomKey.toLowerCase().includes("forest") && input.includes("forest")) ||
-                    (targetRoomKey.toLowerCase().includes("riverbank") && input.includes("river")) ||
-                    (targetRoomKey.toLowerCase().includes("hillside") && input.includes("hill"))) {
+                if ((targetRoomKey.toLowerCase().includes("forest") && input.includes("forest")) ||
+                    (targetRoomKey.toLowerCase().includes("village") && input.includes("village")) ||
+                    (targetRoomKey.toLowerCase().includes("farm") && input.includes("farm")) ||
+                    (targetRoomKey.toLowerCase().includes("river") && input.includes("river")) ||
+                    (targetRoomKey.toLowerCase().includes("bandit") && input.includes("bandit")) ||
+                    (targetRoomKey.toLowerCase().includes("ruin") && input.includes("ruin"))) {
                     foundDirection = dir;
                     break;
                 }
@@ -423,14 +435,14 @@ function executeCommand(action, input, currentRoom) {
         }
 
     } else if (action === "help") {
-        addOutput("You can move using commands like 'go north', 'enter cave', 'go into forest', etc.");
+        addOutput("You can move using commands like 'go north', 'enter ruin', 'go to farm', etc.");
         addOutput("You can look around, take items, attack enemies, talk to NPCs, use/give items, eat, drink, listen, smell, feel, and more.");
         addOutput("Try natural phrases! Experiment and see what happens!");
 
     } else if (action === "use" || action === "equip") {
-        if (input.includes("sword") && gameData.inventory.includes("sword")) {
+        if (input.includes("sword") && gameData.inventory.includes("wooden sword")) {
             gameData.player.weapon = "sword";
-            addOutput("You equip the sword. Your attack power grows!");
+            addOutput("You equip the wooden sword. Your attack power grows slightly!");
         } else if (input.includes("potion") && gameData.inventory.includes("healing potion")) {
             addOutput("You drink the healing potion. You feel invigorated!");
             const potIndex = gameData.inventory.indexOf("healing potion");
@@ -458,11 +470,11 @@ function executeCommand(action, input, currentRoom) {
         }
 
     } else if (action === "eat") {
-        if (input.includes("berries") && gameData.inventory.includes("berries")) {
-            addOutput("You eat the berries. They taste sweet.");
-            const berryIndex = gameData.inventory.indexOf("berries");
-            if (berryIndex !== -1) {
-                gameData.inventory.splice(berryIndex, 1);
+        if (input.includes("apple") && gameData.inventory.includes("apple")) {
+            addOutput("You eat the apple. It's crisp and sweet.");
+            const appleIndex = gameData.inventory.indexOf("apple");
+            if (appleIndex !== -1) {
+                gameData.inventory.splice(appleIndex, 1);
             }
         } else {
             addOutput("You have nothing edible.");
@@ -472,13 +484,13 @@ function executeCommand(action, input, currentRoom) {
         addOutput("You have nothing suitable to drink right now.");
 
     } else if (action === "listen") {
-        addOutput("You pause and listen. You might hear dripping water in a cave, rustling leaves in a forest, or distant creatures.");
+        addOutput("You pause and listen. You might hear distant howls in the forest, quiet murmurs of a hermit, or wind through trees.");
 
     } else if (action === "smell") {
-        addOutput("You inhale deeply. Perhaps damp earth in a cave, fresh pine in a forest, or mossy scents.");
+        addOutput("You inhale deeply. You smell damp earth in the forest, fresh crops in the field, or musty ruin stones.");
 
     } else if (action === "feel") {
-        addOutput("You feel around. Rough stone walls, soft moss, or bark of a tree greet your touch.");
+        addOutput("You feel around. Rough bark, soft moss, worn stone—your surroundings are tangible and real.");
 
     } else {
         addOutput("You can't do that here.");
