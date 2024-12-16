@@ -4,16 +4,19 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Mind of Zach</title>
+  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+  
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@300;400;600&display=swap');
 
     body {
       font-family: 'Poppins', sans-serif;
-      background: linear-gradient(135deg, #1a202c, #2d3748);
-      /* Subtle star-like background */
+      /* Removed body background to allow background canvas to be visible */
+      /* background: linear-gradient(135deg, #1a202c, #2d3748);
       background-image: radial-gradient(#444 1px, transparent 1px);
-      background-size: 40px 40px;
+      background-size: 40px 40px; */
+      background: transparent;
       color: #fff;
       position: relative;
       overflow-x: hidden;
@@ -320,7 +323,7 @@
       transform: scale(0.95);
     }
 
-    /* Added container for coalesce background */
+    /* Container for coalesce background */
     .content.content--canvas {
       position: fixed;
       top: 0;
@@ -329,12 +332,14 @@
       height: 100%;
       pointer-events: none;
       z-index: -1; 
+      /* Optional: Fallback background color */
+      /* background-color: #1a202c; */
     }
 
   </style>
 </head>
 <body class="min-h-screen flex flex-col items-center">
-  <!-- New background container -->
+  <!-- Animated Background Container -->
   <div class="content content--canvas"></div>
 
   <header class="py-10 text-center">
@@ -479,6 +484,7 @@
     </div>
   </div>
 
+  <!-- Zork Adventure Section -->
   <section id="zork" class="hidden">
     <h2 class="text-3xl fun-font my-4">Zork Adventure</h2>
     <div id="output" class="bg-gray-800 text-white p-4 rounded-lg overflow-y-scroll" style="max-height: 300px;"></div>
@@ -486,12 +492,14 @@
     <p class="text-sm text-gray-400 mt-2">Type commands like "go north", "take sword", or "attack goblin".</p>
   </section>
 
+  <!-- Number Guess Game Section -->
   <section id="numberguess" class="hidden">
     <h2 class="text-3xl fun-font my-4">Number Guess Game</h2>
     <p id="guessOutput" class="text-xl text-center italic"></p>
     <button class="mt-4 game-button" onclick="playNumberGuess()">Play Number Guess</button>
   </section>
 
+  <!-- Writings Section -->
   <section id="writings" class="hidden">
     <h2 class="text-3xl fun-font my-4">My Writings</h2>
     <div id="writings-container" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
@@ -500,7 +508,7 @@
     </div>
   </section>
 
-  <!-- TETRIS MODAL -->
+  <!-- Tetris Modal -->
   <div id="tetrisModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <div class="bg-white rounded-lg shadow-lg p-6 text-black w-full max-w-2xl">
       <h2 class="text-3xl fun-font my-4 text-center">Tetris</h2>
@@ -519,7 +527,7 @@
     </div>
   </div>
 
-  <!-- SNAKE MODAL -->
+  <!-- Snake Modal -->
   <div id="snakeModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <div class="bg-white rounded-lg shadow-lg p-6 text-black w-full max-w-md">
       <h2 class="text-3xl fun-font my-4 text-center">Snake</h2>
@@ -540,7 +548,7 @@
     </div>
   </div>
 
-  <!-- PONG MODAL -->
+  <!-- Pong Modal -->
   <div id="pongModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <div class="bg-white rounded-lg shadow-lg p-6 text-black w-full max-w-md">
       <h2 class="text-3xl fun-font my-4 text-center">Pong</h2>
@@ -557,7 +565,7 @@
     </div>
   </div>
 
-  <!-- HANGMAN MODAL -->
+  <!-- Hangman Modal -->
   <div id="hangmanModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <div class="bg-white rounded-lg shadow-lg p-6 text-black w-full max-w-md">
       <h2 class="text-3xl fun-font my-4 text-center">Hangman</h2>
@@ -586,7 +594,7 @@
   <script src="js/pong.js"></script>
   <script src="js/hangman.js"></script>
 
-  <!-- New background scripts -->
+  <!-- Simplex Noise CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/simplex-noise/2.4.0/simplex-noise.min.js"></script>
 
   <!-- Inline util.js -->
@@ -618,194 +626,207 @@
   <!-- Inline coalesce.js -->
   <script>
     // coalesce.js
+    (function() {
+      'use strict';
 
-    'use strict';
+      const particleCount = 700;
+      const particlePropCount = 9;
+      const particlePropsLength = particleCount * particlePropCount;
+      const baseTTL = 100;
+      const rangeTTL = 500;
+      const baseSpeed = 0.1;
+      const rangeSpeed = 1;
+      const baseSize = 2;
+      const rangeSize = 10;
+      const baseHue = 10;
+      const rangeHue = 100;
+      const noiseSteps = 2;
+      const xOff = 0.0025;
+      const yOff = 0.005;
+      const zOff = 0.0005;
+      const backgroundColor = 'hsla(60,50%,3%,1)';
 
-    const particleCount = 700;
-    const particlePropCount = 9;
-    const particlePropsLength = particleCount * particlePropCount;
-    const baseTTL = 100;
-    const rangeTTL = 500;
-    const baseSpeed = 0.1;
-    const rangeSpeed = 1;
-    const baseSize = 2;
-    const rangeSize = 10;
-    const baseHue = 10;
-    const rangeHue = 100;
-    const noiseSteps = 2;
-    const xOff = 0.0025;
-    const yOff = 0.005;
-    const zOff = 0.0005;
-    const backgroundColor = 'hsla(60,50%,3%,1)';
+      let container;
+      let bgCanvas;
+      let ctx;
+      let center = [0, 0];
+      let tick;
+      let particleProps;
 
-    let container;
-    let canvas;
-    let ctx;
-    let center;
-    let tick;
-    let particleProps;
-
-    function setup() {
-      createCanvas();
-      resize();
-      initParticles();
-      drawFrame();
-    }
-
-    function initParticles() {
-      tick = 0;
-      particleProps = new Float32Array(particlePropsLength);
-
-      for (let i = 0; i < particlePropsLength; i += particlePropCount) {
-        initParticle(i);
-      }
-    }
-
-    function initParticle(i) {
-      let theta, x, y, vx, vy, life, ttl, speed, size, hue;
-
-      x = rand(canvas.a.width);
-      y = rand(canvas.a.height);
-      theta = angle(x, y, center[0], center[1]);
-      vx = Math.cos(theta) * 6;
-      vy = Math.sin(theta) * 6;
-      life = 0;
-      ttl = baseTTL + rand(rangeTTL);
-      speed = baseSpeed + rand(rangeSpeed);
-      size = baseSize + rand(rangeSize);
-      hue = baseHue + rand(rangeHue);
-
-      particleProps.set([x, y, vx, vy, life, ttl, speed, size, hue], i);
-    }
-
-    function drawFrame() {
-      window.requestAnimationFrame(draw);
-    }
-
-    function updateParticle(i) {
-      let i2 = 1 + i, i3 = 2 + i, i4 = 3 + i, i5 = 4 + i, i6 = 5 + i, i7 = 6 + i, i8 = 7 + i, i9 = 8 + i;
-      let x = particleProps[i];
-      let y = particleProps[i2];
-      let theta = angle(x, y, center[0], center[1]) + 0.75 * Math.PI / 2;
-      let vx = lerp(particleProps[i3], 2 * Math.cos(theta), 0.05);
-      let vy = lerp(particleProps[i4], 2 * Math.sin(theta), 0.05);
-      let life = particleProps[i5];
-      let ttl = particleProps[i6];
-      let speed = particleProps[i7];
-      let size = particleProps[i8];
-      let hue = particleProps[i9];
-
-      let x2 = x + vx * speed;
-      let y2 = y + vy * speed;
-
-      drawParticle(x, y, theta, life, ttl, size, hue);
-
-      life++;
-
-      particleProps[i] = x2;
-      particleProps[i2] = y2;
-      particleProps[i3] = vx;
-      particleProps[i4] = vy;
-      particleProps[i5] = life;
-
-      if (life > ttl) {
-        initParticle(i);
-      }
-    }
-
-    function drawParticle(x, y, theta, life, ttl, size, hue) {
-      let xRel = x - (0.5 * size), yRel = y - (0.5 * size);
-      
-      ctx.a.save();
-      ctx.a.lineCap = 'round';
-      ctx.a.lineWidth = 1;
-      ctx.a.strokeStyle = `hsla(${hue},100%,60%,${fadeInOut(life, ttl)})`;
-      ctx.a.beginPath();
-      ctx.a.translate(xRel, yRel);
-      ctx.a.rotate(theta);
-      ctx.a.translate(-xRel, -yRel);
-      ctx.a.strokeRect(xRel, yRel, size, size);
-      ctx.a.closePath();
-      ctx.a.restore();
-    }
-
-    function createCanvas() {
-      container = document.querySelector('.content--canvas');
-      canvas = {
-        a: document.createElement('canvas'),
-        b: document.createElement('canvas')
-      };
-      canvas.b.style.position = 'fixed';
-      canvas.b.style.top = '0';
-      canvas.b.style.left = '0';
-      canvas.b.style.width = '100%';
-      canvas.b.style.height = '100%';
-      container.appendChild(canvas.b);
-      ctx = {
-        a: canvas.a.getContext('2d'),
-        b: canvas.b.getContext('2d')
-      };
-      center = [];
-    }
-
-    function resize() {
-      const { innerWidth, innerHeight } = window;
-      
-      canvas.a.width = innerWidth;
-      canvas.a.height = innerHeight;
-
-      ctx.a.drawImage(canvas.b, 0, 0);
-
-      canvas.b.width = innerWidth;
-      canvas.b.height = innerHeight;
-      
-      ctx.b.drawImage(canvas.a, 0, 0);
-
-      center[0] = 0.5 * canvas.a.width;
-      center[1] = 0.5 * canvas.a.height;
-    }
-
-    function renderGlow() {
-      ctx.b.save();
-      ctx.b.filter = 'blur(8px) brightness(200%)';
-      ctx.b.globalCompositeOperation = 'lighter';
-      ctx.b.drawImage(canvas.a, 0, 0);
-      ctx.b.restore();
-
-      ctx.b.save();
-      ctx.b.filter = 'blur(4px) brightness(200%)';
-      ctx.b.globalCompositeOperation = 'lighter';
-      ctx.b.drawImage(canvas.a, 0, 0);
-      ctx.b.restore();
-    }
-
-    function render() {
-      ctx.b.save();
-      ctx.b.globalCompositeOperation = 'lighter';
-      ctx.b.drawImage(canvas.a, 0, 0);
-      ctx.b.restore();
-    }
-
-    function draw() {
-      tick++;
-
-      ctx.a.clearRect(0, 0, canvas.a.width, canvas.a.height);
-
-      ctx.b.fillStyle = backgroundColor;
-      ctx.b.fillRect(0, 0, canvas.a.width, canvas.a.height);
-
-      for (let i = 0; i < particlePropsLength; i += particlePropCount) {
-        updateParticle(i);
+      function setup() {
+        console.log("Coalesce: Setting up background canvas...");
+        createCanvas();
+        resize();
+        initParticles();
+        drawFrame();
       }
 
-      renderGlow();
-      render();
-    }
+      function initParticles() {
+        console.log("Coalesce: Initializing particles...");
+        tick = 0;
+        particleProps = new Float32Array(particlePropsLength);
 
-    window.addEventListener('load', setup);
-    window.addEventListener('resize', resize);
+        for (let i = 0; i < particlePropsLength; i += particlePropCount) {
+          initParticle(i);
+        }
+      }
+
+      function initParticle(i) {
+        let theta, x, y, vx, vy, life, ttl, speed, size, hue;
+
+        x = rand(bgCanvas.a.width);
+        y = rand(bgCanvas.a.height);
+        theta = angle(x, y, center[0], center[1]);
+        vx = Math.cos(theta) * 6;
+        vy = Math.sin(theta) * 6;
+        life = 0;
+        ttl = baseTTL + rand(rangeTTL);
+        speed = baseSpeed + rand(rangeSpeed);
+        size = baseSize + rand(rangeSize);
+        hue = baseHue + rand(rangeHue);
+
+        particleProps.set([x, y, vx, vy, life, ttl, speed, size, hue], i);
+      }
+
+      function drawFrame() {
+        window.requestAnimationFrame(draw);
+      }
+
+      function updateParticle(i) {
+        let i2 = 1 + i, i3 = 2 + i, i4 = 3 + i, i5 = 4 + i, i6 = 5 + i, i7 = 6 + i, i8 = 7 + i, i9 = 8 + i;
+        let x = particleProps[i];
+        let y = particleProps[i2];
+        let theta = angle(x, y, center[0], center[1]) + 0.75 * Math.PI / 2;
+        let vx = lerp(particleProps[i3], 2 * Math.cos(theta), 0.05);
+        let vy = lerp(particleProps[i4], 2 * Math.sin(theta), 0.05);
+        let life = particleProps[i5];
+        let ttl = particleProps[i6];
+        let speed = particleProps[i7];
+        let size = particleProps[i8];
+        let hue = particleProps[i9];
+
+        let x2 = x + vx * speed;
+        let y2 = y + vy * speed;
+
+        drawParticle(x, y, theta, life, ttl, size, hue);
+
+        life++;
+
+        particleProps[i] = x2;
+        particleProps[i2] = y2;
+        particleProps[i3] = vx;
+        particleProps[i4] = vy;
+        particleProps[i5] = life;
+
+        if (life > ttl) {
+          initParticle(i);
+        }
+      }
+
+      function drawParticle(x, y, theta, life, ttl, size, hue) {
+        let xRel = x - (0.5 * size), yRel = y - (0.5 * size);
+
+        ctx.a.save();
+        ctx.a.lineCap = 'round';
+        ctx.a.lineWidth = 1;
+        ctx.a.strokeStyle = `hsla(${hue},100%,60%,${fadeInOut(life, ttl)})`;
+        ctx.a.beginPath();
+        ctx.a.translate(xRel, yRel);
+        ctx.a.rotate(theta);
+        ctx.a.translate(-xRel, -yRel);
+        ctx.a.strokeRect(xRel, yRel, size, size);
+        ctx.a.closePath();
+        ctx.a.restore();
+      }
+
+      function createCanvas() {
+        container = document.querySelector('.content.content--canvas');
+        if (!container) {
+          console.error("Coalesce: Container '.content--canvas' not found.");
+          return;
+        }
+
+        bgCanvas = {
+          a: document.createElement('canvas'),
+          b: document.createElement('canvas')
+        };
+        bgCanvas.b.style.position = 'fixed';
+        bgCanvas.b.style.top = '0';
+        bgCanvas.b.style.left = '0';
+        bgCanvas.b.style.width = '100%';
+        bgCanvas.b.style.height = '100%';
+        container.appendChild(bgCanvas.b);
+        ctx = {
+          a: bgCanvas.a.getContext('2d'),
+          b: bgCanvas.b.getContext('2d')
+        };
+        console.log("Coalesce: Background canvas created and appended.");
+      }
+
+      function resize() {
+        const { innerWidth, innerHeight } = window;
+
+        bgCanvas.a.width = innerWidth;
+        bgCanvas.a.height = innerHeight;
+
+        ctx.a.drawImage(bgCanvas.b, 0, 0);
+
+        bgCanvas.b.width = innerWidth;
+        bgCanvas.b.height = innerHeight;
+
+        ctx.b.drawImage(bgCanvas.a, 0, 0);
+
+        center[0] = 0.5 * bgCanvas.a.width;
+        center[1] = 0.5 * bgCanvas.a.height;
+
+        console.log(`Coalesce: Canvas resized to ${innerWidth}x${innerHeight}`);
+      }
+
+      function renderGlow() {
+        ctx.b.save();
+        ctx.b.filter = 'blur(8px) brightness(200%)';
+        ctx.b.globalCompositeOperation = 'lighter';
+        ctx.b.drawImage(bgCanvas.a, 0, 0);
+        ctx.b.restore();
+
+        ctx.b.save();
+        ctx.b.filter = 'blur(4px) brightness(200%)';
+        ctx.b.globalCompositeOperation = 'lighter';
+        ctx.b.drawImage(bgCanvas.a, 0, 0);
+        ctx.b.restore();
+      }
+
+      function render() {
+        ctx.b.save();
+        ctx.b.globalCompositeOperation = 'lighter';
+        ctx.b.drawImage(bgCanvas.a, 0, 0);
+        ctx.b.restore();
+      }
+
+      function draw() {
+        tick++;
+
+        ctx.a.clearRect(0, 0, bgCanvas.a.width, bgCanvas.a.height);
+
+        ctx.b.fillStyle = backgroundColor;
+        ctx.b.fillRect(0, 0, bgCanvas.a.width, bgCanvas.a.height);
+
+        for (let i = 0; i < particlePropsLength; i += particlePropCount) {
+          updateParticle(i);
+        }
+
+        renderGlow();
+        render();
+
+        window.requestAnimationFrame(draw); // Continue the animation loop
+      }
+
+      window.addEventListener('load', setup);
+      window.addEventListener('resize', resize);
+    })();
   </script>
 
+  <!-- Modal and Game Scripts -->
   <script>
     function showGame(gameId) {
       document.querySelectorAll("section").forEach(section => section.classList.add("hidden"));
