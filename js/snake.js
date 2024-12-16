@@ -1,37 +1,40 @@
-// Simple Snake Game
-// Move the snake with arrow keys. Eat food to grow and increase score.
-// Press "Start" button in the modal to begin.
-// No external dependencies.
-
 (function() {
   const canvas = document.getElementById('snakeCanvas');
   const ctx = canvas.getContext('2d');
   const scoreEl = document.getElementById('snakeScore');
   const startBtn = document.getElementById('startSnakeButton');
 
+  const upBtn = document.getElementById('snakeUp');
+  const downBtn = document.getElementById('snakeDown');
+  const leftBtn = document.getElementById('snakeLeft');
+  const rightBtn = document.getElementById('snakeRight');
+
   let gridSize = 20;
   let snake = [{x:10, y:10}];
-  let food = {x:15, y:15};
+  let food = {x:15, y:15, special:false};
   let vx = 0;
   let vy = 0;
   let score = 0;
   let gameInterval = null;
+  let speed = 200;
 
   function draw() {
-    ctx.fillStyle = '#000';
+    // change background with score
+    const hue = (score*20)%360;
+    ctx.fillStyle = `hsl(${hue},50%,10%)`;
     ctx.fillRect(0,0,canvas.width, canvas.height);
+
     // Draw snake
     ctx.fillStyle = 'lime';
     snake.forEach(part => {
       ctx.fillRect(part.x*gridSize, part.y*gridSize, gridSize, gridSize);
     });
     // Draw food
-    ctx.fillStyle = 'red';
+    ctx.fillStyle = food.special?'#FFD700':'red';
     ctx.fillRect(food.x*gridSize, food.y*gridSize, gridSize, gridSize);
   }
 
   function update() {
-    // Move snake
     const head = {x: snake[0].x+vx, y: snake[0].y+vy};
     if (head.x<0 || head.x>=canvas.width/gridSize || head.y<0 || head.y>=canvas.height/gridSize) {
       gameOver();
@@ -45,9 +48,15 @@
     }
     snake.unshift(head);
     if (head.x===food.x && head.y===food.y) {
-      score++;
+      score += (food.special?2:1);
       updateScore();
       placeFood();
+      // Increase speed after certain scores
+      if (score%5===0 && speed>50) {
+        speed -= 10;
+        clearInterval(gameInterval);
+        gameInterval = setInterval(update, speed);
+      }
     } else {
       snake.pop();
     }
@@ -57,6 +66,8 @@
   function placeFood() {
     food.x = Math.floor(Math.random()*(canvas.width/gridSize));
     food.y = Math.floor(Math.random()*(canvas.height/gridSize));
+    // small chance for special food
+    food.special = (Math.random()<0.2);
   }
 
   function gameOver() {
@@ -74,10 +85,11 @@
     snake = [{x:10, y:10}];
     vx = 0; vy = 0;
     score = 0;
+    speed = 200;
     updateScore();
     placeFood();
     draw();
-    gameInterval = setInterval(update, 200);
+    gameInterval = setInterval(update, speed);
   }
 
   document.addEventListener('keydown', e => {
@@ -87,6 +99,12 @@
     else if (e.key==='ArrowUp' && vy===0) {vx=0; vy=-1;}
     else if (e.key==='ArrowDown' && vy===0) {vx=0; vy=1;}
   });
+
+  // Touch controls
+  upBtn.addEventListener('click', ()=>{if (vy===0){vx=0;vy=-1;}});
+  downBtn.addEventListener('click', ()=>{if (vy===0){vx=0;vy=1;}});
+  leftBtn.addEventListener('click', ()=>{if (vx===0){vx=-1;vy=0;}});
+  rightBtn.addEventListener('click', ()=>{if (vx===0){vx=1;vy=0;}});
 
   startBtn.addEventListener('click', startGame);
 })();
