@@ -47,6 +47,8 @@
     canvas {
       display: block;
       margin: 0 auto;
+      max-width: 90vw;
+      height: auto;
     }
 
     .text-center { text-align: center; }
@@ -76,7 +78,7 @@
       to { opacity:1; }
     }
 
-    /* Wordle Styles */
+    /* Wordle Styles (no changes made here) */
     #wordleBoard {
       display: grid;
       gap: 5px;
@@ -91,7 +93,7 @@
     .wordle-cell {
       width: 50px;
       height: 50px;
-      background-color: #add8e6; /* light blue for "white" tiles */
+      background-color: #add8e6;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -129,7 +131,7 @@
       margin-top: 20px;
     }
     .wordle-key {
-      width: 35px; /* slightly smaller to fit ENT/BCK fully on screen */
+      width: 35px;
       height: 48px;
       background-color: #d3d6da;
       display: flex;
@@ -144,7 +146,7 @@
       backface-visibility: hidden;
       transform: scale(1);
       margin: 3px;
-      font-size: 0.85rem; /* slightly smaller font */
+      font-size: 0.85rem;
     }
     .wordle-key.correct {
       background-color: #6aaa64;
@@ -253,6 +255,8 @@
     .modal {
       transition: opacity 0.5s ease;
       z-index: 50;
+      touch-action: none; /* prevent dragging the modal on touch */
+      user-select: none;
     }
     .active {
       opacity: 1;
@@ -286,6 +290,38 @@
     #quote {
       color: #fff;
     }
+
+    /* Control buttons styling (icons only, no text) */
+    .control-buttons {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .control-button {
+      background-color: #4a5568;
+      color: #f7fafc;
+      width: 50px;
+      height: 50px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      cursor: pointer;
+      user-select: none;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    }
+    .control-button:hover {
+      background-color: #2d3748;
+      transform: scale(1.05);
+    }
+    .control-button:active {
+      transform: scale(0.95);
+    }
+
   </style>
 </head>
 <body class="min-h-screen flex flex-col items-center">
@@ -324,13 +360,14 @@
   <div id="flappyModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <div class="bg-white rounded-lg shadow-lg p-6 text-black w-full max-w-2xl">
       <h2 class="text-3xl fun-font my-4 text-center">Flappy Bird</h2>
-      <canvas id="gameCanvas" width="800" height="400" class="bg-gray-200"></canvas>
+      <canvas id="gameCanvas" width="800" height="400" class="bg-gray-200 mx-auto"></canvas>
       <p id="score" class="text-center text-lg mt-4">Score: 0</p>
       <div class="text-center mt-4">
         <button class="px-6 py-3 bg-blue-600 rounded-lg hover:bg-blue-500" id="startGameButton">Start</button>
         <button class="px-6 py-3 bg-red-600 rounded-lg hover:bg-red-500" onclick="closeFlappyModal()">Close</button>
         <button class="px-6 py-3 bg-blue-600 rounded-lg hover:bg-blue-500" id="restartButton" style="display: none;">Restart</button>
       </div>
+      <!-- Flappy Bird currently uses space/arrow keys. For consistency, no new controls added here. -->
     </div>
   </div>
 
@@ -345,6 +382,7 @@
       <div class="text-center mt-4">
         <button class="px-6 py-3 bg-red-600 rounded-lg hover:bg-red-500" onclick="closeTicTacToeModal()">Close</button>
       </div>
+      <!-- Tic Tac Toe is mouse-based. No new controls needed. -->
     </div>
   </div>
 
@@ -374,6 +412,7 @@
       <div class="text-center mt-4">
         <button class="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-500" onclick="closeWordleModal()">Close</button>
       </div>
+      <!-- Zachdle already has on-screen keyboard. No changes. -->
     </div>
   </div>
 
@@ -383,12 +422,9 @@
       <span class="modal-close">&times;</span>
       <h2 class="modal-header mb-4 text-2xl font-bold">How to Play</h2>
       <p class="mb-6 text-center">Guess the secret word, based on the theme, within six tries each round. There are a total of 3 rounds.</p>
-      <!-- Example Tiles with correct instructions -->
       <div class="mb-6">
         <div class="flex space-x-2 justify-center mb-2">
-          <!-- Correct (Z) green -->
           <div class="wordle-cell correct" style="background-color:#6aaa64;color:white;border:none;">Z</div>
-          <!-- Blue "white" tiles -->
           <div class="wordle-cell" style="background-color:#add8e6;border:none;">A</div>
           <div class="wordle-cell" style="background-color:#add8e6;border:none;">C</div>
           <div class="wordle-cell" style="background-color:#add8e6;border:none;">H</div>
@@ -400,7 +436,6 @@
       <div class="mb-6">
         <div class="flex space-x-2 justify-center mb-2">
           <div class="wordle-cell" style="background-color:#add8e6;border:none;">C</div>
-          <!-- Present (O) yellow -->
           <div class="wordle-cell present" style="background-color:#c9b458;color:white;border:none;">O</div>
           <div class="wordle-cell" style="background-color:#add8e6;border:none;">D</div>
           <div class="wordle-cell" style="background-color:#add8e6;border:none;">E</div>
@@ -413,7 +448,6 @@
         <div class="flex space-x-2 justify-center mb-2">
           <div class="wordle-cell" style="background-color:#add8e6;border:none;">G</div>
           <div class="wordle-cell" style="background-color:#add8e6;border:none;">A</div>
-          <!-- Absent (M) gray -->
           <div class="wordle-cell absent" style="background-color:#787c7e;color:white;border:none;">M</div>
           <div class="wordle-cell" style="background-color:#add8e6;border:none;">E</div>
           <div class="wordle-cell" style="background-color:#add8e6;border:none;">S</div>
@@ -435,6 +469,7 @@
       <div class="text-center mt-4">
         <button class="px-6 py-3 bg-red-600 rounded-lg hover:bg-red-500" onclick="closeRpsModal()">Close</button>
       </div>
+      <!-- RPS is simple click-based. No extra controls needed. -->
     </div>
   </div>
 
@@ -460,7 +495,7 @@
   </section>
 
   <!-- TETRIS MODAL -->
-  <div id="tetrisModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+  <div id="tetrisModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style="touch-action:none;user-select:none;">
     <div class="bg-white rounded-lg shadow-lg p-6 text-black w-full max-w-2xl">
       <h2 class="text-3xl fun-font my-4 text-center">Tetris</h2>
       <canvas id="tetrisCanvas" width="240" height="400" class="bg-gray-200 mx-auto"></canvas>
@@ -469,11 +504,18 @@
         <button class="px-6 py-3 bg-blue-600 rounded-lg hover:bg-blue-500" id="startTetrisButton">Start</button>
         <button class="px-6 py-3 bg-red-600 rounded-lg hover:bg-red-500" onclick="closeTetrisModal()">Close</button>
       </div>
+      <!-- Touch Controls for Tetris: Left, Right, Rotate, Drop -->
+      <div class="control-buttons">
+        <div class="control-button" id="tetrisLeft">◀</div>
+        <div class="control-button" id="tetrisRotate">⤒</div>
+        <div class="control-button" id="tetrisRight">▶</div>
+        <div class="control-button" id="tetrisDown">▼</div>
+      </div>
     </div>
   </div>
 
-  <!-- NEW SNAKE MODAL -->
-  <div id="snakeModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+  <!-- SNAKE MODAL -->
+  <div id="snakeModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style="touch-action:none;user-select:none;">
     <div class="bg-white rounded-lg shadow-lg p-6 text-black w-full max-w-md">
       <h2 class="text-3xl fun-font my-4 text-center">Snake</h2>
       <canvas id="snakeCanvas" width="400" height="400" class="bg-gray-200 mx-auto"></canvas>
@@ -482,12 +524,20 @@
         <button class="px-6 py-3 bg-blue-600 rounded-lg hover:bg-blue-500" id="startSnakeButton">Start</button>
         <button class="px-6 py-3 bg-red-600 rounded-lg hover:bg-red-500" onclick="closeSnakeModal()">Close</button>
       </div>
+      <!-- Touch Controls for Snake: Up, Left, Down, Right -->
+      <div class="control-buttons">
+        <div style="flex-basis:100%;text-align:center;">
+          <div class="control-button" id="snakeUp">▲</div>
+        </div>
+        <div class="control-button" id="snakeLeft">◀</div>
+        <div class="control-button" id="snakeDown">▼</div>
+        <div class="control-button" id="snakeRight">▶</div>
+      </div>
     </div>
   </div>
-  <!-- END SNAKE MODAL -->
 
-  <!-- NEW PONG MODAL -->
-  <div id="pongModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+  <!-- PONG MODAL -->
+  <div id="pongModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style="touch-action:none;user-select:none;">
     <div class="bg-white rounded-lg shadow-lg p-6 text-black w-full max-w-md">
       <h2 class="text-3xl fun-font my-4 text-center">Pong</h2>
       <canvas id="pongCanvas" width="600" height="400" class="bg-gray-200 mx-auto"></canvas>
@@ -496,12 +546,16 @@
         <button class="px-6 py-3 bg-blue-600 rounded-lg hover:bg-blue-500" id="startPongButton">Start</button>
         <button class="px-6 py-3 bg-red-600 rounded-lg hover:bg-red-500" onclick="closePongModal()">Close</button>
       </div>
+      <!-- Touch Controls for Pong: Up, Down -->
+      <div class="control-buttons">
+        <div class="control-button" id="pongUp">▲</div>
+        <div class="control-button" id="pongDown">▼</div>
+      </div>
     </div>
   </div>
-  <!-- END PONG MODAL -->
 
-  <!-- NEW HANGMAN MODAL -->
-  <div id="hangmanModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+  <!-- HANGMAN MODAL -->
+  <div id="hangmanModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style="touch-action:none;user-select:none;">
     <div class="bg-white rounded-lg shadow-lg p-6 text-black w-full max-w-md">
       <h2 class="text-3xl fun-font my-4 text-center">Hangman</h2>
       <canvas id="hangmanCanvas" width="300" height="300" class="bg-gray-200 mx-auto"></canvas>
@@ -512,9 +566,9 @@
         <button class="px-6 py-3 bg-blue-600 rounded-lg hover:bg-blue-500" id="startHangmanButton">Start</button>
         <button class="px-6 py-3 bg-red-600 rounded-lg hover:bg-red-500" onclick="closeHangmanModal()">Close</button>
       </div>
+      <!-- Hangman already has on-screen keyboard, no further controls needed -->
     </div>
   </div>
-  <!-- END HANGMAN MODAL -->
 
   <!-- Scripts -->
   <script src="js/flappybird.js"></script>
@@ -526,11 +580,9 @@
   <script src="js/writings.js"></script>
   <script src="js/yetanotherwordlegame.js"></script>
   <script src="js/tetris.js"></script>
-  <!-- NEW SCRIPTS FOR SNAKE, PONG, HANGMAN -->
   <script src="js/snake.js"></script>
   <script src="js/pong.js"></script>
   <script src="js/hangman.js"></script>
-  <!-- END NEW SCRIPTS -->
 
   <script>
     function showGame(gameId) {
@@ -571,7 +623,6 @@
       document.getElementById("writings").classList.remove("hidden");
     }
 
-    // RULES MODAL
     const rulesModal = document.getElementById('rulesModal');
     const closeRulesButton = document.getElementById('closeRulesButton');
     const modalClose = rulesModal.querySelector('.modal-close');
@@ -598,7 +649,6 @@
       document.getElementById("rpsModal").classList.add("hidden");
     }
 
-    // TETRIS MODAL FUNCTIONS
     function openTetrisModal() {
       document.getElementById("tetrisModal").classList.remove("hidden");
     }
@@ -606,7 +656,6 @@
       document.getElementById("tetrisModal").classList.add("hidden");
     }
 
-    // NEW SNAKE MODAL FUNCTIONS
     function openSnakeModal() {
       document.getElementById("snakeModal").classList.remove("hidden");
     }
@@ -614,7 +663,6 @@
       document.getElementById("snakeModal").classList.add("hidden");
     }
 
-    // NEW PONG MODAL FUNCTIONS
     function openPongModal() {
       document.getElementById("pongModal").classList.remove("hidden");
     }
@@ -622,7 +670,6 @@
       document.getElementById("pongModal").classList.add("hidden");
     }
 
-    // NEW HANGMAN MODAL FUNCTIONS
     function openHangmanModal() {
       document.getElementById("hangmanModal").classList.remove("hidden");
     }
