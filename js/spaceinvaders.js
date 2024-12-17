@@ -1,8 +1,4 @@
-// spaceinvaders.js with multiple levels, power-ups, bosses
-// No canvas drag touch control, only buttons & keys
-// Shoot button center, left/right on sides
-// More variety: first 2 levels normal enemies, 3rd level a boss with more health and power-ups.
-
+// spaceinvaders.js
 (function() {
     const canvas = document.getElementById('spaceGameCanvas');
     const startButton = document.getElementById('startSpaceGame');
@@ -14,7 +10,7 @@
 
     let gameStarted = false;
     let animationId;
-    let player, bullets, enemies, powerUps, keys, gameOver, score, level, enemyDirection;
+    let player, bullets, enemies, powerUps, keys, gameOver, score, level, enemyDirection, enemySpeed, enemyColorHue;
 
     let moveLeftActive = false;
     let moveRightActive = false;
@@ -38,20 +34,29 @@
         score = 0;
         level = levelNum;
         enemyDirection = 1;
+        enemySpeed = 1 + (level-1)*0.2; 
+        enemyColorHue = (level*50)%360;
 
         canvas.width = 800;
         canvas.height = 400;
 
         if (level === 1) {
-            spawnEnemies(2,8,false);
+            spawnEnemies(2,8);
         } else if (level === 2) {
-            spawnEnemies(3,8,false);
-        } else {
+            spawnEnemies(3,8);
+        } else if (level === 3) {
             spawnBoss();
+        } else if (level === 4) {
+            spawnEnemies(4,10);
+        } else if (level === 5) {
+            spawnEnemies(5,10);
+        } else {
+            // continue spawning more rows as levels get higher for longer game
+            spawnEnemies(2+level,8+(level%3));
         }
     }
 
-    function spawnEnemies(rows, cols, isBoss) {
+    function spawnEnemies(rows, cols) {
         const enemyWidth = 30;
         const enemyHeight = 20;
         const padding = 10;
@@ -121,7 +126,8 @@
     }
 
     function drawEnemies() {
-        ctx.fillStyle = 'white';
+        // change enemy color each level for more "pizzazz"
+        ctx.fillStyle = `hsl(${enemyColorHue},100%,50%)`;
         enemies.forEach(e => {
             if (e.alive) ctx.fillRect(e.x, e.y, e.width, e.height);
         });
@@ -131,7 +137,7 @@
         let hitEdge = false;
         enemies.forEach(e => {
             if (e.alive) {
-                e.x += enemyDirection;
+                e.x += enemyDirection * enemySpeed;
                 if (e.x + e.width > canvas.width || e.x < 0) {
                     hitEdge = true;
                 }
@@ -155,12 +161,15 @@
     function movePowerUps() {
         for (let i = powerUps.length - 1; i >= 0; i--) {
             powerUps[i].y += powerUps[i].speed;
-            if (powerUps[i].y + powerUps[i].size >= player.y &&
-                powerUps[i].x < player.x + player.width &&
-                powerUps[i].x + powerUps[i].size > player.x) {
-                // Collected power-up
+            // Improved collision detection with player
+            if (
+              powerUps[i].y < player.y + player.height &&
+              powerUps[i].y + powerUps[i].size > player.y &&
+              powerUps[i].x < player.x + player.width &&
+              powerUps[i].x + powerUps[i].size > player.x
+            ) {
                 player.power += 1;
-                player.speed += 1; // Increase speed
+                player.speed += 1;
                 powerUps.splice(i, 1);
             } else if (powerUps[i].y > canvas.height) {
                 powerUps.splice(i, 1);
@@ -247,17 +256,19 @@
         drawScore();
 
         if (enemies.every(e => !e.alive)) {
-            // Level complete
             ctx.fillStyle = 'white';
             ctx.font = '30px sans-serif';
-            if (level < 3) {
+            if (level === 3) {
+                // Boss defeated
+                ctx.fillText("You Win the Game!", canvas.width/2 - 120, canvas.height/2);
+                cancelAnimationFrame(animationId);
+                return;
+            } else {
                 ctx.fillText("Level Complete!", canvas.width/2 - 100, canvas.height/2);
                 nextLevelButton.style.display = 'inline-block';
-            } else {
-                ctx.fillText("You Win the Game!", canvas.width/2 - 120, canvas.height/2);
+                cancelAnimationFrame(animationId);
+                return;
             }
-            cancelAnimationFrame(animationId);
-            return;
         }
 
         animationId = requestAnimationFrame(update);
@@ -290,7 +301,6 @@
         delete keys[e.key];
     });
 
-    // On-screen buttons only
     leftButton.addEventListener('mousedown', () => { moveLeftActive = true; });
     leftButton.addEventListener('mouseup', () => { moveLeftActive = false; });
     leftButton.addEventListener('mouseleave', () => { moveLeftActive = false; });
