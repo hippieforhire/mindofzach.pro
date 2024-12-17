@@ -19,14 +19,23 @@
   let powerUpActive=false;
   let powerUpTimer=0;
 
+  // Added Levels Configuration
+  const levelsConfig = [
+    { cpuSpeed: 2.5, ballSpeed: 3 },
+    { cpuSpeed: 3.0, ballSpeed: 4 },
+    { cpuSpeed: 3.5, ballSpeed: 5 },
+    { cpuSpeed: 4.0, ballSpeed: 6 },
+    // Add more levels as needed
+  ];
+
   function resetPositions(){
     player.y=canvas.height/2 - player.height/2;
     cpu.x=canvas.width-20;
     cpu.y=canvas.height/2 - cpu.height/2;
     ball.x=canvas.width/2;
     ball.y=canvas.height/2;
-    ball.vx=(Math.random()<0.5?3:-3);
-    ball.vy=(Math.random()<0.5?3:-3);
+    ball.vx=levelsConfig[level-1].ballSpeed * (Math.random()<0.5?1:-1);
+    ball.vy=levelsConfig[level-1].ballSpeed * (Math.random()<0.5?1:-1);
   }
 
   function draw(){
@@ -34,13 +43,22 @@
     ctx.fillStyle=`hsl(${hue},50%,10%)`;
     ctx.fillRect(0,0,canvas.width,canvas.height);
 
+    // CPU paddle color depends on level
+    let cpuColor=`hsl(${(level*80)%360},80%,50%)`;
+
+    if(powerUpActive){
+      player.height=100;
+    }else{
+      player.height=60;
+    }
+
+    // Draw player
     ctx.fillStyle='white';
     ctx.fillRect(player.x,player.y,player.width,player.height);
-
-    let cpuColor=`hsl(${(level*80)%360},80%,50%)`;
+    // Draw CPU
     ctx.fillStyle=cpuColor;
     ctx.fillRect(cpu.x,cpu.y,cpu.width,cpu.height);
-
+    // Draw ball
     ctx.fillStyle='white';
     ctx.beginPath();
     ctx.arc(ball.x,ball.y,ball.size,0,Math.PI*2);
@@ -54,32 +72,38 @@
     if(player.y<0)player.y=0;
     if(player.y+player.height>canvas.height)player.y=canvas.height-player.height;
 
-    if(ball.y<cpu.y+cpu.height/2) cpu.y-=cpuSpeed;
-    else if(ball.y>cpu.y+cpu.height/2) cpu.y+=cpuSpeed;
-    if(cpu.y<0) cpu.y=0;
-    if(cpu.y+cpu.height>canvas.height) cpu.y=canvas.height-cpu.height;
+    // CPU tries to follow ball, gets faster each level
+    if(ball.y < cpu.y + cpu.height/2) cpu.y -= cpuSpeed;
+    else if(ball.y > cpu.y + cpu.height/2) cpu.y += cpuSpeed;
+    if(cpu.y < 0) cpu.y = 0;
+    if(cpu.y + cpu.height > canvas.height) cpu.y = canvas.height - cpu.height;
 
-    ball.x+=ball.vx;
-    ball.y+=ball.vy;
-    if(ball.y-ball.size<0||ball.y+ball.size>canvas.height){
-      ball.vy=-ball.vy;
+    // Move ball
+    ball.x += ball.vx;
+    ball.y += ball.vy;
+    if(ball.y - ball.size < 0 || ball.y + ball.size > canvas.height){
+      ball.vy = -ball.vy;
     }
 
-    if(ball.x-ball.size<player.x+player.width && ball.y>player.y && ball.y<player.y+player.height){
-      ball.vx=-ball.vx;
-      ball.x=player.x+player.width+ball.size;
+    // Collisions
+    // Player
+    if(ball.x - ball.size < player.x + player.width && ball.y > player.y && ball.y < player.y + player.height){
+      ball.vx = -ball.vx;
+      ball.x = player.x + player.width + ball.size;
     }
-    if(ball.x+ball.size>cpu.x && ball.y>cpu.y && ball.y<cpu.y+cpu.height){
-      ball.vx=-ball.vx;
-      ball.x=cpu.x-ball.size;
+    // CPU
+    if(ball.x + ball.size > cpu.x && ball.y > cpu.y && ball.y < cpu.y + cpu.height){
+      ball.vx = -ball.vx;
+      ball.x = cpu.x - ball.size;
     }
 
+    // Scoring
     if(ball.x - ball.size <0){
       cpuScore++;
       resetPositions();
       checkWin();
     }
-    if(ball.x+ball.size>canvas.width){
+    if(ball.x + ball.size > canvas.width){
       playerScore++;
       resetPositions();
       checkWin();
@@ -87,7 +111,7 @@
 
     if(powerUpActive){
       powerUpTimer--;
-      if(powerUpTimer<=0){
+      if(powerUpTimer <= 0){
         powerUpActive=false;
       }
     }
@@ -96,20 +120,20 @@
   }
 
   function checkWin(){
-    if(playerScore>=5){
+    if(playerScore >= 5){
       levelUp(true);
-    }else if(cpuScore>=5){
+    } else if(cpuScore >=5){
       levelUp(false);
-    }else{
+    } else{
       maybeActivatePowerUp();
     }
   }
 
   function maybeActivatePowerUp(){
-    if(Math.random()<0.3&&!powerUpActive){
+    // 30% chance after a point to enlarge player's paddle temporarily
+    if(Math.random() < 0.3 && !powerUpActive){
       powerUpActive=true;
       powerUpTimer=300;
-      player.height=100;
     }
   }
 
@@ -117,17 +141,22 @@
     if(playerWon){
       alert("You win this round! Moving to next level...");
       level++;
+      if(level > levelsConfig.length){
+        alert("Congratulations! You've completed all levels!");
+        level = 1; // Reset to first level or implement further levels
+      }
       cpuScore=0;
       playerScore=0;
-      cpuSpeed+=0.5;
+      cpuSpeed = levelsConfig[level-1].cpuSpeed;
       resetPositions();
       maybeActivatePowerUp();
-    }else{
-      alert("CPU wins! Try again at level "+level);
+    } else{
+      alert("CPU wins! Try again at level " + level);
+      // Reset the game completely
       level=1;
       cpuScore=0;
       playerScore=0;
-      cpuSpeed=2.5;
+      cpuSpeed=levelsConfig[level-1].cpuSpeed;
       resetPositions();
       maybeActivatePowerUp();
     }
@@ -142,7 +171,7 @@
     playerScore=0;
     cpuScore=0;
     level=1;
-    cpuSpeed=2.5;
+    cpuSpeed=levelsConfig[level-1].cpuSpeed;
     powerUpActive=false;
     powerUpTimer=0;
     resetPositions();
@@ -154,7 +183,7 @@
     if(document.getElementById('pongModal').classList.contains('hidden'))return;
     if(e.key==='w'||e.key==='W'){
       player.dy=-5;
-    }else if(e.key==='s'||e.key==='S'){
+    } else if(e.key==='s'||e.key==='S'){
       player.dy=5;
     }
   });
@@ -166,17 +195,15 @@
   });
 
   upBtn.addEventListener('mousedown',()=>{player.dy=-5;});
-  upBtn.addEventListener('touchstart',()=>{player.dy=-5;},{passive:true});
+  upBtn.addEventListener('touchstart',()=>{player.dy=-5;});
   downBtn.addEventListener('mousedown',()=>{player.dy=5;});
-  downBtn.addEventListener('touchstart',()=>{player.dy=5;},{passive:true});
+  downBtn.addEventListener('touchstart',()=>{player.dy=5;});
 
-  upBtn.addEventListener('mouseup',()=>{player.dy=0;});
-  upBtn.addEventListener('touchend',()=>{player.dy=0;},{passive:true});
-  upBtn.addEventListener('touchcancel',()=>{player.dy=0;},{passive:true});
-
-  downBtn.addEventListener('mouseup',()=>{player.dy=0;});
-  downBtn.addEventListener('touchend',()=>{player.dy=0;},{passive:true});
-  downBtn.addEventListener('touchcancel',()=>{player.dy=0;},{passive:true});
+  [upBtn, downBtn].forEach(btn=>{
+    btn.addEventListener('mouseup',()=>{player.dy=0;});
+    btn.addEventListener('touchend',()=>{player.dy=0;});
+    btn.addEventListener('touchcancel',()=>{player.dy=0;});
+  });
 
   startBtn.addEventListener('click',startGame);
 })();
