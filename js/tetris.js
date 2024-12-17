@@ -4,12 +4,11 @@
   const scoreElement = document.getElementById('tetrisScore');
   const startButton = document.getElementById('startTetrisButton');
 
+  const upBtn = document.getElementById('tetrisUp');
+  const downBtn = document.getElementById('tetrisDown');
   const leftBtn = document.getElementById('tetrisLeft');
   const rightBtn = document.getElementById('tetrisRight');
-  const rotateBtn = document.getElementById('tetrisRotate');
-  const downBtn = document.getElementById('tetrisDown');
 
-  // Set fixed size for tetris for better control
   canvas.width = 240;
   canvas.height = 400;
   const scale = 20;
@@ -31,9 +30,7 @@
   };
 
   let animationId=null;
-
-  // For double tap detection on rotate button for hard drop
-  let lastTapTime = 0;
+  let lastTapTime=0;
 
   const pieces='TJLOSZI';
   const colors=[
@@ -116,7 +113,7 @@
     const o=player.pos;
     for(let y=0;y<m.length;y++){
       for(let x=0;x<m[y].length;x++){
-        if(m[y][x]!==0 && 
+        if(m[y][x]!==0 &&
            (arena[y+o.y] && arena[y+o.y][x+o.x])!==0){
           return true;
         }
@@ -286,21 +283,28 @@
     }
   });
 
-  // Touch controls and double tap on rotate for hard drop
-  leftBtn.addEventListener('click',()=>playerMove(-1));
-  rightBtn.addEventListener('click',()=>playerMove(1));
-  downBtn.addEventListener('click',()=>playerDrop());
-
-  rotateBtn.addEventListener('click',()=>{
+  function moveLeft(){playerMove(-1);}
+  function moveRight(){playerMove(1);}
+  function softDrop(){playerDrop();}
+  function rotateOrHardDrop(){
     const now=Date.now();
     if(now - lastTapTime < 300){
-      // double tap detected
       hardDrop();
     } else {
       playerRotate(1);
     }
     lastTapTime=now;
-  });
+  }
+
+  upBtn.addEventListener('click',rotateOrHardDrop);
+  downBtn.addEventListener('click',softDrop);
+  leftBtn.addEventListener('click',moveLeft);
+  rightBtn.addEventListener('click',moveRight);
+
+  upBtn.addEventListener('touchstart',rotateOrHardDrop,{passive:true});
+  downBtn.addEventListener('touchstart',softDrop,{passive:true});
+  leftBtn.addEventListener('touchstart',moveLeft,{passive:true});
+  rightBtn.addEventListener('touchstart',moveRight,{passive:true});
 
   startButton.addEventListener('click',()=>{
     arena=createMatrix(12,20);
