@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Snake</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background: radial-gradient(circle at center, #000000 0%, #333333 100%);
+      font-family: 'Poppins', sans-serif;
+      color: #ffffff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: start;
+      align-items: center;
+      overflow-x: hidden;
+      margin: 0;
+      padding: 0;
+    }
+    header, main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
+    .game-container {
+      width: 100%;
+      max-width: 400px;
+      margin: 0 auto;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow: hidden;
+    }
+    canvas {
+      display: block;
+      margin: 20px auto;
+      background: #000;
+      border: 2px solid #fff;
+    }
+    .game-button {
+      background-color: #4a5568;
+      color: #f7fafc;
+      padding: 10px 20px;
+      margin: 10px 0;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    }
+    .game-button:hover {
+      background-color: #2d3748;
+      transform: scale(1.05);
+    }
+    .game-button:active {
+      transform: scale(0.95);
+    }
+    .control-button {
+      background-color: #4a5568;
+      color: #f7fafc;
+      width: 50px;
+      height: 50px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      cursor: pointer;
+      user-select: none;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    }
+    .control-button:hover {
+      background-color: #2d3748;
+      transform: scale(1.05);
+    }
+    .control-button:active {
+      transform: scale(0.95);
+    }
+  </style>
+</head>
+<body>
+  <header class="p-4 w-full flex justify-center">
+    <a href="index.html" class="game-button">Back to Home</a>
+  </header>
+  <main class="game-container">
+    <h1 class="text-3xl fun-font my-4 text-center">Snake</h1>
+    <canvas id="snakeCanvas"></canvas>
+    <p id="snakeScore" class="text-center text-lg mt-4">Score: 0</p>
+    <div class="text-center mt-4 space-x-4">
+      <button class="px-6 py-3 bg-blue-600 rounded-lg hover:bg-blue-500" id="startSnakeButton">Start</button>
+    </div>
+    <!-- Cross layout for Snake controls -->
+    <div class="control-buttons" style="display:flex;flex-direction:column;align-items:center;margin-top:10px;">
+      <div style="display:flex;justify-content:center;">
+        <div class="control-button" id="snakeUp">▲</div>
+      </div>
+      <div style="display:flex;justify-content:center;align-items:center;margin:5px 0;">
+        <div class="control-button" id="snakeLeft">◀</div>
+        <div style="width:10px;"></div>
+        <div class="control-button" id="snakeRight">▶</div>
+      </div>
+      <div style="display:flex;justify-content:center;">
+        <div class="control-button" id="snakeDown">▼</div>
+      </div>
+    </div>
+  </main>
+  <script src="js/snake.js"></script>
+</body>
+</html>
