@@ -21,9 +21,9 @@
 
     // Added Levels Configuration
     const levelsConfig = [
-        { rows: 2, cols: 8, enemySpeed: 1.5, hasBoss: false },
-        { rows: 3, cols: 10, enemySpeed: 2.0, hasBoss: false },
-        { rows: 4, cols: 12, enemySpeed: 2.5, hasBoss: true }, // Level 3 with boss
+        { rows: 2, cols: 8, enemySpeed: 1.5, hasBoss: false, difficulty:1 },
+        { rows: 3, cols: 10, enemySpeed: 2.0, hasBoss: false, difficulty:2 },
+        { rows: 4, cols: 12, enemySpeed: 2.5, hasBoss: true, difficulty:3 }, // Level 3 with boss
         // Add more levels as needed
     ];
 
@@ -33,7 +33,7 @@
             y: 400 - 50,
             width: 40,
             height: 20,
-            speed: 5,
+            speed: 5 + (levelsConfig[levelNum-1].difficulty * 0.5), // Increase speed with difficulty
             dx: 0,
             power: 1
         };
@@ -48,7 +48,7 @@
         enemyDirection = 1;
 
         canvas.width = 800;
-        canvas.height = 400;
+        canvas.height = 600; // Increased canvas height for longer game duration
 
         const currentLevel = levelsConfig[level-1];
         if (currentLevel.hasBoss) {
@@ -73,7 +73,7 @@
                     height: enemyHeight,
                     alive: true,
                     boss: false,
-                    health: 1,
+                    health: 1 + Math.floor(Math.random()*2), // Slightly varied health
                     color: getRandomColor()
                 });
             }
@@ -104,9 +104,9 @@
         ctx.fillStyle = `hsl(${hue}, 50%, 10%)`;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // Optional: Add gradient or stars for more pizzazz
-        const gradient = ctx.createRadialGradient(canvas.width/2, canvas.height/2, 10, canvas.width/2, canvas.height/2, canvas.width);
-        gradient.addColorStop(0, `hsla(${hue}, 100%, 50%, 0.1)`);
+        // Add gradient for more pizzazz
+        const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+        gradient.addColorStop(0, `hsla(${hue}, 100%, 30%, 0.3)`);
         gradient.addColorStop(1, 'hsla(0, 0%, 0%, 0.0)');
         ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -162,7 +162,7 @@
         });
         if (hitEdge) {
             enemies.forEach(e => {
-                if (e.alive) e.y += 10;
+                if (e.alive) e.y += 10 + (level * 2); // Increase descent speed with level
             });
             enemyDirection *= -1;
         }
@@ -218,7 +218,7 @@
     function spawnPowerUp(x, y){
         const types = ['speed', 'doubleFire'];
         const type = types[Math.floor(Math.random() * types.length)];
-        powerUps.push({x: x, y: y, size: 10, speed:2, type: type});
+        powerUps.push({x: x + 20, y: y + 20, size: 10, speed:2, type: type});
     }
 
     function shoot(){
@@ -232,7 +232,7 @@
     }
 
     function dropPowerUp(x, y) {
-        spawnPowerUp(x + 20, y + 20);
+        spawnPowerUp(x, y);
     }
 
     function checkCollisions() {
@@ -315,8 +315,8 @@
     nextLevelButton.addEventListener('click', () => {
         level++;
         if(level > levelsConfig.length){
-            alert("Congratulations! You've completed all levels!");
-            level = 1; // Reset or extend levels as needed
+            alert("Congratulations! You've completed all levels with enhanced difficulty and visuals!");
+            level = 1; // Reset to first level or implement further levels
         }
         init(level);
         nextLevelButton.style.display = 'none';
