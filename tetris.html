@@ -59,11 +59,7 @@
       transform: scale(0.95);
     }
     .control-buttons {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 10px;
+      margin-top:10px;
     }
     .control-button {
       background-color: #4a5568;
@@ -101,11 +97,19 @@
       <button class="px-6 py-3 bg-blue-600 rounded-lg hover:bg-blue-500" id="startTetrisButton">Start</button>
       <button class="px-6 py-3 bg-red-600 rounded-lg hover:bg-red-500" onclick="window.location.href='index.html'">Close</button>
     </div>
-    <div class="control-buttons mt-4">
-      <div class="control-button" id="tetrisLeft">◀</div>
-      <div class="control-button" id="tetrisRotate">⤒</div>
-      <div class="control-button" id="tetrisRight">▶</div>
-      <div class="control-button" id="tetrisDown">▼</div>
+    <!-- Arrange buttons in a cross layout -->
+    <div class="control-buttons" style="display:flex;flex-direction:column;align-items:center;">
+      <div style="display:flex;justify-content:center;">
+        <div class="control-button" id="tetrisUp">▲</div>
+      </div>
+      <div style="display:flex;justify-content:center;align-items:center;margin:5px 0;">
+        <div class="control-button" id="tetrisLeft">◀</div>
+        <div style="width:10px;"></div>
+        <div class="control-button" id="tetrisRight">▶</div>
+      </div>
+      <div style="display:flex;justify-content:center;">
+        <div class="control-button" id="tetrisDown">▼</div>
+      </div>
     </div>
   </main>
   <script src="js/tetris.js"></script>
