@@ -1,3 +1,5 @@
+// tetris.js
+
 (function() {
   const canvas = document.getElementById('tetrisCanvas');
   const context = canvas.getContext('2d');
@@ -296,15 +298,16 @@
     lastTapTime=now;
   }
 
-  upBtn.addEventListener('click',rotateOrHardDrop);
-  downBtn.addEventListener('click',softDrop);
-  leftBtn.addEventListener('click',moveLeft);
-  rightBtn.addEventListener('click',moveRight);
+  // Changed 'touchstart' to 'touchend' for better touch responsiveness
+  upBtn.addEventListener('click', rotateOrHardDrop);
+  downBtn.addEventListener('click', softDrop);
+  leftBtn.addEventListener('click', moveLeft);
+  rightBtn.addEventListener('click', moveRight);
 
-  upBtn.addEventListener('touchstart',rotateOrHardDrop,{passive:true});
-  downBtn.addEventListener('touchstart',softDrop,{passive:true});
-  leftBtn.addEventListener('touchstart',moveLeft,{passive:true});
-  rightBtn.addEventListener('touchstart',moveRight,{passive:true});
+  upBtn.addEventListener('touchend', rotateOrHardDrop, {passive:true});
+  downBtn.addEventListener('touchend', softDrop, {passive:true});
+  leftBtn.addEventListener('touchend', moveLeft, {passive:true});
+  rightBtn.addEventListener('touchend', moveRight, {passive:true});
 
   startButton.addEventListener('click',()=>{
     arena=createMatrix(12,20);
