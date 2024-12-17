@@ -343,9 +343,9 @@
     <button class="px-6 py-3 bg-teal-600 rounded-lg hover:bg-teal-500" onclick="showGame('numberguess')">Number Guess</button>
     <button class="px-6 py-3 bg-pink-600 rounded-lg hover:bg-pink-500" onclick="openWordleModal()">Zachdle</button>
     <button class="px-6 py-3 bg-gray-600 rounded-lg hover:bg-gray-500" onclick="openWritings()">Writings</button>
-    <!-- Changed from openTetrisModal() to link directly to tetris.html -->
     <button class="px-6 py-3 bg-orange-600 rounded-lg hover:bg-orange-500" onclick="window.location.href='tetris.html'">Tetris</button>
-    <button class="px-6 py-3 bg-lime-600 rounded-lg hover:bg-lime-500" onclick="openSnakeModal()">Snake</button>
+    <!-- Changed Snake to its own page -->
+    <button class="px-6 py-3 bg-lime-600 rounded-lg hover:bg-lime-500" onclick="window.location.href='snake.html'">Snake</button>
     <button class="px-6 py-3 bg-amber-600 rounded-lg hover:bg-amber-500" onclick="openPongModal()">Pong</button>
     <button class="px-6 py-3 bg-rose-600 rounded-lg hover:bg-rose-500" onclick="openHangmanModal()">Hangman</button>
   </main>
@@ -488,30 +488,7 @@
     </div>
   </section>
 
-  <!-- Removed Tetris Modal since now we have tetris.html page -->
-
-  <!-- Snake Modal (unchanged layout, just logic in snake.js improved) -->
-  <div id="snakeModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div class="bg-white rounded-lg shadow-lg p-6 text-black w-full max-w-md">
-      <h2 class="text-3xl fun-font my-4 text-center">Snake</h2>
-      <canvas id="snakeCanvas" class="bg-gray-200"></canvas>
-      <p id="snakeScore" class="text-center text-lg mt-4">Score: 0</p>
-      <div class="text-center mt-4 space-x-4">
-        <button class="px-6 py-3 bg-blue-600 rounded-lg hover:bg-blue-500" id="startSnakeButton">Start</button>
-        <button class="px-6 py-3 bg-red-600 rounded-lg hover:bg-red-500" onclick="closeSnakeModal()">Close</button>
-      </div>
-      <div class="control-buttons mt-4">
-        <div style="flex-basis:100%;text-align:center;">
-          <div class="control-button" id="snakeUp">▲</div>
-        </div>
-        <div class="control-button" id="snakeLeft">◀</div>
-        <div class="control-button" id="snakeDown">▼</div>
-        <div class="control-button" id="snakeRight">▶</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Pong Modal (unchanged) -->
+  <!-- Pong Modal -->
   <div id="pongModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <div class="bg-white rounded-lg shadow-lg p-6 text-black w-full max-w-md">
       <h2 class="text-3xl fun-font my-4 text-center">Pong</h2>
@@ -521,29 +498,16 @@
         <button class="px-6 py-3 bg-blue-600 rounded-lg hover:bg-blue-500" id="startPongButton">Start</button>
         <button class="px-6 py-3 bg-red-600 rounded-lg hover:bg-red-500" onclick="closePongModal()">Close</button>
       </div>
-      <div class="control-buttons mt-4">
+      <!-- Arrange Pong controls in a vertical manner (a cross with only up/down) -->
+      <div class="control-buttons mt-4" style="display:flex;flex-direction:column;align-items:center;">
         <div class="control-button" id="pongUp">▲</div>
+        <div style="height:10px;"></div>
         <div class="control-button" id="pongDown">▼</div>
       </div>
     </div>
   </div>
 
-  <!-- Hangman Modal (unchanged) -->
-  <div id="hangmanModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div class="bg-white rounded-lg shadow-lg p-6 text-black w-full max-w-md">
-      <h2 class="text-3xl fun-font my-4 text-center">Hangman</h2>
-      <canvas id="hangmanCanvas" class="bg-gray-200"></canvas>
-      <p id="hangmanWord" class="text-center text-lg mt-4">Loading...</p>
-      <div id="hangmanKeyboard" class="flex flex-wrap justify-center mt-4"></div>
-      <p id="hangmanMessage" class="text-center text-lg mt-4"></p>
-      <div class="text-center mt-4 space-x-4">
-        <button class="px-6 py-3 bg-blue-600 rounded-lg hover:bg-blue-500" id="startHangmanButton">Start</button>
-        <button class="px-6 py-3 bg-red-600 rounded-lg hover:bg-red-500" onclick="closeHangmanModal()">Close</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- External Scripts (unchanged except removal of old tetris.js reference)-->
+  <!-- External Scripts -->
   <script src="js/flappybird.js"></script>
   <script src="js/tictactoe.js"></script>
   <script src="js/rockpaperscissors.js"></script>
@@ -552,13 +516,12 @@
   <script src="js/numberguess.js"></script>
   <script src="js/writings.js"></script>
   <script src="js/yetanotherwordlegame.js"></script>
-  <script src="js/snake.js"></script>
+  <!-- Removed old snake and tetris since now separate pages -->
   <script src="js/pong.js"></script>
   <script src="js/hangman.js"></script>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/simplex-noise/2.4.0/simplex-noise.min.js"></script>
 
-  <!-- Inline util.js (unchanged) -->
   <script>
     function rand(max) {
       return Math.random() * max;
@@ -578,8 +541,6 @@
       }
     }
   </script>
-
-  <!-- Inline coalesce.js (unchanged) -->
   <script>
     (function() {
       'use strict';
@@ -759,7 +720,6 @@
       window.addEventListener('resize', resize);
     })();
   </script>
-
   <script>
     function showGame(gameId) {
       document.querySelectorAll("section").forEach(section => section.classList.add("hidden"));
@@ -821,15 +781,6 @@
     }
     function closeRpsModal() {
       document.getElementById("rpsModal").classList.add("hidden");
-    }
-
-    // Removed openTetrisModal() since now linking directly to tetris.html
-
-    function openSnakeModal() {
-      document.getElementById("snakeModal").classList.remove("hidden");
-    }
-    function closeSnakeModal() {
-      document.getElementById("snakeModal").classList.add("hidden");
     }
 
     function openPongModal() {
