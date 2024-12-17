@@ -9,28 +9,22 @@
   <script src="https://cdn.tailwindcss.com"></script>
   
   <style>
-    /* Import Google Fonts */
     @import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@300;400;600&display=swap');
-
-    /* Global Box Sizing */
     *, *::before, *::after {
       box-sizing: border-box;
     }
-
     body {
       font-family: 'Poppins', sans-serif;
       background: transparent;
       color: #fff;
       position: relative;
-      overflow-x: hidden; /* Prevent horizontal scroll */
-      margin: 0; /* Remove default margin */
+      overflow-x: hidden; 
+      margin: 0; 
     }
-
     .fun-font {
       font-family: 'Pacifico', cursive;
     }
     .hidden { display: none; }
-
     .game-button {
       display: inline-block;
       text-align: center;
@@ -42,7 +36,7 @@
       cursor: pointer;
       transition: background-color 0.3s ease, transform 0.2s ease;
       box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-      width: 100%; /* Make buttons full width within their grid */
+      width: 100%; 
     }
     .game-button:hover {
       background-color: #2d3748;
@@ -51,18 +45,14 @@
     .game-button:active {
       transform: scale(0.95);
     }
-
-    /* Ensure canvas elements are responsive */
     canvas {
       display: block;
       margin: 0 auto;
       width: 100%;
       height: auto;
-      max-width: 100%; /* Prevent exceeding parent width */
+      max-width: 100%; 
     }
-
     .text-center { text-align: center; }
-
     header {
       animation: fadeInDown 1.5s ease forwards;
       opacity: 0;
@@ -71,7 +61,6 @@
       from { opacity:0; transform: translateY(-20px); }
       to { opacity:1; transform: translateY(0); }
     }
-
     main button {
       transition: transform 0.2s, box-shadow 0.2s;
     }
@@ -79,7 +68,6 @@
       transform: translateY(-3px);
       box-shadow: 0 10px 15px rgba(0,0,0,0.3);
     }
-
     section {
       animation: fadeIn 1s ease forwards;
       opacity:0;
@@ -87,8 +75,6 @@
     @keyframes fadeIn {
       to { opacity:1; }
     }
-
-    /* Wordle Styles (unchanged) */
     #wordleBoard {
       display: grid;
       gap: 5px;
@@ -133,7 +119,6 @@
       color: white;
       border-color: #787c7e;
     }
-
     #wordleKeyboard {
       display: flex;
       flex-direction: column;
@@ -177,7 +162,6 @@
     .wordle-key:active {
       transform: scale(0.95);
     }
-
     #roundIndicator {
       position: absolute;
       top: 10px;
@@ -207,7 +191,6 @@
       pointer-events: none;
       transition: opacity 0.5s ease;
     }
-
     #confetti {
       position: fixed;
       top: 0;
@@ -236,7 +219,6 @@
         opacity: 0;
       }
     }
-
     #progressBarContainer {
       width: 100%;
       background-color: #e0e0e0;
@@ -261,7 +243,6 @@
       transform: scale(1);
       opacity: 1;
     }
-
     .modal {
       transition: opacity 0.5s ease;
       z-index: 50;
@@ -288,8 +269,6 @@
     .modal-close:hover {
       color: #374151;
     }
-
-    /* Make quotes readable */
     #quotes {
       background: rgba(0,0,0,0.3);
       padding: 20px;
@@ -298,8 +277,6 @@
     #quote {
       color: #fff;
     }
-
-    /* Control buttons styling */
     .control-buttons {
       display: flex;
       justify-content: center;
@@ -329,8 +306,6 @@
     .control-button:active {
       transform: scale(0.95);
     }
-
-    /* Container for coalesce background */
     .content.content--canvas {
       position: fixed;
       top: 0;
@@ -339,11 +314,7 @@
       height: 100%;
       pointer-events: none;
       z-index: -1; 
-      /* Optional: Fallback background color */
-      /* background-color: #1a202c; */
     }
-
-    /* Responsive Modals */
     @media (max-width: 768px) {
       .modal-content {
         max-width: 90%;
@@ -352,21 +323,16 @@
   </style>
 </head>
 <body class="min-h-screen flex flex-col items-center">
-  <!-- Animated Background Container -->
   <div class="content content--canvas"></div>
-
   <header class="py-10 text-center">
     <h1 class="text-5xl fun-font mb-4">Welcome to the Mind of Zach!</h1>
     <p class="text-lg text-gray-300">Hello! I’m Zach Rogers, welcome to my page. Click a button!</p>
   </header>
-
-  <!-- Quotes Section -->
   <section id="quotes" class="hidden">
     <h2 class="text-3xl fun-font my-4">Inspirational Quotes</h2>
     <p id="quote" class="text-xl text-center italic">Click below for a random quote!</p>
     <button class="mt-4 game-button" onclick="displayRandomQuote()">Get Quote</button>
   </section>
-
   <main class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-screen-lg w-full px-4 mt-10">
     <button class="px-6 py-3 bg-blue-600 rounded-lg hover:bg-blue-500" onclick="openFlappyModal()">Flappy Bird</button>
     <button class="px-6 py-3 bg-green-600 rounded-lg hover:bg-green-500" onclick="openTicTacToeModal()">Tic Tac Toe</button>
@@ -377,13 +343,14 @@
     <button class="px-6 py-3 bg-teal-600 rounded-lg hover:bg-teal-500" onclick="showGame('numberguess')">Number Guess</button>
     <button class="px-6 py-3 bg-pink-600 rounded-lg hover:bg-pink-500" onclick="openWordleModal()">Zachdle</button>
     <button class="px-6 py-3 bg-gray-600 rounded-lg hover:bg-gray-500" onclick="openWritings()">Writings</button>
-    <button class="px-6 py-3 bg-orange-600 rounded-lg hover:bg-orange-500" onclick="openTetrisModal()">Tetris</button>
+    <!-- Changed from openTetrisModal() to link directly to tetris.html -->
+    <button class="px-6 py-3 bg-orange-600 rounded-lg hover:bg-orange-500" onclick="window.location.href='tetris.html'">Tetris</button>
     <button class="px-6 py-3 bg-lime-600 rounded-lg hover:bg-lime-500" onclick="openSnakeModal()">Snake</button>
     <button class="px-6 py-3 bg-amber-600 rounded-lg hover:bg-amber-500" onclick="openPongModal()">Pong</button>
     <button class="px-6 py-3 bg-rose-600 rounded-lg hover:bg-rose-500" onclick="openHangmanModal()">Hangman</button>
   </main>
 
-  <!-- Flappy Bird Modal -->
+  <!-- Flappy Bird Modal (unchanged) -->
   <div id="flappyModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <div class="bg-white rounded-lg shadow-lg p-6 text-black w-full max-w-2xl">
       <h2 class="text-3xl fun-font my-4 text-center">Flappy Bird</h2>
@@ -397,7 +364,7 @@
     </div>
   </div>
 
-  <!-- Tic Tac Toe Modal -->
+  <!-- Tic Tac Toe Modal (unchanged) -->
   <div id="ticTacToeModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <div class="bg-white rounded-lg shadow-lg p-6 text-black w-full max-w-md">
       <h2 class="text-3xl fun-font my-4 text-center">Tic Tac Toe</h2>
@@ -411,7 +378,7 @@
     </div>
   </div>
 
-  <!-- Zachdle Modal -->
+  <!-- Zachdle Modal (unchanged) -->
   <div id="wordleModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-auto">
     <div class="bg-white rounded-lg shadow-lg p-6 text-black w-full max-w-2xl mx-4 relative modal-content">
       <div id="roundIndicator"></div>
@@ -440,7 +407,7 @@
     </div>
   </div>
 
-  <!-- Rules Modal for Zachdle -->
+  <!-- Rules Modal for Zachdle (unchanged) -->
   <div id="rulesModal" class="modal fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center">
     <div class="relative bg-white rounded-lg p-6 w-full max-w-md shadow-lg modal-content">
       <span class="modal-close">&times;</span>
@@ -486,7 +453,7 @@
     </div>
   </div>
 
-  <!-- Rock Paper Scissors Modal -->
+  <!-- Rock Paper Scissors Modal (unchanged) -->
   <div id="rpsModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <div class="bg-white rounded-lg shadow-lg p-6 text-black w-full max-w-md">
       <h2 class="text-3xl fun-font my-4 text-center">Rock Paper Scissors</h2>
@@ -497,7 +464,7 @@
     </div>
   </div>
 
-  <!-- Zork Adventure Section -->
+  <!-- Zork Adventure Section (unchanged) -->
   <section id="zork" class="hidden">
     <h2 class="text-3xl fun-font my-4">Zork Adventure</h2>
     <div id="output" class="bg-gray-800 text-white p-4 rounded-lg overflow-y-scroll" style="max-height: 300px;"></div>
@@ -505,14 +472,14 @@
     <p class="text-sm text-gray-400 mt-2">Type commands like "go north", "take sword", or "attack goblin".</p>
   </section>
 
-  <!-- Number Guess Game Section -->
+  <!-- Number Guess Game Section (unchanged) -->
   <section id="numberguess" class="hidden">
     <h2 class="text-3xl fun-font my-4">Number Guess Game</h2>
     <p id="guessOutput" class="text-xl text-center italic"></p>
     <button class="mt-4 game-button" onclick="playNumberGuess()">Play Number Guess</button>
   </section>
 
-  <!-- Writings Section -->
+  <!-- Writings Section (unchanged) -->
   <section id="writings" class="hidden">
     <h2 class="text-3xl fun-font my-4">My Writings</h2>
     <div id="writings-container" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
@@ -521,26 +488,9 @@
     </div>
   </section>
 
-  <!-- Tetris Modal -->
-  <div id="tetrisModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div class="bg-white rounded-lg shadow-lg p-6 text-black w-full max-w-2xl">
-      <h2 class="text-3xl fun-font my-4 text-center">Tetris</h2>
-      <canvas id="tetrisCanvas" class="bg-gray-200"></canvas>
-      <p id="tetrisScore" class="text-center text-lg mt-4">Score: 0</p>
-      <div class="text-center mt-4 space-x-4">
-        <button class="px-6 py-3 bg-blue-600 rounded-lg hover:bg-blue-500" id="startTetrisButton">Start</button>
-        <button class="px-6 py-3 bg-red-600 rounded-lg hover:bg-red-500" onclick="closeTetrisModal()">Close</button>
-      </div>
-      <div class="control-buttons mt-4">
-        <div class="control-button" id="tetrisLeft">◀</div>
-        <div class="control-button" id="tetrisRotate">⤒</div>
-        <div class="control-button" id="tetrisRight">▶</div>
-        <div class="control-button" id="tetrisDown">▼</div>
-      </div>
-    </div>
-  </div>
+  <!-- Removed Tetris Modal since now we have tetris.html page -->
 
-  <!-- Snake Modal -->
+  <!-- Snake Modal (unchanged layout, just logic in snake.js improved) -->
   <div id="snakeModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <div class="bg-white rounded-lg shadow-lg p-6 text-black w-full max-w-md">
       <h2 class="text-3xl fun-font my-4 text-center">Snake</h2>
@@ -561,7 +511,7 @@
     </div>
   </div>
 
-  <!-- Pong Modal -->
+  <!-- Pong Modal (unchanged) -->
   <div id="pongModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <div class="bg-white rounded-lg shadow-lg p-6 text-black w-full max-w-md">
       <h2 class="text-3xl fun-font my-4 text-center">Pong</h2>
@@ -578,7 +528,7 @@
     </div>
   </div>
 
-  <!-- Hangman Modal -->
+  <!-- Hangman Modal (unchanged) -->
   <div id="hangmanModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <div class="bg-white rounded-lg shadow-lg p-6 text-black w-full max-w-md">
       <h2 class="text-3xl fun-font my-4 text-center">Hangman</h2>
@@ -593,7 +543,7 @@
     </div>
   </div>
 
-  <!-- External Scripts -->
+  <!-- External Scripts (unchanged except removal of old tetris.js reference)-->
   <script src="js/flappybird.js"></script>
   <script src="js/tictactoe.js"></script>
   <script src="js/rockpaperscissors.js"></script>
@@ -602,30 +552,23 @@
   <script src="js/numberguess.js"></script>
   <script src="js/writings.js"></script>
   <script src="js/yetanotherwordlegame.js"></script>
-  <script src="js/tetris.js"></script>
   <script src="js/snake.js"></script>
   <script src="js/pong.js"></script>
   <script src="js/hangman.js"></script>
 
-  <!-- Simplex Noise CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/simplex-noise/2.4.0/simplex-noise.min.js"></script>
 
-  <!-- Inline util.js -->
+  <!-- Inline util.js (unchanged) -->
   <script>
-    // util.js
-
     function rand(max) {
       return Math.random() * max;
     }
-
     function angle(x1, y1, x2, y2) {
       return Math.atan2(y2 - y1, x2 - x1);
     }
-
     function lerp(start, end, amt) {
       return (1 - amt) * start + amt * end;
     }
-
     function fadeInOut(life, ttl) {
       const halfTTL = ttl / 2;
       if (life < halfTTL) {
@@ -636,12 +579,10 @@
     }
   </script>
 
-  <!-- Inline coalesce.js -->
+  <!-- Inline coalesce.js (unchanged) -->
   <script>
-    // coalesce.js
     (function() {
       'use strict';
-
       const particleCount = 700;
       const particlePropCount = 9;
       const particlePropsLength = particleCount * particlePropCount;
@@ -653,21 +594,16 @@
       const rangeSize = 10;
       const baseHue = 10;
       const rangeHue = 100;
-      const noiseSteps = 2;
-      const xOff = 0.0025;
-      const yOff = 0.005;
-      const zOff = 0.0005;
       const backgroundColor = 'hsla(60,50%,3%,1)';
 
       let container;
-      let bgCanvas; // Renamed to avoid conflict
+      let bgCanvas; 
       let ctx;
       let center = [0, 0];
       let tick;
       let particleProps;
 
       function setup() {
-        console.log("Coalesce: Setting up background canvas...");
         createCanvas();
         resize();
         initParticles();
@@ -675,7 +611,6 @@
       }
 
       function initParticles() {
-        console.log("Coalesce: Initializing particles...");
         tick = 0;
         particleProps = new Float32Array(particlePropsLength);
 
@@ -686,7 +621,6 @@
 
       function initParticle(i) {
         let theta, x, y, vx, vy, life, ttl, speed, size, hue;
-
         x = rand(bgCanvas.a.width);
         y = rand(bgCanvas.a.height);
         theta = angle(x, y, center[0], center[1]);
@@ -697,7 +631,6 @@
         speed = baseSpeed + rand(rangeSpeed);
         size = baseSize + rand(rangeSize);
         hue = baseHue + rand(rangeHue);
-
         particleProps.set([x, y, vx, vy, life, ttl, speed, size, hue], i);
       }
 
@@ -755,10 +688,8 @@
       function createCanvas() {
         container = document.querySelector('.content.content--canvas');
         if (!container) {
-          console.error("Coalesce: Container '.content--canvas' not found.");
           return;
         }
-
         bgCanvas = {
           a: document.createElement('canvas'),
           b: document.createElement('canvas')
@@ -768,32 +699,24 @@
         bgCanvas.b.style.left = '0';
         bgCanvas.b.style.width = '100%';
         bgCanvas.b.style.height = '100%';
-        bgCanvas.b.style.zIndex = '-1'; // Ensure it's behind all other content
+        bgCanvas.b.style.zIndex = '-1';
         container.appendChild(bgCanvas.b);
         ctx = {
           a: bgCanvas.a.getContext('2d'),
           b: bgCanvas.b.getContext('2d')
         };
-        console.log("Coalesce: Background canvas created and appended.");
       }
 
       function resize() {
         const { innerWidth, innerHeight } = window;
-
         bgCanvas.a.width = innerWidth;
         bgCanvas.a.height = innerHeight;
-
         ctx.a.drawImage(bgCanvas.b, 0, 0);
-
         bgCanvas.b.width = innerWidth;
         bgCanvas.b.height = innerHeight;
-
         ctx.b.drawImage(bgCanvas.a, 0, 0);
-
         center[0] = 0.5 * bgCanvas.a.width;
         center[1] = 0.5 * bgCanvas.a.height;
-
-        console.log(`Coalesce: Canvas resized to ${innerWidth}x${innerHeight}`);
       }
 
       function renderGlow() {
@@ -819,9 +742,7 @@
 
       function draw() {
         tick++;
-
         ctx.a.clearRect(0, 0, bgCanvas.a.width, bgCanvas.a.height);
-
         ctx.b.fillStyle = backgroundColor;
         ctx.b.fillRect(0, 0, bgCanvas.a.width, bgCanvas.a.height);
 
@@ -831,8 +752,7 @@
 
         renderGlow();
         render();
-
-        window.requestAnimationFrame(draw); // Continue the animation loop
+        window.requestAnimationFrame(draw); 
       }
 
       window.addEventListener('load', setup);
@@ -840,7 +760,6 @@
     })();
   </script>
 
-  <!-- Modal and Game Scripts -->
   <script>
     function showGame(gameId) {
       document.querySelectorAll("section").forEach(section => section.classList.add("hidden"));
@@ -849,14 +768,12 @@
         startZorkGame();
       }
     }
-
     function openFlappyModal() {
       document.getElementById("flappyModal").classList.remove("hidden");
     }
     function closeFlappyModal() {
       document.getElementById("flappyModal").classList.add("hidden");
     }
-
     function openTicTacToeModal() {
       document.getElementById("ticTacToeModal").classList.remove("hidden");
       initializeTicTacToe();
@@ -864,7 +781,6 @@
     function closeTicTacToeModal() {
       document.getElementById("ticTacToeModal").classList.add("hidden");
     }
-
     function openWordleModal() {
       document.getElementById("wordleModal").classList.remove("hidden");
       document.body.classList.add('modal-open');
@@ -874,7 +790,6 @@
       document.getElementById("wordleModal").classList.add("hidden");
       document.body.classList.remove('modal-open');
     }
-
     function openWritings() {
       document.querySelectorAll("section").forEach(section => section.classList.add("hidden"));
       document.getElementById("writings").classList.remove("hidden");
@@ -889,12 +804,10 @@
       rulesModal.classList.add('active');
       rulesModal.style.zIndex = '100';
     }
-
     function closeRulesModal() {
       rulesModal.classList.remove('active');
       rulesModal.classList.add('hidden');
     }
-
     if (modalClose) {
       modalClose.addEventListener('click', closeRulesModal);
     }
@@ -910,12 +823,7 @@
       document.getElementById("rpsModal").classList.add("hidden");
     }
 
-    function openTetrisModal() {
-      document.getElementById("tetrisModal").classList.remove("hidden");
-    }
-    function closeTetrisModal() {
-      document.getElementById("tetrisModal").classList.add("hidden");
-    }
+    // Removed openTetrisModal() since now linking directly to tetris.html
 
     function openSnakeModal() {
       document.getElementById("snakeModal").classList.remove("hidden");
