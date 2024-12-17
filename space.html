@@ -65,7 +65,6 @@
     .game-button:active {
       transform: scale(0.95);
     }
-
     .starfield {
       position: fixed;
       top: 0;
@@ -87,7 +86,6 @@
       from { opacity: 0.1; }
       to { opacity: 1; }
     }
-
     .controls-container {
       display: flex;
       justify-content: space-around;
@@ -115,11 +113,9 @@
     .control-button:active {
       transform: scale(0.95);
     }
-
     #nextLevelButton {
       display: none;
     }
-
     @media (max-width: 400px) {
       .control-button {
         width: 50px;
@@ -133,7 +129,6 @@
   <header class="p-4 w-full flex justify-center">
     <a href="index.html" class="game-button">Back to Home</a>
   </header>
-
   <main class="game-container">
     <h1 class="text-3xl font-bold mb-4 mt-4 text-center">Space Invaders</h1>
     <div class="canvas-wrapper">
@@ -141,17 +136,13 @@
     </div>
     <button id="startSpaceGame" class="game-button">Start Game</button>
     <button id="nextLevelButton" class="game-button">Next Level</button>
-
-    <!-- On-screen controls: Left, Shoot (middle), Right -->
     <div class="controls-container">
       <div class="control-button" id="leftButton">←</div>
       <div class="control-button" id="shootButton">★</div>
       <div class="control-button" id="rightButton">→</div>
     </div>
   </main>
-
   <div class="starfield" id="starfield"></div>
-
   <script src="js/spaceinvaders.js"></script>
   <script>
     const starfield = document.getElementById('starfield');
