@@ -4,11 +4,13 @@
   const scoreElement = document.getElementById('tetrisScore');
   const startButton = document.getElementById('startTetrisButton');
 
+  const upBtn = document.getElementById('tetrisUp');
+  const downBtn = document.getElementById('tetrisDown');
   const leftBtn = document.getElementById('tetrisLeft');
   const rightBtn = document.getElementById('tetrisRight');
-  const rotateBtn = document.getElementById('tetrisRotate');
-  const downBtn = document.getElementById('tetrisDown');
 
+  canvas.width = 240;
+  canvas.height = 400;
   const scale = 20;
   context.scale(scale, scale);
 
@@ -17,16 +19,18 @@
   let dropInterval = 1000;
   let lastTime = 0;
   let score = 0;
-  let level = 1;
   let linesCleared = 0;
   const levelThreshold = 10; 
-  let animationId = null;
+  let level = 1;
 
   let player = {
     pos:{x:0,y:0},
     matrix:null,
     isPowerUp:false,
   };
+
+  let animationId=null;
+  let lastTapTime=0;
 
   const pieces='TJLOSZI';
   const colors=[
@@ -221,6 +225,18 @@
     dropCounter=0;
   }
 
+  function hardDrop(){
+    while(!collide(arena,player)){
+      player.pos.y++;
+    }
+    player.pos.y--;
+    merge(arena,player);
+    arenaSweep();
+    updateScore();
+    playerReset();
+    dropCounter=0;
+  }
+
   function drawMatrix(matrix,offset){
     matrix.forEach((row,y)=>{
       row.forEach((value,x)=>{
@@ -255,7 +271,7 @@
   }
 
   document.addEventListener('keydown',e=>{
-    if(document.getElementById("tetrisModal").classList.contains("hidden")) return;
+    if(!animationId)return;
     if(e.key==='ArrowLeft'){
       playerMove(-1);
     }else if(e.key==='ArrowRight'){
@@ -267,23 +283,28 @@
     }
   });
 
-  // Touch controls
-  leftBtn.addEventListener('click',()=>playerMove(-1));
-  rightBtn.addEventListener('click',()=>playerMove(1));
-  rotateBtn.addEventListener('click',()=>playerRotate(1));
-  downBtn.addEventListener('click',()=>playerDrop());
-
-  // Double-tap to drop
-  let lastTap = 0;
-  canvas.addEventListener('touchend', function(e) {
-    const currentTime = new Date().getTime();
-    const tapLength = currentTime - lastTap;
-    if (tapLength < 300 && tapLength > 0) {
-      // Double-tap detected
-      playerDrop();
+  function moveLeft(){playerMove(-1);}
+  function moveRight(){playerMove(1);}
+  function softDrop(){playerDrop();}
+  function rotateOrHardDrop(){
+    const now=Date.now();
+    if(now - lastTapTime < 300){
+      hardDrop();
+    } else {
+      playerRotate(1);
     }
-    lastTap = currentTime;
-  }, false);
+    lastTapTime=now;
+  }
+
+  upBtn.addEventListener('click',rotateOrHardDrop);
+  downBtn.addEventListener('click',softDrop);
+  leftBtn.addEventListener('click',moveLeft);
+  rightBtn.addEventListener('click',moveRight);
+
+  upBtn.addEventListener('touchstart',rotateOrHardDrop,{passive:true});
+  downBtn.addEventListener('touchstart',softDrop,{passive:true});
+  leftBtn.addEventListener('touchstart',moveLeft,{passive:true});
+  rightBtn.addEventListener('touchstart',moveRight,{passive:true});
 
   startButton.addEventListener('click',()=>{
     arena=createMatrix(12,20);
