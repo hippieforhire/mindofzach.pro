@@ -9,6 +9,9 @@
   const rotateBtn = document.getElementById('tetrisRotate');
   const downBtn = document.getElementById('tetrisDown');
 
+  // Set fixed size for tetris for better control
+  canvas.width = 240;
+  canvas.height = 400;
   const scale = 20;
   context.scale(scale, scale);
 
@@ -17,16 +20,20 @@
   let dropInterval = 1000;
   let lastTime = 0;
   let score = 0;
-  let level = 1;
   let linesCleared = 0;
   const levelThreshold = 10; 
-  let animationId = null;
+  let level = 1;
 
   let player = {
     pos:{x:0,y:0},
     matrix:null,
     isPowerUp:false,
   };
+
+  let animationId=null;
+
+  // For double tap detection on rotate button for hard drop
+  let lastTapTime = 0;
 
   const pieces='TJLOSZI';
   const colors=[
@@ -109,7 +116,7 @@
     const o=player.pos;
     for(let y=0;y<m.length;y++){
       for(let x=0;x<m[y].length;x++){
-        if(m[y][x]!==0 &&
+        if(m[y][x]!==0 && 
            (arena[y+o.y] && arena[y+o.y][x+o.x])!==0){
           return true;
         }
@@ -221,6 +228,18 @@
     dropCounter=0;
   }
 
+  function hardDrop(){
+    while(!collide(arena,player)){
+      player.pos.y++;
+    }
+    player.pos.y--;
+    merge(arena,player);
+    arenaSweep();
+    updateScore();
+    playerReset();
+    dropCounter=0;
+  }
+
   function drawMatrix(matrix,offset){
     matrix.forEach((row,y)=>{
       row.forEach((value,x)=>{
@@ -255,7 +274,7 @@
   }
 
   document.addEventListener('keydown',e=>{
-    if(document.getElementById("tetrisModal").classList.contains("hidden")) return;
+    if(!animationId)return;
     if(e.key==='ArrowLeft'){
       playerMove(-1);
     }else if(e.key==='ArrowRight'){
@@ -267,11 +286,21 @@
     }
   });
 
-  // Touch controls
+  // Touch controls and double tap on rotate for hard drop
   leftBtn.addEventListener('click',()=>playerMove(-1));
   rightBtn.addEventListener('click',()=>playerMove(1));
-  rotateBtn.addEventListener('click',()=>playerRotate(1));
   downBtn.addEventListener('click',()=>playerDrop());
+
+  rotateBtn.addEventListener('click',()=>{
+    const now=Date.now();
+    if(now - lastTapTime < 300){
+      // double tap detected
+      hardDrop();
+    } else {
+      playerRotate(1);
+    }
+    lastTapTime=now;
+  });
 
   startButton.addEventListener('click',()=>{
     arena=createMatrix(12,20);
