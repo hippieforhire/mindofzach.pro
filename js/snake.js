@@ -9,6 +9,10 @@
   const leftBtn = document.getElementById('snakeLeft');
   const rightBtn = document.getElementById('snakeRight');
 
+  // Ensure consistent canvas size
+  canvas.width = 400;
+  canvas.height = 400;
+
   let gridSize=20;
   let snake=[{x:10,y:10}];
   let food={x:15,y:15,special:false};
@@ -19,28 +23,28 @@
   let speed=200;
 
   function draw(){
-    // Vivid background: Hue based on score
     const hue=(score*30)%360;
     ctx.fillStyle=`hsl(${hue},70%,20%)`;
     ctx.fillRect(0,0,canvas.width,canvas.height);
 
-    // Draw snake in bright color
     ctx.fillStyle='lime';
     snake.forEach(part=>{
       ctx.fillRect(part.x*gridSize,part.y*gridSize,gridSize,gridSize);
     });
 
-    // Draw food
     ctx.fillStyle=food.special?'#FFD700':'red';
     ctx.fillRect(food.x*gridSize,food.y*gridSize,gridSize,gridSize);
   }
 
   function update(){
     const head={x:snake[0].x+vx,y:snake[0].y+vy};
+
+    // Check wall collision
     if(head.x<0||head.x>=canvas.width/gridSize||head.y<0||head.y>=canvas.height/gridSize){
       gameOver();
       return;
     }
+    // Check self collision
     for(let i=1;i<snake.length;i++){
       if(snake[i].x===head.x&&snake[i].y===head.y){
         gameOver();
@@ -64,10 +68,20 @@
   }
 
   function placeFood(){
-    food.x=Math.floor(Math.random()*(canvas.width/gridSize));
-    food.y=Math.floor(Math.random()*(canvas.height/gridSize));
-    // occasionally special food
-    food.special=(Math.random()<0.2);
+    // Ensure food in a valid spot
+    let validPosition=false;
+    while(!validPosition){
+      food.x=Math.floor(Math.random()*(canvas.width/gridSize));
+      food.y=Math.floor(Math.random()*(canvas.height/gridSize));
+      food.special=(Math.random()<0.2);
+      validPosition=true;
+      for(let i=0;i<snake.length;i++){
+        if(snake[i].x===food.x&&snake[i].y===food.y){
+          validPosition=false;
+          break;
+        }
+      }
+    }
   }
 
   function gameOver(){
@@ -100,7 +114,6 @@
     else if(e.key==='ArrowDown'&&vy===0){vx=0;vy=1;}
   });
 
-  // Touch controls
   upBtn.addEventListener('click',()=>{if(vy===0){vx=0;vy=-1;}});
   downBtn.addEventListener('click',()=>{if(vy===0){vx=0;vy=1;}});
   leftBtn.addEventListener('click',()=>{if(vx===0){vx=-1;vy=0;}});
