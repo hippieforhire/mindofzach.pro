@@ -51,7 +51,6 @@
         } else if (level === 5) {
             spawnEnemies(5,10);
         } else {
-            // continue spawning more rows as levels get higher for longer game
             spawnEnemies(2+level,8+(level%3));
         }
     }
@@ -126,7 +125,6 @@
     }
 
     function drawEnemies() {
-        // change enemy color each level for more "pizzazz"
         ctx.fillStyle = `hsl(${enemyColorHue},100%,50%)`;
         enemies.forEach(e => {
             if (e.alive) ctx.fillRect(e.x, e.y, e.width, e.height);
@@ -161,7 +159,6 @@
     function movePowerUps() {
         for (let i = powerUps.length - 1; i >= 0; i--) {
             powerUps[i].y += powerUps[i].speed;
-            // Improved collision detection with player
             if (
               powerUps[i].y < player.y + player.height &&
               powerUps[i].y + powerUps[i].size > player.y &&
@@ -259,16 +256,13 @@
             ctx.fillStyle = 'white';
             ctx.font = '30px sans-serif';
             if (level === 3) {
-                // Boss defeated
                 ctx.fillText("You Win the Game!", canvas.width/2 - 120, canvas.height/2);
-                cancelAnimationFrame(animationId);
-                return;
             } else {
                 ctx.fillText("Level Complete!", canvas.width/2 - 100, canvas.height/2);
                 nextLevelButton.style.display = 'inline-block';
-                cancelAnimationFrame(animationId);
-                return;
             }
+            cancelAnimationFrame(animationId);
+            return;
         }
 
         animationId = requestAnimationFrame(update);
@@ -301,6 +295,7 @@
         delete keys[e.key];
     });
 
+    // Add touch events
     leftButton.addEventListener('mousedown', () => { moveLeftActive = true; });
     leftButton.addEventListener('mouseup', () => { moveLeftActive = false; });
     leftButton.addEventListener('mouseleave', () => { moveLeftActive = false; });
