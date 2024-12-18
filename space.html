@@ -8,15 +8,15 @@
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- External Libraries -->
+  <!-- External Libraries via CDN -->
   <!-- Animate.css -->
-  <link rel="stylesheet" href="node_modules/animate.css/animate.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
   <!-- AOS for scroll animations -->
-  <link rel="stylesheet" href="node_modules/aos/dist/aos.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" integrity="sha512-pvQQjZ1XxvN7hFfhxjZNkEc90kH9PVOoKtu4XFKlx0kgW0BN41LzU5KcYc9FQuSUpKjPT5hylWWr0XjkSrlUVg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <!-- Hover.css -->
-  <link rel="stylesheet" href="node_modules/hover.css/css/hover-min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/hover.css/2.3.1/css/hover-min.css" integrity="sha512-8hcPJQJDAKx2Q+MKnqP+a3WRbz3YIA7rHRiWJpV5pKNN+TnV1LjFMDYJ0DBLGfAw45n2e6xE7Lfz6fEo0eIqjA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <!-- Swiper CSS -->
-  <link rel="stylesheet" href="node_modules/swiper/swiper-bundle.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.4.4/swiper-bundle.min.css" integrity="sha512-jVoxsEuj/aqBvDEbXEhwnHhcuh5eNqIdHhbz3Xxcoyyz5B14W+qsHHHkHNFAcG92b+1fEuY7j+5IX9i+z05vXA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <!-- Splitting.js CSS -->
   <link rel="stylesheet" href="https://unpkg.com/splitting/dist/splitting.css">
   <link rel="stylesheet" href="https://unpkg.com/splitting/dist/splitting-cells.css">
@@ -151,7 +151,7 @@
         Experience the universe of Space Invaders like never before, now enhanced with vivid animations, smooth scrolling, and dynamic effects!
       </p>
       <!-- Animated SVG with Vivus.js -->
-      <img id="ZSA" src="img/ZSA.svg.svg" alt="Animated SVG" class="mx-auto">
+      <img id="ZSA" src="IMG/ZSA.svg.svg" alt="Animated SVG" class="mx-auto">
     </header>
 
     <main class="game-container" data-aos="zoom-in" data-aos-delay="500">
@@ -194,85 +194,204 @@
 
   <div class="starfield" id="starfield"></div>
 
-  <!-- External Scripts -->
-  <script src="node_modules/splitting/dist/splitting.min.js"></script>
-  <script src="node_modules/aos/dist/aos.js"></script>
-  <script src="node_modules/gsap/dist/gsap.min.js"></script>
-  <script src="node_modules/locomotive-scroll/dist/locomotive-scroll.min.js"></script>
-  <script src="node_modules/particles.js/particles.js"></script>
-  <script src="node_modules/vivus/dist/vivus.min.js"></script>
-  <script src="node_modules/kute.js/dist/kute.min.js"></script>
-  <script src="node_modules/@mojs/core/dist/mo.umd.js"></script>
-  <script src="node_modules/swiper/swiper-bundle.min.js"></script>
+  <!-- External Scripts via CDN -->
+  <!-- Splitting.js -->
+  <script src="https://unpkg.com/splitting/dist/splitting.min.js"></script>
+  <!-- AOS.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js" integrity="sha512-7oEmCgCkYv82AX+lmK6ctqS1rXOk5Y/Ixq0PQfIhNjfRmdPhHb6lVjnag1xT72s4C3W8uPHKLLlg3SZvLRC0Ug==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <!-- GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" integrity="sha512-0cSmm+7q+OtyXhJ5fH8BubOqO+yY9aJYquPUiV3P6NzJ2jwSpTqH7qTqh7MY7iE/Kf8H+bpiiXg7Bhd+Y2mIkg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <!-- Locomotive Scroll -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/locomotive-scroll/4.1.4/locomotive-scroll.min.js" integrity="sha512-I6YbXkTXV8Q7YURH6Lkp8FyEdjpbF7AeMPL+BWHDxxiPUo5RxS+jKklyYtl6EdvCyhEpvSZBdOkbJyrFc2Dk1g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <!-- Particles.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js" integrity="sha512-3pgnjwOILrGjHwK4c6ivPRp/OgdDJvm7kLa5YqfnCAiKrvYm7mgaRwI3Y5BMV8yVGjRwUJwWqztSYg/J1Q0fVw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <!-- Vivus.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vivus/0.4.6/vivus.min.js" integrity="sha512-KYJfC9VbdKnRC8pndBSnC/7X/zvU5X1dSjXHLhZJpF6z6ASg3f3PNKoa9YHbV3kZ3/ClxZgZbIG42AJbSE2QGw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <!-- Kute.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/kute.js/2.1.3/kute.min.js" integrity="sha512-VgXzlkmsUQdA60KAgMlfkIs04xCx9M+jJ0p40Q9oAlIdLfLy7CrSZpHWHh+eXHo7tJXlFrcCIejflGwrdFr0xA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <!-- Mo.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mojs/0.288.1/mo.min.js" integrity="sha512-TdYs1r7XMwBYJkMRrP9uGdzPZ9pUEcvGNs3s6dgj8BMVvZ+IT6VpmDmCFJY3g8sCj2dSHMDI8Hk1OC3gY1wVwA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <!-- Swiper JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.4.4/swiper-bundle.min.js" integrity="sha512-oqQxio1lq8RqqE/o61DYNc8b+JKqBtfazQ+/vCXwPQRdC7HttBuLhnYb8aPVYx6VJ/LXnI1UwhOwZbM8qHwK3Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
   <!-- Original Scripts -->
   <script src="js/spaceinvaders.js"></script>
 
   <script>
-    // Initialize Splitting.js
-    Splitting();
-
-    // Initialize AOS
-    AOS.init();
-
-    // Initialize Locomotive Scroll
-    const scrollEl = document.querySelector('[data-scroll-container]');
-    const locoScroll = new LocomotiveScroll({
-      el: scrollEl,
-      smooth: true
-    });
-
-    // Particles.js configuration
-    particlesJS.load('particles-js', 'particles.json', function() {
-      console.log('Particles.js loaded!');
-    });
-
-    // Animate SVG with Vivus.js
-    new Vivus('ZSA', { type: 'oneByOne', duration: 200, start:'autostart', file: 'img/ZSA.svg.svg' }, function(){
-      document.getElementById('ZSA').style.opacity = 1;
-    });
-
-    // GSAP entrance animation for the fancy heading
-    gsap.from('h1.text-5xl', {y:-50, opacity:0, duration:1, delay:0.5});
-
-    // Mo.js Burst Animation on Load
     document.addEventListener('DOMContentLoaded', () => {
+      // Initialize Splitting.js
+      Splitting();
+
+      // Initialize AOS
+      AOS.init();
+
+      // Initialize Locomotive Scroll
+      const scrollEl = document.querySelector('[data-scroll-container]');
+      const locoScroll = new LocomotiveScroll({
+        el: scrollEl,
+        smooth: true
+      });
+
+      // Particles.js configuration
+      particlesJS('particles-js',
+        {
+          "particles": {
+            "number": {
+              "value": 80,
+              "density": {
+                "enable": true,
+                "value_area": 800
+              }
+            },
+            "color": {
+              "value": "#ffffff"
+            },
+            "shape": {
+              "type": "circle",
+              "stroke": {
+                "width": 0,
+                "color": "#000000"
+              },
+              "polygon": {
+                "nb_sides": 5
+              }
+            },
+            "opacity": {
+              "value": 0.5,
+              "random": false,
+              "anim": {
+                "enable": false,
+                "speed": 1,
+                "opacity_min": 0.1,
+                "sync": false
+              }
+            },
+            "size": {
+              "value": 3,
+              "random": true,
+              "anim": {
+                "enable": false,
+                "speed": 40,
+                "size_min": 0.1,
+                "sync": false
+              }
+            },
+            "line_linked": {
+              "enable": true,
+              "distance": 150,
+              "color": "#ffffff",
+              "opacity": 0.4,
+              "width": 1
+            },
+            "move": {
+              "enable": true,
+              "speed": 6,
+              "direction": "none",
+              "random": false,
+              "straight": false,
+              "out_mode": "out",
+              "bounce": false,
+              "attract": {
+                "enable": false,
+                "rotateX": 600,
+                "rotateY": 1200
+              }
+            }
+          },
+          "interactivity": {
+            "detect_on": "canvas",
+            "events": {
+              "onhover": {
+                "enable": true,
+                "mode": "repulse"
+              },
+              "onclick": {
+                "enable": true,
+                "mode": "push"
+              },
+              "resize": true
+            },
+            "modes": {
+              "grab": {
+                "distance": 400,
+                "line_linked": {
+                  "opacity": 1
+                }
+              },
+              "bubble": {
+                "distance": 400,
+                "size": 40,
+                "duration": 2,
+                "opacity": 8,
+                "speed": 3
+              },
+              "repulse": {
+                "distance": 200,
+                "duration": 0.4
+              },
+              "push": {
+                "particles_nb": 4
+              },
+              "remove": {
+                "particles_nb": 2
+              }
+            }
+          },
+          "retina_detect": true
+        }
+      );
+
+      // Animate SVG with Vivus.js
+      new Vivus('ZSA', {
+        type: 'oneByOne',
+        duration: 200,
+        start: 'autostart',
+        file: 'IMG/ZSA.svg.svg'
+      }, function(){
+        document.getElementById('ZSA').style.opacity = 1;
+      });
+
+      // GSAP entrance animation for the fancy heading
+      gsap.from('h1.text-5xl', {y:-50, opacity:0, duration:1, delay:0.5});
+
+      // Mo.js Burst Animation on Load
       const burst = new mojs.Burst({
-        left: '50%', top: '50%',
+        left: '50%',
+        top: '50%',
         count: 10,
         radius: {0:100},
         children: {
-          shape:'circle',
-          fill:'white',
-          duration:2000
+          shape: 'circle',
+          fill: 'white',
+          duration: 2000
         }
       });
       burst.play();
 
       // Kute.js example: animate background color of body after load
       KUTE.fromTo('body', {backgroundColor:'#000000'}, {backgroundColor:'#111111'}, {duration:2000}).start();
-    });
 
-    // Initialize Swiper Carousel
-    var swiper = new Swiper('.mySwiper', {
-      loop:true,
-      pagination: {
-        el: '.swiper-pagination',
-      },
-    });
+      // Initialize Swiper Carousel
+      var swiper = new Swiper('.mySwiper', {
+        loop: true,
+        pagination: {
+          el: '.swiper-pagination',
+        },
+      });
 
-    // Create Stars in Starfield
-    const starfield = document.getElementById('starfield');
-    for (let i = 0; i < 100; i++) {
-      const star = document.createElement('div');
-      star.classList.add('star');
-      const size = Math.random() * 3;
-      star.style.width = size + 'px';
-      star.style.height = size + 'px';
-      star.style.top = Math.random() * 100 + '%';
-      star.style.left = Math.random() * 100 + '%';
-      starfield.appendChild(star);
-    }
+      // Create Stars in Starfield
+      const starfield = document.getElementById('starfield');
+      for (let i = 0; i < 100; i++) {
+        const star = document.createElement('div');
+        star.classList.add('star');
+        const size = Math.random() * 3;
+        star.style.width = size + 'px';
+        star.style.height = size + 'px';
+        star.style.top = Math.random() * 100 + '%';
+        star.style.left = Math.random() * 100 + '%';
+        starfield.appendChild(star);
+      }
+    });
   </script>
 </body>
 </html>
