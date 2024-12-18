@@ -4,9 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Space Invaders</title>
+  
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Added External Libraries -->
+  <!-- External Libraries -->
   <!-- Animate.css -->
   <link rel="stylesheet" href="node_modules/animate.css/animate.min.css">
   <!-- AOS for scroll animations -->
@@ -15,7 +17,7 @@
   <link rel="stylesheet" href="node_modules/hover.css/css/hover-min.css">
   <!-- Swiper CSS -->
   <link rel="stylesheet" href="node_modules/swiper/swiper-bundle.min.css">
-  <!-- Splitting.js CSS (for fancy text) -->
+  <!-- Splitting.js CSS -->
   <link rel="stylesheet" href="https://unpkg.com/splitting/dist/splitting.css">
   <link rel="stylesheet" href="https://unpkg.com/splitting/dist/splitting-cells.css">
 
@@ -125,8 +127,8 @@
       display: none;
     }
 
-    /* Add a container for the SVG to animate with Vivus */
-    #mySVG {
+    /* Container for the animated SVG */
+    #ZSA {
       width: 150px;
       margin-top: 20px;
       opacity: 0;
@@ -142,14 +144,14 @@
 
     <!-- Fancy Animated Heading with Splitting.js and Animate.css -->
     <header class="p-4 w-full flex flex-col items-center justify-center" data-aos="fade-down" data-aos-duration="1500">
-      <!-- This is the new text I'm allowed to add -->
+      <!-- New Added Text -->
       <h1 class="text-5xl font-bold text-center animate__animated animate__fadeInDown"
           style="margin-top:50px;" data-splitting>Galactic Showdown</h1>
       <p class="text-center text-gray-300 mt-2 animate__animated animate__fadeInUp" style="max-width:600px;">
         Experience the universe of Space Invaders like never before, now enhanced with vivid animations, smooth scrolling, and dynamic effects!
       </p>
-      <!-- SVG with Vivus animation -->
-      <img id="mySVG" src="img/mySVG.svg" alt="Animated SVG" class="mx-auto">
+      <!-- Animated SVG with Vivus.js -->
+      <img id="ZSA" src="img/ZSA.svg.svg" alt="Animated SVG" class="mx-auto">
     </header>
 
     <main class="game-container" data-aos="zoom-in" data-aos-delay="500">
@@ -174,7 +176,7 @@
       </div>
     </main>
 
-    <!-- Add a Swiper carousel at the bottom to test Swiper -->
+    <!-- Swiper Carousel at the Bottom -->
     <section class="w-full max-w-md mt-10 mb-10" data-aos="fade-up">
       <h2 class="text-2xl font-bold text-center mb-4">More Cosmic Wonders</h2>
       <div class="swiper-container swiper mySwiper" style="width:100%;max-width:400px;">
@@ -183,15 +185,16 @@
           <div class="swiper-slide" style="background:#ffa600;display:flex;align-items:center;justify-content:center;height:200px;">Slide 2</div>
           <div class="swiper-slide" style="background:#bc5090;display:flex;align-items:center;justify-content:center;height:200px;">Slide 3</div>
         </div>
-        <!-- If you want pagination or navigation -->
+        <!-- Pagination -->
         <div class="swiper-pagination"></div>
       </div>
     </section>
 
-  </div><!-- end locomotive scroll container -->
+  </div><!-- End Locomotive Scroll Container -->
 
   <div class="starfield" id="starfield"></div>
 
+  <!-- External Scripts -->
   <script src="node_modules/splitting/dist/splitting.min.js"></script>
   <script src="node_modules/aos/dist/aos.js"></script>
   <script src="node_modules/gsap/dist/gsap.min.js"></script>
@@ -219,20 +222,20 @@
       smooth: true
     });
 
-    // Particles.js config
+    // Particles.js configuration
     particlesJS.load('particles-js', 'particles.json', function() {
       console.log('Particles.js loaded!');
     });
 
-    // Animate SVG with Vivus
-    new Vivus('mySVG', { type: 'oneByOne', duration: 200, start:'autostart', file: 'img/mySVG.svg' }, function(){
-      document.getElementById('mySVG').style.opacity = 1;
+    // Animate SVG with Vivus.js
+    new Vivus('ZSA', { type: 'oneByOne', duration: 200, start:'autostart', file: 'img/ZSA.svg.svg' }, function(){
+      document.getElementById('ZSA').style.opacity = 1;
     });
 
-    // Small GSAP entrance for heading
+    // GSAP entrance animation for the fancy heading
     gsap.from('h1.text-5xl', {y:-50, opacity:0, duration:1, delay:0.5});
 
-    // Mo.js animation on load
+    // Mo.js Burst Animation on Load
     document.addEventListener('DOMContentLoaded', () => {
       const burst = new mojs.Burst({
         left: '50%', top: '50%',
@@ -250,7 +253,7 @@
       KUTE.fromTo('body', {backgroundColor:'#000000'}, {backgroundColor:'#111111'}, {duration:2000}).start();
     });
 
-    // Swiper initialization
+    // Initialize Swiper Carousel
     var swiper = new Swiper('.mySwiper', {
       loop:true,
       pagination: {
@@ -258,7 +261,7 @@
       },
     });
 
-    // Create some stars in starfield
+    // Create Stars in Starfield
     const starfield = document.getElementById('starfield');
     for (let i = 0; i < 100; i++) {
       const star = document.createElement('div');
@@ -270,7 +273,6 @@
       star.style.left = Math.random() * 100 + '%';
       starfield.appendChild(star);
     }
-
   </script>
 </body>
 </html>
