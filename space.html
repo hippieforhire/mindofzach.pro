@@ -5,6 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Space Invaders</title>
   <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Added External Libraries -->
+  <!-- Animate.css -->
+  <link rel="stylesheet" href="node_modules/animate.css/animate.min.css">
+  <!-- AOS for scroll animations -->
+  <link rel="stylesheet" href="node_modules/aos/dist/aos.css">
+  <!-- Hover.css -->
+  <link rel="stylesheet" href="node_modules/hover.css/css/hover-min.css">
+  <!-- Swiper CSS -->
+  <link rel="stylesheet" href="node_modules/swiper/swiper-bundle.min.css">
+  <!-- Splitting.js CSS (for fancy text) -->
+  <link rel="stylesheet" href="https://unpkg.com/splitting/dist/splitting.css">
+  <link rel="stylesheet" href="https://unpkg.com/splitting/dist/splitting-cells.css">
+
   <style>
     body {
       background: radial-gradient(circle at center, #000000 0%, #1a1a1a 100%);
@@ -110,36 +124,141 @@
     #nextLevelButton {
       display: none;
     }
+
+    /* Add a container for the SVG to animate with Vivus */
+    #mySVG {
+      width: 150px;
+      margin-top: 20px;
+      opacity: 0;
+    }
   </style>
 </head>
 <body>
-  <header class="p-4 w-full flex justify-center">
-    <a href="index.html" class="game-button">Back to Home</a>
-  </header>
-  <main class="game-container">
-    <h1 class="text-3xl font-bold mb-4 mt-4 text-center">Space Invaders</h1>
-    <div class="canvas-wrapper">
-      <canvas id="spaceGameCanvas"></canvas>
-    </div>
-    <button id="startSpaceGame" class="game-button">Start Game</button>
-    <button id="nextLevelButton" class="game-button">Next Level</button>
+  <!-- Particles.js container -->
+  <div id="particles-js" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;"></div>
 
-    <!-- Arrange controls in a cross-like pattern with shoot in center -->
-    <div style="display:flex;flex-direction:column;align-items:center;margin-top:10px;">
-      <div style="height:50px;"></div>
-      <div style="display:flex;justify-content:center;align-items:center;">
-        <div class="control-button" id="leftButton">◀</div>
-        <div style="width:10px;"></div>
-        <div class="control-button" id="shootButton">★</div>
-        <div style="width:10px;"></div>
-        <div class="control-button" id="rightButton">▶</div>
+  <!-- Locomotive Scroll Container -->
+  <div data-scroll-container>
+
+    <!-- Fancy Animated Heading with Splitting.js and Animate.css -->
+    <header class="p-4 w-full flex flex-col items-center justify-center" data-aos="fade-down" data-aos-duration="1500">
+      <!-- This is the new text I'm allowed to add -->
+      <h1 class="text-5xl font-bold text-center animate__animated animate__fadeInDown"
+          style="margin-top:50px;" data-splitting>Galactic Showdown</h1>
+      <p class="text-center text-gray-300 mt-2 animate__animated animate__fadeInUp" style="max-width:600px;">
+        Experience the universe of Space Invaders like never before, now enhanced with vivid animations, smooth scrolling, and dynamic effects!
+      </p>
+      <!-- SVG with Vivus animation -->
+      <img id="mySVG" src="img/mySVG.svg" alt="Animated SVG" class="mx-auto">
+    </header>
+
+    <main class="game-container" data-aos="zoom-in" data-aos-delay="500">
+      <h1 class="text-3xl font-bold mb-4 mt-4 text-center">Space Invaders</h1>
+      <div class="canvas-wrapper">
+        <canvas id="spaceGameCanvas"></canvas>
       </div>
-      <div style="height:50px;"></div>
-    </div>
-  </main>
+      <button id="startSpaceGame" class="game-button hvr-buzz">Start Game</button>
+      <button id="nextLevelButton" class="game-button hvr-buzz">Next Level</button>
+
+      <!-- Arrange controls in a cross-like pattern with shoot in center -->
+      <div style="display:flex;flex-direction:column;align-items:center;margin-top:10px;">
+        <div style="height:50px;"></div>
+        <div style="display:flex;justify-content:center;align-items:center;">
+          <div class="control-button hvr-pulse" id="leftButton">◀</div>
+          <div style="width:10px;"></div>
+          <div class="control-button hvr-pulse" id="shootButton">★</div>
+          <div style="width:10px;"></div>
+          <div class="control-button hvr-pulse" id="rightButton">▶</div>
+        </div>
+        <div style="height:50px;"></div>
+      </div>
+    </main>
+
+    <!-- Add a Swiper carousel at the bottom to test Swiper -->
+    <section class="w-full max-w-md mt-10 mb-10" data-aos="fade-up">
+      <h2 class="text-2xl font-bold text-center mb-4">More Cosmic Wonders</h2>
+      <div class="swiper-container swiper mySwiper" style="width:100%;max-width:400px;">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide" style="background:#ff6363;display:flex;align-items:center;justify-content:center;height:200px;">Slide 1</div>
+          <div class="swiper-slide" style="background:#ffa600;display:flex;align-items:center;justify-content:center;height:200px;">Slide 2</div>
+          <div class="swiper-slide" style="background:#bc5090;display:flex;align-items:center;justify-content:center;height:200px;">Slide 3</div>
+        </div>
+        <!-- If you want pagination or navigation -->
+        <div class="swiper-pagination"></div>
+      </div>
+    </section>
+
+  </div><!-- end locomotive scroll container -->
+
   <div class="starfield" id="starfield"></div>
+
+  <script src="node_modules/splitting/dist/splitting.min.js"></script>
+  <script src="node_modules/aos/dist/aos.js"></script>
+  <script src="node_modules/gsap/dist/gsap.min.js"></script>
+  <script src="node_modules/locomotive-scroll/dist/locomotive-scroll.min.js"></script>
+  <script src="node_modules/particles.js/particles.js"></script>
+  <script src="node_modules/vivus/dist/vivus.min.js"></script>
+  <script src="node_modules/kute.js/dist/kute.min.js"></script>
+  <script src="node_modules/@mojs/core/dist/mo.umd.js"></script>
+  <script src="node_modules/swiper/swiper-bundle.min.js"></script>
+
+  <!-- Original Scripts -->
   <script src="js/spaceinvaders.js"></script>
+
   <script>
+    // Initialize Splitting.js
+    Splitting();
+
+    // Initialize AOS
+    AOS.init();
+
+    // Initialize Locomotive Scroll
+    const scrollEl = document.querySelector('[data-scroll-container]');
+    const locoScroll = new LocomotiveScroll({
+      el: scrollEl,
+      smooth: true
+    });
+
+    // Particles.js config
+    particlesJS.load('particles-js', 'particles.json', function() {
+      console.log('Particles.js loaded!');
+    });
+
+    // Animate SVG with Vivus
+    new Vivus('mySVG', { type: 'oneByOne', duration: 200, start:'autostart', file: 'img/mySVG.svg' }, function(){
+      document.getElementById('mySVG').style.opacity = 1;
+    });
+
+    // Small GSAP entrance for heading
+    gsap.from('h1.text-5xl', {y:-50, opacity:0, duration:1, delay:0.5});
+
+    // Mo.js animation on load
+    document.addEventListener('DOMContentLoaded', () => {
+      const burst = new mojs.Burst({
+        left: '50%', top: '50%',
+        count: 10,
+        radius: {0:100},
+        children: {
+          shape:'circle',
+          fill:'white',
+          duration:2000
+        }
+      });
+      burst.play();
+
+      // Kute.js example: animate background color of body after load
+      KUTE.fromTo('body', {backgroundColor:'#000000'}, {backgroundColor:'#111111'}, {duration:2000}).start();
+    });
+
+    // Swiper initialization
+    var swiper = new Swiper('.mySwiper', {
+      loop:true,
+      pagination: {
+        el: '.swiper-pagination',
+      },
+    });
+
+    // Create some stars in starfield
     const starfield = document.getElementById('starfield');
     for (let i = 0; i < 100; i++) {
       const star = document.createElement('div');
@@ -151,6 +270,7 @@
       star.style.left = Math.random() * 100 + '%';
       starfield.appendChild(star);
     }
+
   </script>
 </body>
 </html>
