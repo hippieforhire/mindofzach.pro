@@ -1557,7 +1557,6 @@ textarea.w-input, textarea.w-select {
   0% {
     transform: rotate(0);
   }
-
   100% {
     transform: rotate(360deg);
   }
@@ -2393,3 +2392,9 @@ p {
 }
 
 /* ========================================================= */
+
+/* == Fix so the timeline bar doesn't appear over the header == */
+header {
+  position: relative;
+  z-index: 9999;
+}
