@@ -21,6 +21,8 @@
       position: relative;
       width: 100%;
       height: auto;
+      /* Added the z-index so the timeline line won't appear over the header */
+      z-index: 9999;
     }
 
     header img {
@@ -189,28 +191,12 @@
     </nav>
   </header>
   
+  <!-- Page Wrapper -->
   <div class="page-wrapper">
-    <div class="section-hero">
-      <div class="background-layer">
-        <!-- Replaced Gradient SVG with Animated Logo Video -->
-        <video autoplay muted loop playsinline class="background-video">
-          <source src="videos/Logo.mp4" type="video/mp4">
-          Your browser does not support the video tag.
-        </video>
-      </div>
-      <div class="container">
-        <div class="padding-vertical-xxlarge">
-          <div class="timeline-hero_heading-wrapper">
-            <h1>A Timeline of the Mark Twain Title Company</h1>
-            <div class="margin-bottom-medium">
-              <p class="paragraph-large">
-                Mark Twain Title Company traces our origins back to 1898, when we were known as Marion County Abstract Company, a name we still hold the rights to. The company has been through many changes over the years, but the one thing that hasn't changed is our dedication to providing the area with the best title insurance and real estate services around. Please take a look at our company timeline, spanning over a century.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    
+    <!-- *** REMOVED the entire .section-hero block that contained
+         the "A Timeline of the Mark Twain Title Company" text *** -->
+    
     <div class="section-timeline-heading">
       <div class="container">
         <div class="padding-vertical-xlarge">
