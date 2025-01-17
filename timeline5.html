@@ -143,6 +143,22 @@
       text-align: center;
       min-height: 600px; /* Ensures it stays bigger by default */
     }
+
+    /* 1) Keep typed text from jumping: force a stable min-height and no fade-out. */
+    #typedSubtitle {
+      display: inline-block;
+      min-height: 1.5em; /* Enough to ensure no vertical jump */
+    }
+
+    /* 2) Make timeline the same green (#0a6f1b) instead of black (#0a0a0a). */
+    .section-timeline {
+      z-index: -3;
+      background-color: #0a6f1b; /* changed from #0a0a0a */
+      position: relative;
+    }
+    .section-timeline-cta {
+      background-color: #0a6f1b; /* changed from #0a0a0a */
+    }
   </style>
 
   <!-- Anime.js (for color animation) -->
@@ -256,6 +272,8 @@
         </div>
       </div>
     </div>
+
+    <!-- CHANGED background-color to #0a6f1b via CSS above -->
     <div class="section-timeline">
       <div class="container">
         <div class="timeline_component">
@@ -938,7 +956,7 @@
       };
       const callback = (entries, observer) => {
         entries.forEach(entry => {
-          if(entry.isIntersecting){
+          if (entry.isIntersecting) {
             entry.target.classList.add('visible');
             observer.unobserve(entry.target);
           }
@@ -959,6 +977,10 @@
           startDelay: 300,
           backDelay: 1200,
           loop: true,
+          /* Force typed text to remain visible, no fade-out/flicker: */
+          fadeOut: false,
+          smartBackspace: false,
+          showCursor: false,
           onComplete: function() {
             // Anime.js color pulsing
             anime({
@@ -975,6 +997,5 @@
       }
     });
   </script>
-
 </body>
 </html>
