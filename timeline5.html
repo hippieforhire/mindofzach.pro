@@ -53,10 +53,6 @@
       gap: 20px; /* Space between links */
     }
 
-    header nav ul li {
-      /* Optional: Add any additional styling for list items */
-    }
-
     header nav ul li a {
       color: #ffffff; /* White text for visibility over image */
       text-decoration: none;
@@ -64,12 +60,11 @@
       font-size: 16px;
       transition: color 0.3s ease;
     }
-
     header nav ul li a:hover {
       color: #ff7448; /* Example hover color */
     }
 
-    /* Responsive Adjustments */
+    /* Responsive Adjustments for Nav */
     @media screen and (max-width: 767px) {
       header nav {
         bottom: 15px;
@@ -82,7 +77,6 @@
         font-size: 14px;
       }
     }
-
     @media screen and (max-width: 479px) {
       header nav {
         bottom: 10px;
@@ -96,9 +90,8 @@
       }
     }
 
-    /* Dimming Effect for Timeline Items */
+    /* Dimming Effect for Timeline Items (unchanged) */
     .timeline_item {
-      /* Existing styles */
       z-index: 2;
       grid-column-gap: 0px;
       grid-row-gap: 0px;
@@ -109,8 +102,6 @@
       padding-bottom: 80px;
       display: grid;
       position: relative;
-
-      /* New styles for dimming effect */
       opacity: 0.5;
       filter: brightness(0.7);
       transition: opacity 0.6s, filter 0.6s;
@@ -131,21 +122,22 @@
       z-index: -1;
     }
 
-    /* NEW SECTION STYLES */
+    /* NEW SECTION (green) */
     .section-lighthouse {
       background-color: #0a6f1b;
       padding: 60px 0;
       text-align: center;
       min-height: 600px; /* Ensures it stays bigger by default */
     }
-
-    /* 1) Keep typed text from jumping: force a stable min-height and no fade-out. */
     #typedSubtitle {
       display: inline-block;
-      min-height: 1.5em; /* Enough to ensure no vertical jump */
+      min-height: 1.5em; /* stable height, no jump */
     }
 
-    /* 2) Make timeline the same green (#0a6f1b) instead of black (#0a0a0a). */
+    /* Make timeline and heading green instead of black */
+    .section-timeline-heading {
+      background-color: #0a6f1b; /* changed from #0a0a0a */
+    }
     .section-timeline {
       z-index: -3;
       background-color: #0a6f1b; /* changed from #0a0a0a */
@@ -226,12 +218,7 @@
   <!-- Page Wrapper -->
   <div class="page-wrapper">
 
-    <!-- 
-      NEW SECTION INSERTED HERE
-      ----------------------------------------------
-      Uses typed text: "Lighting the path to homeownership"
-      plus your Logo.mp4 next to it (with a min-height).
-    -->
+    <!-- NEW GREEN SECTION with typed text + Logo.mp4 -->
     <div class="section-lighthouse">
       <div class="container" style="max-width: 1200px; margin: 0 auto;">
         <h2 style="font-size: 48px; color: #fff; margin-bottom: 10px;">
@@ -255,9 +242,7 @@
     </div>
     <!-- END NEW SECTION -->
 
-    <!-- *** REMOVED the entire .section-hero block that contained
-         the "A Timeline of the Mark Twain Title Company" text *** -->
-
+    <!-- The timeline heading area (now green instead of black) -->
     <div class="section-timeline-heading">
       <div class="container">
         <div class="padding-vertical-xlarge">
@@ -270,7 +255,7 @@
       </div>
     </div>
 
-    <!-- CHANGED background-color to #0a6f1b via CSS above -->
+    <!-- The timeline itself, also green background -->
     <div class="section-timeline">
       <div class="container">
         <div class="timeline_component">
@@ -278,7 +263,7 @@
             <div data-w-id="d5abcf1f-3370-3eea-ccfd-66f076babfdd" class="timeline_progress-bar"></div>
           </div>
 
-          <!-- Existing Timeline Items (no changes) -->
+          <!-- Existing Timeline Items (unchanged) -->
           <div data-w-id="d5abcf1f-3370-3eea-ccfd-66f076babfe0" class="timeline_item">
             <div id="w-node-d5abcf1f-3370-3eea-ccfd-66f076babfe1-047360b0" class="timeline_left">
               <div class="timeline_date-text">January 20, 1898</div>
@@ -304,8 +289,6 @@
               </div>
             </div>
           </div>
-
-          <!-- Re-Added Missing Timeline Items -->
 
           <!-- January 27, 1898 - 2.jpg -->
           <div data-w-id="new-id-2" class="timeline_item">
@@ -496,8 +479,7 @@
             </div>
           </div>
 
-          <!-- New Timeline Items Start Here -->
-
+          <!-- More Timeline Items Below (unchanged) -->
           <div data-w-id="new-id-10" class="timeline_item">
             <div id="new-id-10-left" class="timeline_left">
               <div class="timeline_date-text">July 1, 1914</div>
@@ -913,14 +895,15 @@
               </div>
             </div>
           </div>
-
-          <!-- New Timeline Items End Here -->
+          <!-- End of Timeline Items -->
 
           <div class="overlay-fade-bottom"></div>
           <div class="overlay-fade-top"></div>
         </div>
       </div>
     </div>
+
+    <!-- CTA area still green -->
     <div data-w-id="a33510ee-228e-eaaa-6baf-5bde8b8e2d5c" class="section-timeline-cta">
       <div class="container">
         <div class="padding-vertical-xlarge">
