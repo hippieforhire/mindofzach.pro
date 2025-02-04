@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property Boundary Mapper</title>
+    <link rel="stylesheet" href="maps.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+</head>
+<body>
+    <h1>Property Boundary Mapper</h1>
+    
+    <textarea id="legalDescription" placeholder="Enter legal description..."></textarea>
+    <button onclick="parseLegalDescription()">Map Property</button>
+
+    <div id="map"></div>
+
+    <button onclick="exportGeoJSON()">Export as GeoJSON</button>
+    <button onclick="exportKML()">Export as KML</button>
+    <button onclick="exportCAD()">Export as CAD</button>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/turf/turf.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
