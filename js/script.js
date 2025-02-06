@@ -42,28 +42,26 @@ function parseLegalDescription() {
 // Parses the legal description text and extracts coordinates
 function parseDescription(text) {
   let parsedPoints = [];
-  // Starting reference point in Marion County, MO
+  // Starting reference point in Marion County, MO (as [lat, lng])
   let startLat = 39.800, startLng = -91.500;
   let currentPoint = [startLat, startLng];
   parsedPoints.push(currentPoint);
   console.log("Starting at:", currentPoint);
 
-  // Regular expression to capture segments with directional data and a distance in feet.
-  // This regex looks for:
+  // Improved regex to capture segments with:
   //   1. A primary direction (North, South, East, West)
-  //   2. Degrees (with optional decimals) followed by the word "degrees" or the symbol "°"
-  //   3. Optional minutes (and possibly a minutes symbol)
-  //   4. Optional seconds (and possibly a seconds symbol)
+  //   2. Degrees (number with optional decimals) and the word "degree(s)" or the symbol "°"
+  //   3. Optional minutes (number) with "minute(s)" (or ' or min) optionally preceded by "and"
+  //   4. Optional seconds (number) with "second(s)" (or " or sec) optionally preceded by "and"
   //   5. An optional secondary direction (North, South, East, West)
-  //   6. A distance value (number with optional decimals) followed by ft or feet
-  let regex = /(North|South|East|West)\s+(\d+(?:\.\d+)?)\s*(?:°|degrees)\s*(?:(\d+(?:\.\d+)?)\s*(?:'|minutes))?\s*(?:(\d+(?:\.\d+)?)\s*(?:"|seconds))?\s*(North|South|East|West)?(?:[,\s;:"’‘-])*?(\d+(?:\.\d+)?)\s*(?:ft|feet)/gi;
+  //   6. Then non-digit characters and finally a distance value (number) followed by "ft" or "feet"
+  let regex = /(North|South|East|West)\s+(\d+(?:\.\d+)?)\s*(?:°|degrees?)\s*(?:(\d+(?:\.\d+)?)\s*(?:minutes?|min|['’])\s*(?:and\s*)?)?(?:(\d+(?:\.\d+)?)\s*(?:seconds?|sec|["”])\s*(?:and\s*)?)?\s*(North|South|East|West)?[^0-9]*?(\d+(?:\.\d+)?)\s*(?:ft|feet)/gi;
   
   let match;
   let matchCount = 0;
   while ((match = regex.exec(text)) !== null) {
     matchCount++;
     console.log("Match " + matchCount + " found:", match);
-    // Extract the matched groups:
     // match[1]: primary direction
     // match[2]: degrees
     // match[3]: minutes (optional)
@@ -124,12 +122,15 @@ function convertBearing(dir1, degrees, minutes, seconds, dir2) {
 
 // Moves a starting point by a given bearing (in degrees) and distance (in feet)
 // using Turf.js to compute the destination point.
+// Note: The input point is in [lat, lng] order, but Turf.js requires [lng, lat].
 function movePoint(start, bearing, distanceFeet) {
   let distanceMeters = distanceFeet * 0.3048;
-  // Turf.js expects distance in kilometers
-  let destination = turf.destination(turf.point(start), distanceMeters / 1000, bearing, { units: "kilometers" });
-  // Turf returns [lng, lat]; reverse for Leaflet ([lat, lng])
-  return destination.geometry.coordinates.reverse();
+  let distanceKilometers = distanceMeters / 1000;
+  // Convert start from [lat, lng] to [lng, lat]
+  let turfStart = turf.point([start[1], start[0]]);
+  let destination = turf.destination(turfStart, distanceKilometers, bearing, { units: "kilometers" });
+  // Turf returns [lng, lat]; convert to [lat, lng] for Leaflet
+  return [destination.geometry.coordinates[1], destination.geometry.coordinates[0]];
 }
 
 // Exports the drawn boundary as GeoJSON
