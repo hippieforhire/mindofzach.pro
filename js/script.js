@@ -11,16 +11,31 @@ let boundaryPoints = [];
 
 // Called when the user clicks the "Map Property" button
 function parseLegalDescription() {
+  console.log("parseLegalDescription() called.");
   let input = document.getElementById("legalDescription").value;
+  
+  if (!input.trim()) {
+    alert("Please enter a legal description.");
+    return;
+  }
+  
+  // Clear any previous polygon from the map
+  boundaryLayer.setLatLngs([]);
+  boundaryPoints = [];
+
   boundaryPoints = parseDescription(input);
+  
+  console.log("Parsed points:", boundaryPoints);
   
   if (boundaryPoints.length > 2) {
     // Ensure the polygon closes by appending the starting point
     boundaryPoints.push(boundaryPoints[0]);
     boundaryLayer.setLatLngs(boundaryPoints);
     map.fitBounds(boundaryLayer.getBounds());
+    console.log("Polygon drawn with " + boundaryPoints.length + " points.");
   } else {
-    alert("Error: Not enough points parsed.");
+    alert("Error: Not enough points parsed. Please check the legal description format.");
+    console.warn("Only " + boundaryPoints.length + " point(s) were parsed.");
   }
 }
 
@@ -31,19 +46,23 @@ function parseDescription(text) {
   let startLat = 39.800, startLng = -91.500;
   let currentPoint = [startLat, startLng];
   parsedPoints.push(currentPoint);
+  console.log("Starting at:", currentPoint);
 
-  // Regular expression to capture:
-  //   1. A primary direction (North/South/East/West)
-  //   2. Degrees (with optional decimals)
-  //   3. Optional minutes
-  //   4. Optional seconds
-  //   5. Optional secondary direction (North/South/East/West)
-  //   6. Distance in feet (number with optional decimals) followed by ft or feet
-  let regex = /(North|South|East|West)\s+(\d+(?:\.\d+)?)\s*(?:°|degrees)\s*(?:(\d+(?:\.\d+)?)\s*(?:'|minutes))?\s*(?:(\d+(?:\.\d+)?)\s*(?:"|seconds))?\s*(North|South|East|West)?(?:[\w\s,;"’‘-])*?(\d+(?:\.\d+)?)\s*(?:ft|feet)/gi;
+  // Regular expression to capture segments with directional data and a distance in feet.
+  // This regex looks for:
+  //   1. A primary direction (North, South, East, West)
+  //   2. Degrees (with optional decimals) followed by the word "degrees" or the symbol "°"
+  //   3. Optional minutes (and possibly a minutes symbol)
+  //   4. Optional seconds (and possibly a seconds symbol)
+  //   5. An optional secondary direction (North, South, East, West)
+  //   6. A distance value (number with optional decimals) followed by ft or feet
+  let regex = /(North|South|East|West)\s+(\d+(?:\.\d+)?)\s*(?:°|degrees)\s*(?:(\d+(?:\.\d+)?)\s*(?:'|minutes))?\s*(?:(\d+(?:\.\d+)?)\s*(?:"|seconds))?\s*(North|South|East|West)?(?:[,\s;:"’‘-])*?(\d+(?:\.\d+)?)\s*(?:ft|feet)/gi;
   
   let match;
+  let matchCount = 0;
   while ((match = regex.exec(text)) !== null) {
-    console.log("Match found:", match);
+    matchCount++;
+    console.log("Match " + matchCount + " found:", match);
     // Extract the matched groups:
     // match[1]: primary direction
     // match[2]: degrees
@@ -60,36 +79,36 @@ function parseDescription(text) {
 
     // Compute the bearing from the provided directions and angle values
     let bearing = convertBearing(dir1, deg, min, sec, dir2);
-    console.log(`Parsed: ${dir1} ${deg}° ${min}' ${sec}" ${dir2}, Distance: ${distance} ft, Bearing: ${bearing}°`);
+    console.log(`Segment ${matchCount}: ${dir1} ${deg}° ${min}' ${sec}" ${dir2}, Distance: ${distance} ft, Bearing: ${bearing}°`);
 
     // Compute the next point from the current point
     let newPoint = movePoint(currentPoint, bearing, distance);
+    console.log("New point:", newPoint);
     parsedPoints.push(newPoint);
     currentPoint = newPoint;
   }
 
-  if (parsedPoints.length === 1) {
-    console.warn("No valid segments found in the legal description.");
+  if (matchCount === 0) {
+    console.warn("No segments matched in the legal description. Please verify the format.");
   }
+  
   return parsedPoints;
 }
 
 // Converts bearing information from legal descriptions into a numeric degree bearing.
-// This simple conversion assumes the primary direction gives the quadrant.
-// You may need to adjust this logic to match your specific requirements.
+// This function uses a simple conversion based on the primary and optional secondary direction.
 function convertBearing(dir1, degrees, minutes, seconds, dir2) {
   let decimalDegrees = degrees + (minutes / 60) + (seconds / 3600);
   // Adjust based on primary direction
   switch(dir1) {
     case "North":
-      // Bearing is relative to North. If secondary direction exists, adjust east/west.
       if (dir2 === "East") return decimalDegrees;
       if (dir2 === "West") return 360 - decimalDegrees;
       return decimalDegrees;
     case "South":
       if (dir2 === "East") return 180 - decimalDegrees;
       if (dir2 === "West") return 180 + decimalDegrees;
-      return 180 + decimalDegrees; // default to South if no secondary given
+      return 180 + decimalDegrees;
     case "East":
       if (dir2 === "North") return 90 - decimalDegrees;
       if (dir2 === "South") return 90 + decimalDegrees;
@@ -107,7 +126,7 @@ function convertBearing(dir1, degrees, minutes, seconds, dir2) {
 // using Turf.js to compute the destination point.
 function movePoint(start, bearing, distanceFeet) {
   let distanceMeters = distanceFeet * 0.3048;
-  // Turf expects distance in kilometers
+  // Turf.js expects distance in kilometers
   let destination = turf.destination(turf.point(start), distanceMeters / 1000, bearing, { units: "kilometers" });
   // Turf returns [lng, lat]; reverse for Leaflet ([lat, lng])
   return destination.geometry.coordinates.reverse();
