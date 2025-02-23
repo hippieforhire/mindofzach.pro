@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flappy Bird Game</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        #gameCanvas {
+            display: none;
+            border: 2px solid #000;
+        }
+        #score {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 18px;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div id="score">Score: 0</div>
+    <canvas id="gameCanvas"></canvas>
+    <button id="startGameButton">Start Game</button>
+    <button id="restartButton" style="display: none;">Restart Game</button>
+
+    <script>
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+const startButton = document.getElementById("startGameButton");
+const restartButton = document.getElementById("restartButton");
+let bird, pipes, score, isGameOver, timer, gameLoopId;
+
+// Bird sprite frames (data URIs for animation)
+const birdFrames = [
+    "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAB3RJTUUH5gYKEisM7u4wPAAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAADVSURBVFjD7ZY9CgIxEIS/upgLMLnq4kZ0kZ0dSK+6uAMTq7gDE6u4AxMruAMT+9Y8yWR3kpmk4ExO8n2g7wMAAAD/xgC+3W53u91ut9vt6nq9Xq/X6/Xu9/r9frvd7ff7/X6/3+93u91ut9vtdrvd7na73e12u93u9/v9fr/f7/f7/X6/3+93u91ut9vtdrvd7na73W63u93udrvd7na73e12u93tdrvd7Xa73e52u92udrvd7Xa73e12u92udrvd7Xa73e12u93tdrvd7Xa73e52u92u/gJq4QCiTq8mFgAAAABJRU5ErkJggg==",
+    "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAB3RJTUUH5gYKEiwR7u4wPAAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAADVSURBVFjD7ZY9CgIxEIS/upgLMLnq4kZ0kZ0dSK+6uAMTq7gDE6u4AxMruAMT+9Y8yWR3kpmk4ExO8n2g7wMAAAD/xgC+3W53u91ut9vt6nq9Xq/X6/Xu9/r9frvd7ff7/X6/3+93u91ut9vtdrvd7na73e12u93u9/v9fr/f7/f7/X6/3+93u91ut9vtdrvd7na73W63u93udrvd7na73e12u93tdrvd7Xa73e52u92udrvd7Xa73e12u92udrvd7Xa73e12u93tdrvd7Xa73e52u92u/gJq4QCiTq8mFgAAAABJRU5ErkJggg==",
+    "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAB3RJTUUH5gYKEi0R7u4wPAAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAADVSURBVFjD7ZY9CgIxEIS/upgLMLnq4kZ0kZ0dSK+6uAMTq7gDE6u4AxMruAMT+9Y8yWR3kpmk4ExO8n2g7wMAAAD/xgC+3W53u91ut9vt6nq9Xq/X6/Xu9/r9frvd7ff7/X6/3+93u91ut9vtdrvd7na73e12u93u9/v9fr/f7/f7/X6/3+93u91ut9vtdrvd7na73W63u93udrvd7na73e12u93tdrvd7Xa73e52u92udrvd7Xa73e12u92udrvd7Xa73e12u93tdrvd7Xa73e52u92u/gJq4QCiTq8mFgAAAABJRU5ErkJggg=="
+];
+
+// Pipe sprite (data URI)
+const pipeImage = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAB3RJTUUH5gYKEi8R7u4wPAAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAADVSURBVFjD7ZY9CgIxEIS/upgLMLnq4kZ0kZ0dSK+6uAMTq7gDE6u4AxMruAMT+9Y8yWR3kpmk4ExO8n2g7wMAAAD/xgC+3W53u91ut9vt6nq9Xq/X6/Xu9/r9frvd7ff7/X6/3+93u91ut9vtdrvd7na73e12u93u9/v9fr/f7/f7/X6/3+93u91ut9vtdrvd7na73W63u93udrvd7na73e12u93tdrvd7Xa73e52u92udrvd7Xa73e12u92udrvd7Xa73e12u93tdrvd7Xa73e52u92u/gJq4QCiTq8mFgAAAABJRU5ErkJggg==";
+
+let birdFrameIndex = 0;
+let frameCount = 0;
+
+function initGame() {
+    bird = { x: 50, y: canvas.height / 2, width: 32, height: 32, gravity: 0.6, lift: -10, velocity: 0 };
+    pipes = [];
+    score = 0;
+    isGameOver = false;
+    timer = 0;
+    updateScore();
+    document.getElementById("score").style.display = "block";
+    restartButton.style.display = "none";
+}
+
+function startGame() {
+    canvas.width = 800;
+    canvas.height = 400;
+    canvas.style.maxWidth = "100%";
+    canvas.style.height = "auto";
+    initGame();
+    canvas.style.display = "block";
+    canvas.addEventListener("click", startMovement);
+    canvas.addEventListener("touchstart", startMovement, { passive: false });
+}
+
+function stopGame() {
+    cancelAnimationFrame(gameLoopId);
+    window.removeEventListener("click", birdFlap);
+    window.removeEventListener("touchstart", birdFlap);
+}
+
+function startMovement(event) {
+    event.preventDefault();
+    window.addEventListener("click", birdFlap);
+    window.addEventListener("touchstart", birdFlap, { passive: false });
+    gameLoop();
+    canvas.removeEventListener("click", startMovement);
+    canvas.removeEventListener("touchstart", startMovement);
+}
+
+function birdFlap(event) {
+    event.preventDefault();
+    bird.velocity = bird.lift;
+}
+
+function gameLoop() {
+    if (isGameOver) return;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawBackground();
+    bird.velocity += bird.gravity;
+    bird.y += bird.velocity;
+
+    if (bird.y + bird.height > canvas.height * 0.75 || bird.y < 0) {
+        endGame();
+    }
+
+    drawBird();
+    updatePipes();
+    drawPipes();
+    checkCollisions();
+    timer++;
+    frameCount++;
+    if (frameCount % 10 === 0) {
+        birdFrameIndex = (birdFrameIndex + 1) % birdFrames.length;
+    }
+    gameLoopId = requestAnimationFrame(gameLoop);
+}
+
+function drawBackground() {
+    ctx.fillStyle = "#87CEEB";
+    ctx.fillRect(0, 0, canvas.width, canvas.height * 0.75);
+    ctx.fillStyle = "#228B22";
+    ctx.fillRect(0, canvas.height * 0.75, canvas.width, canvas.height * 0.25);
+    ctx.fillStyle = "#FFD700";
+    ctx.beginPath();
+    ctx.arc(canvas.width - 50, 50, 30, 0, 2 * Math.PI);
+    ctx.fill();
+    ctx.fillStyle = "#FFFFFF";
+    drawCloud(100, 100);
+    drawCloud(200, 150);
+    drawCloud(300, 120);
+}
+
+function drawCloud(x, y) {
+    ctx.beginPath();
+    ctx.arc(x, y, 20, 0, 2 * Math.PI);
+    ctx.arc(x + 25, y + 10, 25, 0, 2 * Math.PI);
+    ctx.arc(x + 50, y, 20, 0, 2 * Math.PI);
+    ctx.fill();
+}
+
+function drawBird() {
+    const birdImg = new Image();
+    birdImg.src = birdFrames[birdFrameIndex];
+    ctx.drawImage(birdImg, bird.x, bird.y, bird.width, bird.height);
+}
+
+function updatePipes() {
+    const gap = 150;
+    if (timer % 90 === 0 && !isGameOver) {
+        const maxPipeHeight = Math.floor((canvas.height * 0.75) - gap - 50);
+        const pipeHeight = Math.floor(Math.random() * maxPipeHeight) + 50;
+        pipes.push({ x: canvas.width, y: pipeHeight, gap: gap, passed: false });
+    }
+
+    pipes.forEach(pipe => {
+        pipe.x -= 3;
+        if (!pipe.passed && bird.x > pipe.x + 50) {
+            pipe.passed = true;
+            score++;
+            updateScore();
+        }
+    });
+
+    pipes = pipes.filter(pipe => pipe.x + 50 > 0);
+}
+
+function drawPipes() {
+    const pipeImg = new Image();
+    pipeImg.src = pipeImage;
+    pipes.forEach(pipe => {
+        // Draw top pipe
+        ctx.drawImage(pipeImg, pipe.x, 0, 50, pipe.y);
+        // Draw bottom pipe
+        ctx.drawImage(pipeImg, pipe.x, pipe.y + pipe.gap, 50, canvas.height - (pipe.y + pipe.gap));
+    });
+}
+
+function checkCollisions() {
+    pipes.forEach(pipe => {
+        if (bird.x + bird.width > pipe.x && bird.x < pipe.x + 50) {
+            if (bird.y < pipe.y || bird.y + bird.height > pipe.y + pipe.gap) {
+                endGame();
+            }
+        }
+    });
+}
+
+function endGame() {
+    isGameOver = true;
+    window.removeEventListener("click", birdFlap);
+    window.removeEventListener("touchstart", birdFlap);
+    document.getElementById("score").textContent += " - Game Over!";
+    canvas.addEventListener("click", tryRestartAfterGameOver);
+    canvas.addEventListener("touchstart", tryRestartAfterGameOver, { passive: false });
+}
+
+function tryRestartAfterGameOver(event) {
+    event.preventDefault();
+    if (isGameOver) {
+        canvas.removeEventListener("click", tryRestartAfterGameOver);
+        canvas.removeEventListener("touchstart", tryRestartAfterGameOver);
+        restartGame();
+    }
+}
+
+function restartGame() {
+    initGame();
+    canvas.addEventListener("click", startMovement);
+    canvas.addEventListener("touchstart", startMovement, { passive: false });
+}
+
+function updateScore() {
+    document.getElementById("score").textContent = `Score: ${score}`;
+}
+
+startButton.addEventListener("click", startGame);
+restartButton.addEventListener("click", restartGame);
+    </script>
+</body>
+</html>
