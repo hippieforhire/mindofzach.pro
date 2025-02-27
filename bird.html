@@ -42,23 +42,8 @@ const startButton = document.getElementById("startGameButton");
 const restartButton = document.getElementById("restartButton");
 let bird, pipes, score, isGameOver, timer, gameLoopId, hasStarted;
 
-// Bird sprite frames (data URIs for animation)
-const birdFrames = [
-    "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAB3RJTUUH5gYKEisM7u4wPAAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAADVSURBVFjD7ZY9CgIxEIS/upgLMLnq4kZ0kZ0dSK+6uAMTq7gDE6u4AxMruAMT+9Y8yWR3kpmk4ExO8n2g7wMAAAD/xgC+3W53u91ut9vt6nq9Xq/X6/Xu9/r9frvd7ff7/X6/3+93u91ut9vtdrvd7na73e12u93u9/v9fr/f7/f7/X6/3+93u91ut9vtdrvd7na73W63u93udrvd7na73e12u93tdrvd7Xa73e52u92udrvd7Xa73e12u92udrvd7Xa73e12u93tdrvd7Xa73e52u92u/gJq4QCiTq8mFgAAAABJRU5ErkJggg==",
-    "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAB3RJTUUH5gYKEiwR7u4wPAAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAADVSURBVFjD7ZY9CgIxEIS/upgLMLnq4kZ0kZ0dSK+6uAMTq7gDE6u4AxMruAMT+9Y8yWR3kpmk4ExO8n2g7wMAAAD/xgC+3W53u91ut9vt6nq9Xq/X6/Xu9/r9frvd7ff7/X6/3+93u91ut9vtdrvd7na73e12u93u9/v9fr/f7/f7/X6/3+93u91ut9vtdrvd7na73W63u93udrvd7na73e12u93tdrvd7Xa73e52u92udrvd7Xa73e12u92udrvd7Xa73e12u93tdrvd7Xa73e52u92u/gJq4QCiTq8mFgAAAABJRU5ErkJggg==",
-    "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAB3RJTUUH5gYKEi0R7u4wPAAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAADVSURBVFjD7ZY9CgIxEIS/upgLMLnq4kZ0kZ0dSK+6uAMTq7gDE6u4AxMruAMT+9Y8yWR3kpmk4ExO8n2g7wMAAAD/xgC+3W53u91ut9vt6nq9Xq/X6/Xu9/r9frvd7ff7/X6/3+93u91ut9vtdrvd7na73e12u93u9/v9fr/f7/f7/X6/3+93u91ut9vtdrvd7na73W63u93udrvd7na73e12u93tdrvd7Xa73e52u92udrvd7Xa73e12u92udrvd7Xa73e12u93tdrvd7Xa73e52u92u/gJq4QCiTq8mFgAAAABJRU5ErkJggg=="
-];
-
-// Pipe sprite (data URI)
-const pipeImage = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAB3RJTUUH5gYKEi8R7u4wPAAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAADVSURBVFjD7ZY9CgIxEIS/upgLMLnq4kZ0kZ0dSK+6uAMTq7gDE6u4AxMruAMT+9Y8yWR3kpmk4ExO8n2g7wMAAAD/xgC+3W53u91ut9vt6nq9Xq/X6/Xu9/r9frvd7ff7/X6/3+93u91ut9vtdrvd7na73e12u93u9/v9fr/f7/f7/X6/3+93u91ut9vtdrvd7na73W63u93udrvd7na73e12u93tdrvd7Xa73e52u92udrvd7Xa73e12u92udrvd7Xa73e12u93tdrvd7Xa73e52u92u/gJq4QCiTq8mFgAAAABJRU5ErkJggg==";
-
-let birdImages = [];
-let pipeImg;
-let birdFrameIndex = 0;
-let frameCount = 0;
-
 function initGame() {
-    bird = { x: 50, y: canvas.height / 2, width: 32, height: 32, gravity: 0.3, lift: -10, velocity: 0 };
+    bird = { x: 50, y: canvas.height / 2, width: 32, height: 32, gravity: 0.1, lift: -8, velocity: 0 };
     pipes = [];
     score = 0;
     isGameOver = false;
@@ -75,25 +60,22 @@ function startGame() {
     canvas.style.maxWidth = "100%";
     canvas.style.height = "auto";
     
-    // Preload images
-    birdImages = birdFrames.map(src => {
-        const img = new Image();
-        img.src = src;
-        return img;
-    });
-    pipeImg = new Image();
-    pipeImg.src = pipeImage;
-    
     initGame();
     canvas.style.display = "block";
-    canvas.addEventListener("click", startMovement);
-    canvas.addEventListener("touchstart", startMovement, { passive: false });
-}
-
-function stopGame() {
-    cancelAnimationFrame(gameLoopId);
-    window.removeEventListener("click", birdFlap);
-    window.removeEventListener("touchstart", birdFlap);
+    
+    // Draw initial state
+    drawBackground();
+    drawBird(); // Show bird at starting position
+    ctx.font = "30px Arial";
+    ctx.fillStyle = "black";
+    ctx.textAlign = "center";
+    ctx.fillText("Click canvas to start", canvas.width / 2, canvas.height / 2);
+    
+    // Remove any existing listeners to prevent duplicates
+    canvas.removeEventListener("click", startMovement);
+    canvas.removeEventListener("touchstart", startMovement);
+    canvas.addEventListener("click", startMovement, { once: true });
+    canvas.addEventListener("touchstart", startMovement, { passive: false, once: true });
 }
 
 function startMovement(event) {
@@ -101,8 +83,6 @@ function startMovement(event) {
     window.addEventListener("click", birdFlap);
     window.addEventListener("touchstart", birdFlap, { passive: false });
     gameLoop();
-    canvas.removeEventListener("click", startMovement);
-    canvas.removeEventListener("touchstart", startMovement);
 }
 
 function birdFlap(event) {
@@ -131,10 +111,6 @@ function gameLoop() {
     drawPipes();
     checkCollisions();
     timer++;
-    frameCount++;
-    if (frameCount % 10 === 0) {
-        birdFrameIndex = (birdFrameIndex + 1) % birdFrames.length;
-    }
     gameLoopId = requestAnimationFrame(gameLoop);
 }
 
@@ -143,32 +119,11 @@ function drawBackground() {
     ctx.fillRect(0, 0, canvas.width, canvas.height * 0.75);
     ctx.fillStyle = "#228B22";
     ctx.fillRect(0, canvas.height * 0.75, canvas.width, canvas.height * 0.25);
-    ctx.fillStyle = "#FFD700";
-    ctx.beginPath();
-    ctx.arc(canvas.width - 50, 50, 30, 0, 2 * Math.PI);
-    ctx.fill();
-    ctx.fillStyle = "#FFFFFF";
-    drawCloud(100, 100);
-    drawCloud(200, 150);
-    drawCloud(300, 120);
-}
-
-function drawCloud(x, y) {
-    ctx.beginPath();
-    ctx.arc(x, y, 20, 0, 2 * Math.PI);
-    ctx.arc(x + 25, y + 10, 25, 0, 2 * Math.PI);
-    ctx.arc(x + 50, y, 20, 0, 2 * Math.PI);
-    ctx.fill();
 }
 
 function drawBird() {
-    const birdImg = birdImages[birdFrameIndex];
-    if (birdImg.complete && birdImg.naturalWidth !== 0) {
-        ctx.drawImage(birdImg, bird.x, bird.y, bird.width, bird.height);
-    } else {
-        ctx.fillStyle = "red";
-        ctx.fillRect(bird.x, bird.y, bird.width, bird.height);
-    }
+    ctx.fillStyle = "red";
+    ctx.fillRect(bird.x, bird.y, bird.width, bird.height);
 }
 
 function updatePipes() {
@@ -192,18 +147,11 @@ function updatePipes() {
 }
 
 function drawPipes() {
-    if (pipeImg.complete && pipeImg.naturalWidth !== 0) {
-        pipes.forEach(pipe => {
-            ctx.drawImage(pipeImg, pipe.x, 0, 50, pipe.y);
-            ctx.drawImage(pipeImg, pipe.x, pipe.y + pipe.gap, 50, canvas.height - (pipe.y + pipe.gap));
-        });
-    } else {
-        ctx.fillStyle = "green";
-        pipes.forEach(pipe => {
-            ctx.fillRect(pipe.x, 0, 50, pipe.y);
-            ctx.fillRect(pipe.x, pipe.y + pipe.gap, 50, canvas.height - (pipe.y + pipe.gap));
-        });
-    }
+    ctx.fillStyle = "green";
+    pipes.forEach(pipe => {
+        ctx.fillRect(pipe.x, 0, 50, pipe.y);
+        ctx.fillRect(pipe.x, pipe.y + pipe.gap, 50, canvas.height - (pipe.y + pipe.gap));
+    });
 }
 
 function checkCollisions() {
@@ -222,23 +170,12 @@ function endGame() {
     window.removeEventListener("touchstart", birdFlap);
     document.getElementById("score").textContent += " - Game Over!";
     restartButton.style.display = "block";
-    canvas.addEventListener("click", tryRestartAfterGameOver);
-    canvas.addEventListener("touchstart", tryRestartAfterGameOver, { passive: false });
-}
-
-function tryRestartAfterGameOver(event) {
-    event.preventDefault();
-    if (isGameOver) {
-        canvas.removeEventListener("click", tryRestartAfterGameOver);
-        canvas.removeEventListener("touchstart", tryRestartAfterGameOver);
-        restartGame();
-    }
 }
 
 function restartGame() {
+    canvas.style.display = "none";
     initGame();
-    canvas.addEventListener("click", startMovement);
-    canvas.addEventListener("touchstart", startMovement, { passive: false });
+    startGame();
 }
 
 function updateScore() {
